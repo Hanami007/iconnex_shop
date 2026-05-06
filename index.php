@@ -109,13 +109,22 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
 
     <!-- COURSES -->
     <section id="courses">
-        <div class="course-tabs">
-            <button class="course-tab active" onclick="switchCourseTab(this,'popular')">แพ็กเกจยอดนิยม</button>
-            <button class="course-tab" onclick="switchCourseTab(this,'latest')">แพ็กเกจใหม่ล่าสุด</button>
+        <!-- Tabs & Filters -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 36px;">
+            <h1 style="font-size: 3rem;">แพ็กเกจ</h1>
+            <p class="section-description">เลือกแพ็กเกจของคุณ <span style="color: var(--accent)">คลิกที่รูปภาพเพื่อดูรายละเอียด</span></p>
+            <!-- Category Filters -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                <button class="filter-pill active" onclick="setFilter(this,'all')">ทั้งหมด</button>
+                <button class="filter-pill" onclick="setFilter(this,'editing')">การตัดต่อ</button>
+                <button class="filter-pill" onclick="setFilter(this,'business')">ธุรกิจ</button>
+                <button class="filter-pill" onclick="setFilter(this,'tiktok')">TikTok</button>
+            </div>
         </div>
 
-        <!-- Category 1 -->
-        <p class="course-desc">ที่สุดของการเรียนรู้และทำความเข้าใจ<br>
+        <div class="category-section" data-category="editing" style="transition: opacity 0.4s ease;">
+            <!-- Category 1 -->
+            <p class="course-desc">ที่สุดของการเรียนรู้และทำความเข้าใจ<br>
             รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด<br>
             รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอีย</p>
         <div class="course-grid" id="editing-grid">
@@ -188,11 +197,12 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             </div>
         </div>
 
-        <div class="section-divider"></div>
+        </div>
 
         <!-- Category 2: BUSINESS -->
-        <div class="course-section-label">BUSINESS</div>
-        <p class="course-desc">สำหรับผู้ประกอบการและนักพัฒนาธุรกิจที่ต้องการเพิ่มทักษะการตลาดดิจิทัล<br>
+        <div class="category-section" data-category="business" style="transition: opacity 0.4s ease;">
+            <div class="course-section-label">BUSINESS</div>
+            <p class="course-desc">สำหรับผู้ประกอบการและนักพัฒนาธุรกิจที่ต้องการเพิ่มทักษะการตลาดดิจิทัล<br>
             เรียนรู้จากผู้เชี่ยวชาญในด้านธุรกิจออนไลน์</p>
         <div class="course-grid" id="business-grid">
             <div class="course-card" onclick="goToDetail(4)">
@@ -263,12 +273,13 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             </div>
         </div>
 
-        <div class="section-divider"></div>
+        </div>
 
         <!-- Category 3: TIKTOK -->
-        <div class="course-section-label">TIKTOK</div>
-        <p class="course-desc">กลยุทธ์การทำ TikTok ให้ไวรัลและสร้างรายได้จากแพลตฟอร์มนี้<br>
-            เรียนรู้จากผู้สร้างสรรค์ที่มีผู้ติดตามหลักล้านคน</p>
+        <div class="category-section" data-category="tiktok" style="transition: opacity 0.4s ease;">
+            <div class="course-section-label">TIKTOK</div>
+            <p class="course-desc">กลยุทธ์การทำ TikTok ให้ไวรัลและสร้างรายได้จากแพลตฟอร์มนี้<br>
+                เรียนรู้จากผู้สร้างสรรค์ที่มีผู้ติดตามหลักล้านคน</p>
         <div class="course-grid" id="tiktok-grid">
             <div class="course-card" onclick="goToDetail(7)">
                 <div class="course-card-header">

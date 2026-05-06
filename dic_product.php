@@ -7,10 +7,6 @@ if (!$course) {
     header('Location: index.php');
     exit;
 }
-// Get related courses in the same category
-$relatedCourses = array_filter($courses, function($c) use ($course, $id) {
-    return $c['category'] === $course['category'] && $c['id'] !== $id;
-});
 
 ?>
 <!DOCTYPE html>
@@ -51,6 +47,14 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
     <!-- COURSE DETAIL SECTION -->
     <section id="course-detail" class="course-detail-section"
         style="background: linear-gradient(135deg, #022f58 0%, #0f015f 100%); padding: 60px 20px;">
+        
+        <!-- Back Button -->
+        <div style="max-width: 1200px; margin: 0 auto 20px;">
+            <a href="index.php#courses" style="color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 8px; transition: background 0.2s;">
+                <span>←</span> กลับไปหน้าคอร์สเรียน
+            </a>
+        </div>
+
         <div class="course-detail-container"
             style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
 

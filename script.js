@@ -14,12 +14,20 @@ function switchTab(btn, type) {
   // In production, swap images per type
 }
 
-// Tab: courses
-function switchCourseTab(btn, type) {
-  document
-    .querySelectorAll(".course-tab")
-    .forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
+// Category filter
+function filterCategory(category) {
+
+  document.querySelectorAll(".category-section").forEach((section) => {
+    if (category === 'all' || section.getAttribute('data-category') === category) {
+      section.style.display = "block";
+      // trigger reflow
+      void section.offsetWidth;
+      section.style.opacity = "1";
+    } else {
+      section.style.display = "none";
+      section.style.opacity = "0";
+    }
+  });
 }
 
 // FAQ accordion
@@ -84,3 +92,21 @@ fetch("cart_handler.php", {
       badge.style.display = "flex";
     }
   });
+
+function setTab(el, val) {
+  document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  switchCourseTab(val);
+}
+
+function setFilter(el, val) {
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  filterCategory(val);
+}
+
+// Function for sorting tab
+function switchCourseTab(val) {
+  // Logic to handle popular/latest sorting can be added here
+  console.log('Switched tab to:', val);
+}
