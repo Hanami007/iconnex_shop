@@ -44,6 +44,13 @@ foreach ($items as $id => $qty) {
         </ul>
     </nav>
 
+    <!-- Breadcrumb -->
+    <div style="max-width: 1200px; margin: 20px auto 0; padding: 0 40px; font-size: 14px; color: #999;">
+        <a href="index.php" style="color: #666; text-decoration: none;">หน้าหลัก</a> <span style="margin: 0 8px;">›</span>
+        <a href="index.php#courses" style="color: #666; text-decoration: none;">คอร์สเรียน</a> <span style="margin: 0 8px;">›</span>
+        <span style="color: #333; font-weight: 600;">ตะกร้าสินค้า</span>
+    </div>
+
     <div class="cart-page">
         <div class="cart-title">🛒 ตะกร้าสินค้า</div>
 

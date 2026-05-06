@@ -83,26 +83,45 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     </div>
 
     <!-- PORTFOLIO -->
-    <section id="portfolio">
+    <section id="portfolio" style="overflow: hidden;">
         <h2 class="section-title">ผลงาน</h2>
         <div class="tab-bar">
-            <button class="tab-btn" onclick="switchTab(this,'video')">วิดีโอ</button>
-            <button class="tab-btn active" onclick="switchTab(this,'photo')">ภาพ</button>
+            <button class="tab-btn" onclick="switchTab(this,'photo')">ภาพ</button>
+            <button class="tab-btn active" onclick="switchTab(this,'video')">วิดีโอ</button>
         </div>
 
-        <div class="portfolio-grid" id="portfolio-grid">
-            <!-- Photo tab content -->
-            <div class="portfolio-card">
-                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" alt="THAIFEX 2025" />
+        <!-- PHOTOS MARQUEE -->
+        <div id="portfolio-photo-content" class="portfolio-marquee-container">
+            <div class="portfolio-marquee">
+                <!-- Original set -->
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" alt="THAIFEX 2025" /></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Event" /></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Stage" /></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" alt="Media" /></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" alt="Event 2" /></div>
+                <!-- Duplicated set for seamless scrolling -->
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" alt="THAIFEX 2025" /></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Event" /></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Stage" /></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" alt="Media" /></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" alt="Event 2" /></div>
             </div>
-            <div class="portfolio-card">
-                <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Event" />
-            </div>
-            <div class="portfolio-card">
-                <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Stage" />
-            </div>
-            <div class="portfolio-card">
-                <img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" alt="Media" />
+        </div>
+        <!-- VIDEOS MARQUEE -->
+        <div id="portfolio-video-content" class="portfolio-marquee-container" style="display: none;">
+            <div class="portfolio-marquee">
+                <!-- Original set -->
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" style="filter: brightness(0.7);" alt="Video 1" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" style="filter: brightness(0.7);" alt="Video 2" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" style="filter: brightness(0.7);" alt="Video 3" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" style="filter: brightness(0.7);" alt="Video 4" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" style="filter: brightness(0.7);" alt="Video 5" /><span class="video-play-icon">▶</span></div>
+                <!-- Duplicated set for seamless scrolling -->
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" style="filter: brightness(0.7);" alt="Video 1" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" style="filter: brightness(0.7);" alt="Video 2" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" style="filter: brightness(0.7);" alt="Video 3" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" style="filter: brightness(0.7);" alt="Video 4" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" style="filter: brightness(0.7);" alt="Video 5" /><span class="video-play-icon">▶</span></div>
             </div>
         </div>
     </section>
