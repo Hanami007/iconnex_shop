@@ -8,6 +8,10 @@ if (!$course) {
     exit;
 }
 
+// Get related courses in the same category
+$relatedCourses = array_filter($courses, function($c) use ($course, $id) {
+    return $c['category'] === $course['category'] && $c['id'] !== $id;
+});
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -48,11 +52,20 @@ if (!$course) {
     <section id="course-detail" class="course-detail-section"
         style="background: linear-gradient(135deg, #022f58 0%, #0f015f 100%); padding: 60px 20px;">
         
-        <!-- Back Button -->
+         <!-- Breadcrumb -->
+        <div style="max-width: 1200px; margin: 0 auto 20px; font-size: 14px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 10px;">
+            <a href="index.php" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">หน้าหลัก</a>
+            <span>›</span>
+            <a href="index.php#courses" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">คอร์สเรียน</a>
+            <span>›</span>
+            <span style="color: white; font-weight: 600;"><?php echo htmlspecialchars($course['name']); ?></span>
+        </div>
+
         <div style="max-width: 1200px; margin: 0 auto 20px;">
             <a href="index.php#courses" style="color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 8px; transition: background 0.2s;">
                 <span>←</span> กลับไปหน้าคอร์สเรียน
             </a>
+            
         </div>
 
         <div class="course-detail-container"
@@ -195,6 +208,105 @@ if (!$course) {
                             </div>
                         </ul>
                     </div>
+
+                    <!-- REVIEWS SECTION -->
+                    <div id="reviews-section" style="margin-top: 50px;">
+                        <!-- Title and Rating -->
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="width: 4px; height: 32px; background: #FFB400; border-radius: 2px;"></div>
+                            <h2 style="font-size: 24px; font-weight: 700; color: #333; margin: 0;">รีวิวจากผู้เรียน</h2>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+                            <div style="color: #FFB400; font-size: 24px;">★★★★<span style="position: relative; display: inline-block; width: 12px; overflow: hidden;">★<span style="position: absolute; left: 0; width: 50%; color: #FFB400; overflow: hidden;">★</span></span></div>
+                            <div style="font-size: 32px; font-weight: 700; color: #FFB400;">4.5</div>
+                            <div style="font-size: 14px; color: #999;">(138 รีวิว)</div>
+                        </div>
+
+                        <!-- Summary Box -->
+                        <div style="border: 1px solid #eee; border-radius: 12px; padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); background: white;">
+                            
+                            <!-- Left Summary -->
+                            <div style="text-align: center; border-right: 1px solid #eee; padding-right: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                <div style="font-size: 15px; color: #555; margin-bottom: 15px; font-weight: 600;">ความคาดหวังของผู้เรียน</div>
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                                    <div style="font-size: 48px; font-weight: 700; color: #333; line-height: 1;">96%</div>
+                                    <div style="text-align: left; font-size: 13px; color: #666; line-height: 1.4;">ของรีวิว<br>บอกว่าคอร์สนี้</div>
+                                </div>
+                                <div style="border: 1px solid #00C853; color: #00C853; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                    ตรงตามความคาดหวัง <span>😊</span>
+                                </div>
+                            </div>
+
+                            <!-- Right Summary -->
+                            <div style="padding-left: 10px;">
+                                <div style="font-size: 15px; color: #555; margin-bottom: 20px; font-weight: 600;">สิ่งที่ผู้เรียนชอบมากที่สุด</div>
+                                <div style="display: flex; flex-direction: column; gap: 12px;">
+                                    <div style="background: #f5f5f5; border-radius: 6px; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555;"><span>👍</span> เนื้อหา</div>
+                                        <div style="font-size: 13px; font-weight: 600; color: #333;">73%</div>
+                                    </div>
+                                    <div style="background: #f5f5f5; border-radius: 6px; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555;"><span>👍</span> ผู้สอน</div>
+                                        <div style="font-size: 13px; font-weight: 600; color: #333;">64%</div>
+                                    </div>
+                                    <div style="background: #f5f5f5; border-radius: 6px; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555;"><span>👍</span> การจัดเรียงเนื้อหา</div>
+                                        <div style="font-size: 13px; font-weight: 600; color: #333;">59%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review List Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="font-size: 18px; font-weight: 700; color: #333;">ความคิดเห็น (2)</h3>
+                            <div style="font-size: 14px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                เรียงตามความคิดเห็นแนะนำ <span style="font-size: 10px;">▼</span>
+                            </div>
+                        </div>
+
+                        <!-- Review Cards -->
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <!-- Card 1 -->
+                            <div style="background: #F8F9FA; border-radius: 12px; padding: 24px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                    <div style="display: flex; gap: 15px;">
+                                        <!-- Avatar -->
+                                        <div style="width: 48px; height: 48px; border-radius: 50%; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #999; background: white;">
+                                            😐
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 4px;">จิ๊บ นลินี</div>
+                                            <div style="font-size: 12px; color: #999;">28 กุมภาพันธ์ 2569 เวลา 07:32</div>
+                                        </div>
+                                    </div>
+                                    <div style="color: #FFB400; font-size: 14px;">★★★★★</div>
+                                </div>
+                                <div style="height: 1px; background: #E0E0E0; margin: 15px 0;"></div>
+                                <p style="color: #555; font-size: 14px; line-height: 1.6; margin: 0;">มีเทคนิคใหม่ที่ไม่เคยรู้คือ Stac และอื่นๆอีกหลายอย่างเลย ดีมากค่ะ</p>
+                            </div>
+
+                            <!-- Card 2 -->
+                            <div style="background: #F8F9FA; border-radius: 12px; padding: 24px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                    <div style="display: flex; gap: 15px;">
+                                        <!-- Avatar -->
+                                        <div style="width: 48px; height: 48px; border-radius: 50%; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #999; background: white;">
+                                            🙂
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 4px;">Nattida Tavarojn</div>
+                                            <div style="font-size: 12px; color: #999;">17 กันยายน 2568 เวลา 21:08</div>
+                                        </div>
+                                    </div>
+                                    <div style="color: #FFB400; font-size: 14px;">★★★<span style="color: #ccc;">★★</span></div>
+                                </div>
+                                <div style="height: 1px; background: #E0E0E0; margin: 15px 0;"></div>
+                                <p style="color: #555; font-size: 14px; line-height: 1.6; margin: 0;">อยากให้โชว์resultที่อยากได้ไว้ด้านข้าง เวลาเขียนcodeจะได้รู้ว่าอยากได้แบบไหน และสามารถมองเห็นตลอด ไม่ต้องกลับไปกลับมา</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Right: Sidebar -->
@@ -223,16 +335,8 @@ if (!$course) {
                             <li style="padding: 8px 0; font-size: 13px; color: #555;">👨‍🏫 <strong>ผู้สอน:</strong> <?php echo htmlspecialchars($course['instructor']); ?></li>
                         </ul>
                     </div>
-                </div>
-                <!-- review section -->
-                <div style="margin-top: 40px;"></div>
-                    <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #333;">รีวิวจากผู้เรียน</h3>
-                    <div style="background: white; border-radius: 8px; padding: 20px; line-height: 1.8; color: #555;">
-                        <p style="margin-bottom: 15px;"><strong>นางสาวสมหญิง:</strong> คอร์สนี้ช่วยให้ฉันเข้าใจการวิเคราะห์ข้อมูลบุคลากรและนำไปใช้ในงานได้จริง</p>
-                        <p style="margin-bottom: 15px;"><strong>นายสมชาย:</strong> เนื้อหาครอบคลุมและอธิบายง่ายมาก แนะนำสำหรับคนที่อยากเริ่มต้นกับ People Analytics</p>
-                        <p style="margin-bottom: 15px;"><strong>นางสาวสวยงาม:</strong> ผู้สอนมีความรู้ลึกซึ้งและสามารถตอบคำถามได้ดีมาก คอร์สนี้คุ้มค่ามากๆ</p>
-                    </div>
-                </div>
+
+                
             </div>
         </div>
     </section>
