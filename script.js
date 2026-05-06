@@ -11,14 +11,7 @@ function switchTab(btn, type) {
     .querySelectorAll(".tab-btn")
     .forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
-  
-  if (type === 'video') {
-    document.getElementById('portfolio-photo-content').style.display = 'none';
-    document.getElementById('portfolio-video-content').style.display = 'block';
-  } else {
-    document.getElementById('portfolio-photo-content').style.display = 'block';
-    document.getElementById('portfolio-video-content').style.display = 'none';
-  }
+  // In production, swap images per type
 }
 
 // Category filter
@@ -85,6 +78,29 @@ function addToCart(courseId) {
     });
 }
 
+function buyNow(course) {
+    // Add to cart via session first (to keep it synced)
+    fetch("cart_handler.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `action=add&course_id=${course.id}`,
+    }).then(() => {
+        // Prepare data for the payment page
+        const item = {
+            id: course.id,
+            name: course.name,
+            price: course.price,
+            qty: 1,
+            instructor: course.instructor,
+            image: course.image,
+            description: course.description,
+            category: course.category
+        };
+        localStorage.setItem('checkoutCart', JSON.stringify([item]));
+        window.location.href = 'pay2.1/index.html';
+    });
+}
+
 // โหลด count ตะกร้าตอนเปิดหน้า
 fetch("cart_handler.php", {
   method: "POST",
@@ -117,34 +133,3 @@ function switchCourseTab(val) {
   // Logic to handle popular/latest sorting can be added here
   console.log('Switched tab to:', val);
 }
-
-// Initialize Course Carousels
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll('.course-grid').forEach(grid => {
-    // Check if grid has more than 3 cards
-    if (grid.children.length > 3) {
-      // Wrap grid
-      const wrapper = document.createElement('div');
-      wrapper.className = 'course-carousel-container';
-      grid.parentNode.insertBefore(wrapper, grid);
-      wrapper.appendChild(grid);
-
-      // Create buttons
-      const prevBtn = document.createElement('button');
-      prevBtn.className = 'carousel-btn prev-btn';
-      prevBtn.innerHTML = '❮';
-      prevBtn.onclick = () => { grid.scrollBy({ left: -320, behavior: 'smooth' }); };
-
-      const nextBtn = document.createElement('button');
-      nextBtn.className = 'carousel-btn next-btn';
-      nextBtn.innerHTML = '❯';
-      nextBtn.onclick = () => { grid.scrollBy({ left: 320, behavior: 'smooth' }); };
-
-      wrapper.appendChild(prevBtn);
-      wrapper.appendChild(nextBtn);
-      
-      // Remove margin from grid since wrapper has it
-      grid.style.margin = '0';
-    }
-  });
-});

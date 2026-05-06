@@ -83,46 +83,26 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     </div>
 
     <!-- PORTFOLIO -->
-    <section id="portfolio" style="overflow: hidden;">
+    <section id="portfolio">
         <h2 class="section-title">ผลงาน</h2>
         <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchTab(this,'photo')">ภาพ</button>
             <button class="tab-btn" onclick="switchTab(this,'video')">วิดีโอ</button>
+            <button class="tab-btn active" onclick="switchTab(this,'photo')">ภาพ</button>
         </div>
 
-        <!-- PHOTOS MARQUEE -->
-        <div id="portfolio-photo-content" class="portfolio-marquee-container">
-            <div class="portfolio-marquee">
-                <!-- Original set -->
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" alt="THAIFEX 2025" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Event" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Stage" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" alt="Media" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" alt="Event 2" /></div>
-                <!-- Duplicated set for seamless scrolling -->
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" alt="THAIFEX 2025" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Event" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Stage" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" alt="Media" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" alt="Event 2" /></div>
+        <div class="portfolio-grid" id="portfolio-grid">
+            <!-- Photo tab content -->
+            <div class="portfolio-card">
+                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" alt="THAIFEX 2025" />
             </div>
-        </div>
-
-        <!-- VIDEOS MARQUEE -->
-        <div id="portfolio-video-content" class="portfolio-marquee-container" style="display: none;">
-            <div class="portfolio-marquee">
-                <!-- Original set -->
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" style="filter: brightness(0.7);" alt="Video 1" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" style="filter: brightness(0.7);" alt="Video 2" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" style="filter: brightness(0.7);" alt="Video 3" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" style="filter: brightness(0.7);" alt="Video 4" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" style="filter: brightness(0.7);" alt="Video 5" /><span class="video-play-icon">▶</span></div>
-                <!-- Duplicated set for seamless scrolling -->
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" style="filter: brightness(0.7);" alt="Video 1" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" style="filter: brightness(0.7);" alt="Video 2" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" style="filter: brightness(0.7);" alt="Video 3" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" style="filter: brightness(0.7);" alt="Video 4" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" style="filter: brightness(0.7);" alt="Video 5" /><span class="video-play-icon">▶</span></div>
+            <div class="portfolio-card">
+                <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Event" />
+            </div>
+            <div class="portfolio-card">
+                <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Stage" />
+            </div>
+            <div class="portfolio-card">
+                <img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" alt="Media" />
             </div>
         </div>
     </section>
@@ -217,9 +197,11 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             </div>
         </div>
 
+        </div>
+
         <!-- Category 2: BUSINESS -->
         <div class="category-section" data-category="business" style="transition: opacity 0.4s ease;">
-            <div class="course-section-label"><h2 class="course-section-title">BUSINESS</h2></div>
+            <div class="course-section-label">BUSINESS</div>
             <p class="course-desc">สำหรับผู้ประกอบการและนักพัฒนาธุรกิจที่ต้องการเพิ่มทักษะการตลาดดิจิทัล<br>
             เรียนรู้จากผู้เชี่ยวชาญในด้านธุรกิจออนไลน์</p>
         <div class="course-grid" id="business-grid">
@@ -267,28 +249,6 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     </div>
                 </div>
             </div>
-            <div class="course-card" onclick="goToDetail(5)">
-                <div class="course-card-header">
-                    <div class="course-card-label">Chat Editor</div>
-                    <div class="course-rating">⭐ 4.9 (210)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">CHAt Editer</p>
-                    <p class="course-instructor">โดย วิชิต สุมนา</p>
-                    <p class="course-description">สร้างแบรนด์ส่วนตัวของคุณให้เป็นที่รู้จักในโลกดิจิทัล</p>
-                    <div class="course-info">
-                        <span>📚 16 บทเรียน</span>
-                        <span>⏱️ 28 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 999</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(5)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(5)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
-            </div>
             <div class="course-card" onclick="goToDetail(6)">
                 <div class="course-card-header">
                     <div class="course-card-label">Copywriting Mastery</div>
@@ -312,11 +272,12 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                 </div>
             </div>
         </div>
+
         </div>
 
         <!-- Category 3: TIKTOK -->
         <div class="category-section" data-category="tiktok" style="transition: opacity 0.4s ease;">
-            <div class="course-section-label"><h2 class="course-section-title">TIKTOK</h2></div>
+            <div class="course-section-label">TIKTOK</div>
             <p class="course-desc">กลยุทธ์การทำ TikTok ให้ไวรัลและสร้างรายได้จากแพลตฟอร์มนี้<br>
                 เรียนรู้จากผู้สร้างสรรค์ที่มีผู้ติดตามหลักล้านคน</p>
         <div class="course-grid" id="tiktok-grid">

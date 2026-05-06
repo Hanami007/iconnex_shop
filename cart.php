@@ -44,13 +44,6 @@ foreach ($items as $id => $qty) {
         </ul>
     </nav>
 
-    <!-- Breadcrumb -->
-    <div style="max-width: 1200px; margin: 20px auto 0; padding: 0 40px; font-size: 14px; color: #999;">
-        <a href="index.php" style="color: #666; text-decoration: none;">หน้าหลัก</a> <span style="margin: 0 8px;">›</span>
-        <a href="index.php#courses" style="color: #666; text-decoration: none;">คอร์สเรียน</a> <span style="margin: 0 8px;">›</span>
-        <span style="color: #333; font-weight: 600;">ตะกร้าสินค้า</span>
-    </div>
-
     <div class="cart-page">
         <div class="cart-title">🛒 ตะกร้าสินค้า</div>
 
@@ -110,7 +103,7 @@ foreach ($items as $id => $qty) {
                         <span>ยอดรวม</span>
                         <span id="grand-total">฿<?= number_format($total) ?></span>
                     </div>
-                    <button class="checkout-btn">ดำเนินการชำระเงิน →</button>
+                    <button class="checkout-btn" onclick="checkout()">ดำเนินการชำระเงิน →</button>
                 </div>
             </div>
         <?php endif; ?>
@@ -165,6 +158,28 @@ foreach ($items as $id => $qty) {
                     document.getElementById('grand-total').textContent = '฿' + data.total.toLocaleString();
                     showToast('ลบสินค้าแล้ว ✓');
                 });
+        }
+        function checkout() {
+            const items = [];
+            <?php foreach ($items as $id => $qty): 
+                $c = $courses[$id] ?? null;
+                if ($c): ?>
+                items.push({
+                    id: <?= $id ?>,
+                    name: <?= json_encode($c['name']) ?>,
+                    price: <?= $c['price'] ?>,
+                    qty: <?= $qty ?>,
+                    instructor: <?= json_encode($c['instructor']) ?>,
+                    image: <?= json_encode($c['image']) ?>,
+                    description: <?= json_encode($c['description']) ?>,
+                    category: <?= json_encode($c['category']) ?>,
+                    hours: <?= $c['hours'] ?>,
+                    lessons: <?= $c['lessons'] ?>
+                });
+            <?php endif; endforeach; ?>
+            
+            localStorage.setItem('checkoutCart', JSON.stringify(items));
+            location.href = 'pay2.1/index.html';
         }
     </script>
 </body>
