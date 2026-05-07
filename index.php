@@ -220,8 +220,8 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
 
         <!-- Category 2: BUSINESS -->
         <div class="category-section" data-category="business" style="transition: opacity 0.4s ease;">
-            <div class="course-section-label">BUSINESS</div>
-            <p class="course-desc">สำหรับผู้ประกอบการและนักพัฒนาธุรกิจที่ต้องการเพิ่มทักษะการตลาดดิจิทัล<br>
+            <div class="course-section-label"><h2 style="text-align: center;">BUSINESS</h2></div>
+            <p class="course-desc" style="text-align: center;">สำหรับผู้ประกอบการและนักพัฒนาธุรกิจที่ต้องการเพิ่มทักษะการตลาดดิจิทัล<br>
             เรียนรู้จากผู้เชี่ยวชาญในด้านธุรกิจออนไลน์</p>
         <div class="course-grid" id="business-grid">
             <div class="course-card" onclick="goToDetail(4)">
@@ -296,8 +296,8 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
 
         <!-- Category 3: TIKTOK -->
         <div class="category-section" data-category="tiktok" style="transition: opacity 0.4s ease;">
-            <div class="course-section-label">TIKTOK</div>
-            <p class="course-desc">กลยุทธ์การทำ TikTok ให้ไวรัลและสร้างรายได้จากแพลตฟอร์มนี้<br>
+            <div class="course-section-label"><h2 style="text-align: center;">TIKTOK</h2></div>
+            <p class="course-desc" style="text-align: center;">กลยุทธ์การทำ TikTok ให้ไวรัลและสร้างรายได้จากแพลตฟอร์มนี้<br>
                 เรียนรู้จากผู้สร้างสรรค์ที่มีผู้ติดตามหลักล้านคน</p>
         <div class="course-grid" id="tiktok-grid">
             <div class="course-card" onclick="goToDetail(7)">
