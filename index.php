@@ -47,6 +47,14 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         ">0</span>
                 </a>
             </li>
+            <?php if(isset($_SESSION['user_id'])): ?>
+                <li><a href="logout.php" style="color: #ffae35;">ออกจากระบบ (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a></li>
+                <?php if($_SESSION['role'] === 'admin'): ?>
+                    <li><a href="admin/index.php" style="color: #4CAF50;">Admin Panel</a></li>
+                <?php endif; ?>
+            <?php else: ?>
+                <li><a href="login.php" style="color: #4CAF50;">เข้าสู่ระบบ</a></li>
+            <?php endif; ?>
         </ul>
     </nav>
 
@@ -57,17 +65,30 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             next level and connect with like-minded individuals. Unlock your full creative potential and join a
             community that inspires and elevates your craft.</p>
         <a href="#courses" class="btn-primary">เริ่มต้น</a>
+        <?php
+        $total_courses = count($courses);
+        $total_rating = 0;
+        $total_reviews = 0;
+        foreach ($courses as $c) {
+            $total_rating += floatval($c['rating']);
+            $total_reviews += intval($c['reviews']);
+        }
+        $avg_rating = $total_courses > 0 ? number_format($total_rating / $total_courses, 1) : "5.0";
+        $total_members = $total_reviews * 10; // Mock calculation based on reviews
+        $total_members_display = $total_members > 1000 ? round($total_members / 1000, 1) . 'K' : number_format($total_members);
+        if ($total_members == 0) $total_members_display = '0';
+        ?>
         <div class="hero-stats">
             <div>
-                <div class="stat-num">100K</div>
+                <div class="stat-num"><?php echo $total_members_display; ?></div>
                 <div class="stat-label">สมาชิก</div>
             </div>
             <div>
-                <div class="stat-num">50+</div>
+                <div class="stat-num"><?php echo $total_courses; ?>+</div>
                 <div class="stat-label">คอร์ส</div>
             </div>
             <div>
-                <div class="stat-num">4.9 ★</div>
+                <div class="stat-num"><?php echo $avg_rating; ?> ★</div>
                 <div class="stat-label">คะแนนรีวิว</div>
             </div>
         </div>
@@ -159,11 +180,18 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                 ?>
                 <div class="course-card" onclick="goToDetail(<?php echo $course['id']; ?>)">
                     <div class="course-card-header">
-                        <?php if(strpos($course['image'], '.') !== false): ?>
-                            <img src="IMG/<?php echo htmlspecialchars($course['image']); ?>" alt="<?php echo htmlspecialchars($course['name']); ?>" class="course-card-img" />
+                        <?php 
+                        $img_val = $course['image'];
+                        if (strpos($img_val, '<img') !== false): 
+                            // Render raw HTML if it was saved as an img tag previously
+                            echo $img_val;
+                        elseif (strpos($img_val, '.') !== false): 
+                            $img_src = strpos($img_val, 'uploads/') === 0 ? '/' . htmlspecialchars($img_val) : 'IMG/' . htmlspecialchars($img_val);
+                        ?>
+                            <img src="<?php echo $img_src; ?>" alt="<?php echo htmlspecialchars($course['name']); ?>" class="course-card-img" />
                         <?php else: ?>
                             <div style="height: 180px; display: flex; align-items: center; justify-content: center; font-size: 64px; background: #f5f5f5; border-radius: 8px 8px 0 0;">
-                                <?php echo htmlspecialchars($course['image'] ?: '📚'); ?>
+                                <?php echo htmlspecialchars($img_val ?: '📚'); ?>
                             </div>
                         <?php endif; ?>
                         <div class="course-card-label"><?php echo htmlspecialchars($course['category']); ?></div>

@@ -14,25 +14,59 @@ async function fetchCourses() {
         console.error("Failed to fetch courses:", err);
     }
 }
-const users=[
-  {name:'Maria Chen',email:'maria@example.com',role:'Student',enrolled:5,status:'active',joined:'Jan 12, 2024'},
-  {name:'James Lee',email:'james@example.com',role:'Instructor',enrolled:0,status:'active',joined:'Mar 4, 2023'},
-  {name:'Alex Johnson',email:'alex@example.com',role:'Student',enrolled:3,status:'active',joined:'Feb 20, 2024'},
-  {name:'Sarah Park',email:'sarah@example.com',role:'Instructor',enrolled:0,status:'pending',joined:'May 1, 2025'},
-  {name:'Daniel Wu',email:'daniel@example.com',role:'Student',enrolled:8,status:'active',joined:'Oct 15, 2023'},
-  {name:'Emma Wilson',email:'emma@example.com',role:'Admin',enrolled:0,status:'active',joined:'Jun 1, 2022'},
-  {name:'Liam Brown',email:'liam@example.com',role:'Student',enrolled:2,status:'suspended',joined:'Dec 5, 2023'},
-  {name:'Sophia Davis',email:'sophia@example.com',role:'Student',enrolled:6,status:'active',joined:'Aug 18, 2023'},
-];
-const orders=[
-  {id:'#4821',student:'Alex Johnson',course:'UI/UX Masterclass',amount:'$59',status:'completed',date:'May 4, 2025'},
-  {id:'#4820',student:'Maria Chen',course:'React Advanced',amount:'$99',status:'completed',date:'May 3, 2025'},
-  {id:'#4819',student:'Daniel Wu',course:'Python DS & ML',amount:'$79',status:'pending',date:'May 3, 2025'},
-  {id:'#4818',student:'Liam Brown',course:'Web Dev Bootcamp',amount:'$89',status:'refunded',date:'May 2, 2025'},
-  {id:'#4817',student:'Sophia Davis',course:'AWS Cloud',amount:'$49',status:'completed',date:'May 1, 2025'},
-  {id:'#4816',student:'Emma Wilson',course:'Flutter Dev',amount:'$69',status:'completed',date:'Apr 30, 2025'},
-  {id:'#4815',student:'James Lee',course:'Cybersecurity',amount:'$69',status:'pending',date:'Apr 29, 2025'},
-];
+let users = [];
+let orders = [];
+
+async function fetchOrders() {
+    try {
+        const res = await fetch('/admin/api_orders.php');
+        const json = await res.json();
+        if (json.success) {
+            orders = json.data;
+            renderOrders();
+        }
+    } catch(err) {
+        console.error('Error fetching orders:', err);
+    }
+}
+
+async function updateOrderStatus(id, status) {
+    if (!confirm('ยืนยันการอนุมัติและส่งคอร์สเรียนนี้?')) return;
+    try {
+        const fd = new URLSearchParams();
+        fd.append('action', 'update_status');
+        fd.append('id', id);
+        fd.append('status', status);
+        const res = await fetch('/admin/api_orders.php', {
+            method: 'POST',
+            body: fd
+        });
+        const json = await res.json();
+        if (json.success) {
+            showToast('✅', 'อนุมัติคำสั่งซื้อเรียบร้อยแล้ว!');
+            fetchOrders(); // Refresh table
+            // Optionally reload the page to update stats
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast('❌', 'Error updating status: ' + json.error);
+        }
+    } catch(err) {
+        showToast('❌', 'Request failed');
+    }
+}
+
+async function fetchUsers() {
+    try {
+        const res = await fetch('/admin/api_users.php');
+        const json = await res.json();
+        if (json.success) {
+            users = json.data;
+            renderUsers();
+        }
+    } catch(err) {
+        console.error('Error fetching users:', err);
+    }
+}
 
 function paginate(data,page,per=6){const s=(page-1)*per;return{items:data.slice(s,s+per),total:data.length};}
 
@@ -52,12 +86,11 @@ function renderCourses(page=1){
       <td class="td-primary"><div class="td-course"><div class="course-thumb">${c.img}</div><span>${c.title}</span></div></td>
       <td><span class="badge badge-purple">${c.category}</span></td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600">${c.price}</td>
-      <td>${c.students.toLocaleString()}</td>
-      <td>${c.status==='published'?'<span class="badge badge-green">Published</span>':'<span class="badge badge-yellow">Draft</span>'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.8rem">${c.students.toLocaleString()}</td>
+      <td><span class="badge badge-green">${c.status.charAt(0).toUpperCase()+c.status.slice(1)}</span></td>
       <td><div class="actions">
-        <button class="act-btn" onclick="showToast('✏️','Course editor opened')">✏️</button>
-        <button class="act-btn">👁</button>
-        <button class="act-btn danger" onclick="showToast('🗑','Course deleted')">🗑</button>
+        <button class="act-btn" onclick="editCourse(${c.id})">✏️</button>
+        <button class="act-btn danger" onclick="deleteCourse(${c.id})">🗑</button>
       </div></td>
     </tr>`).join('');
   renderPagination('coursePagination',total,page,'renderCourses');
@@ -85,18 +118,18 @@ function renderUsers(page=1){
 
 function renderOrders(page=1){
   const{items,total}=paginate(orders,page);
-  const sc={completed:'badge-green',pending:'badge-yellow',refunded:'badge-red'};
+  const sc={completed:'badge-green',pending:'badge-yellow',cancelled:'badge-red'};
   document.getElementById('orderTableBody').innerHTML=items.map(o=>`
     <tr>
-      <td style="font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent-2)">${o.id}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent-2)">${o.order_no}</td>
       <td class="td-primary">${o.student}</td>
       <td>${o.course}</td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600">${o.amount}</td>
       <td><span class="badge ${sc[o.status]}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:.77rem">${o.date}</td>
       <td><div class="actions">
+        ${o.status === 'pending' ? `<button class="btn btn-sm btn-primary" onclick="updateOrderStatus(${o.id}, 'completed')">✅ อนุมัติ</button>` : ''}
         <button class="act-btn">👁</button>
-        <button class="act-btn" onclick="showToast('📧','Receipt sent!')">📧</button>
       </div></td>
     </tr>`).join('');
   renderPagination('orderPagination',total,page,'renderOrders');
@@ -130,43 +163,214 @@ function handleSearch(v){
   if(p==='courses')filterTable(v,'courseTable');
 }
 
+function addLesson(btn) {
+  const lessonList = btn.previousElementSibling;
+  const d = document.createElement('div');
+  d.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  d.innerHTML = `<input class="form-control course-lesson-input" placeholder="Lesson/Detail" style="flex:1; font-size:13px;"/><button type="button" class="act-btn danger" style="width:24px;height:24px;font-size:12px;" onclick="this.parentElement.remove()">✕</button>`;
+  lessonList.appendChild(d);
+}
+
 function addSection(){
   const list=document.getElementById('sectionList');
-  const i=list.children.length+1;
   const d=document.createElement('div');
-  d.style.cssText='display:flex;gap:8px;align-items:center';
-  d.innerHTML=`<input class="form-control" placeholder="Section ${i}: " style="flex:1"/><button class="act-btn danger" onclick="this.parentElement.remove()">🗑</button>`;
+  d.className = 'section-block';
+  d.style.cssText='background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #eee;';
+  d.innerHTML=`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+      <input class="form-control course-section-input" placeholder="Section Title" style="flex:1; font-weight:bold;"/>
+      <button type="button" class="act-btn danger" onclick="this.parentElement.parentElement.remove()">🗑</button>
+    </div>
+    <div class="lesson-list" style="display:flex;flex-direction:column;gap:8px;padding-left:20px;margin-bottom:10px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input class="form-control course-lesson-input" placeholder="Lesson/Detail" style="flex:1; font-size:13px;"/>
+        <button type="button" class="act-btn danger" style="width:24px;height:24px;font-size:12px;" onclick="this.parentElement.remove()">✕</button>
+      </div>
+    </div>
+    <button type="button" class="btn btn-ghost btn-sm" style="font-size:12px; padding:4px 8px; margin-left:20px;" onclick="addLesson(this)">＋ Add Lesson</button>
+  `;
   list.appendChild(d);
 }
 
+function resetCourseForm() {
+    document.getElementById('courseId').value = '';
+    document.getElementById('courseTitle').value = '';
+    document.getElementById('courseDesc').value = '';
+    document.getElementById('courseInstructor').value = '';
+    document.getElementById('courseLessons').value = '10';
+    document.getElementById('courseHours').value = '20';
+    document.getElementById('courseCategory').selectedIndex = 0;
+    document.getElementById('coursePrice').value = '';
+    document.getElementById('courseImage').value = '';
+    document.getElementById('courseModalTitle').textContent = '✦ Add New Course';
+    document.getElementById('sectionList').innerHTML = `
+      <div class="section-block" style="background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #eee;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+          <input class="form-control course-section-input" placeholder="Section Title (e.g. Chapter 1)" style="flex:1; font-weight:bold;"/>
+          <button type="button" class="act-btn danger" onclick="this.parentElement.parentElement.remove()">🗑</button>
+        </div>
+        <div class="lesson-list" style="display:flex;flex-direction:column;gap:8px;padding-left:20px;margin-bottom:10px;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="form-control course-lesson-input" placeholder="Lesson/Detail (e.g. 1.1 Introduction)" style="flex:1; font-size:13px;"/>
+            <button type="button" class="act-btn danger" style="width:24px;height:24px;font-size:12px;" onclick="this.parentElement.remove()">✕</button>
+          </div>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" style="font-size:12px; padding:4px 8px; margin-left:20px;" onclick="addLesson(this)">＋ Add Lesson</button>
+      </div>
+    `;
+}
+
+function openAddCourseModal() {
+    resetCourseForm();
+    openModal('courseModal');
+}
+
+function editCourse(id) {
+    const course = courses.find(c => c.id == id);
+    if (!course) return;
+    
+    resetCourseForm();
+    document.getElementById('courseId').value = course.id;
+    document.getElementById('courseTitle').value = course.title;
+    document.getElementById('courseDesc').value = course.description || '';
+    document.getElementById('courseInstructor').value = course.instructor || '';
+    document.getElementById('courseLessons').value = course.lessons || 10;
+    document.getElementById('courseHours').value = course.hours || 20;
+    document.getElementById('courseCategory').value = course.category;
+    document.getElementById('coursePrice').value = course.raw_price || course.price.replace(/[^0-9]/g, '');
+    document.getElementById('courseModalTitle').textContent = '✦ Edit Course';
+    
+    // Render sections
+    if (course.content_json) {
+        try {
+            const sections = JSON.parse(course.content_json);
+            const list = document.getElementById('sectionList');
+            list.innerHTML = '';
+            if (sections && sections.length > 0) {
+                sections.forEach(sec => {
+                    const d = document.createElement('div');
+                    d.className = 'section-block';
+                    d.style.cssText = 'background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #eee;';
+                    
+                    let lessonsHtml = '';
+                    if (sec.lessons && sec.lessons.length > 0) {
+                        sec.lessons.forEach(lesson => {
+                            lessonsHtml += `
+                            <div style="display:flex;gap:8px;align-items:center;">
+                              <input class="form-control course-lesson-input" value="${lesson}" placeholder="Lesson/Detail" style="flex:1; font-size:13px;"/>
+                              <button type="button" class="act-btn danger" style="width:24px;height:24px;font-size:12px;" onclick="this.parentElement.remove()">✕</button>
+                            </div>`;
+                        });
+                    } else {
+                        lessonsHtml = `
+                            <div style="display:flex;gap:8px;align-items:center;">
+                              <input class="form-control course-lesson-input" placeholder="Lesson/Detail" style="flex:1; font-size:13px;"/>
+                              <button type="button" class="act-btn danger" style="width:24px;height:24px;font-size:12px;" onclick="this.parentElement.remove()">✕</button>
+                            </div>`;
+                    }
+
+                    d.innerHTML = `
+                      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+                        <input class="form-control course-section-input" value="${sec.section}" placeholder="Section Title" style="flex:1; font-weight:bold;"/>
+                        <button type="button" class="act-btn danger" onclick="this.parentElement.parentElement.remove()">🗑</button>
+                      </div>
+                      <div class="lesson-list" style="display:flex;flex-direction:column;gap:8px;padding-left:20px;margin-bottom:10px;">
+                        ${lessonsHtml}
+                      </div>
+                      <button type="button" class="btn btn-ghost btn-sm" style="font-size:12px; padding:4px 8px; margin-left:20px;" onclick="addLesson(this)">＋ Add Lesson</button>
+                    `;
+                    list.appendChild(d);
+                });
+            } else {
+                // Default empty section
+                resetCourseForm(); // will set the default empty block
+                document.getElementById('courseModalTitle').textContent = '✦ Edit Course';
+            }
+        } catch(e) {
+            console.error('Error parsing sections', e);
+        }
+    }
+    
+    openModal('courseModal');
+}
+
+async function deleteCourse(id) {
+    if (!confirm('ยืนยันการลบคอร์สนี้? ข้อมูลจะไม่สามารถกู้คืนได้')) return;
+    try {
+        const fd = new FormData();
+        fd.append('action', 'delete');
+        fd.append('id', id);
+        
+        const res = await fetch('/admin/api_courses.php', { method: 'POST', body: fd });
+        const json = await res.json();
+        
+        if (json.success) {
+            showToast('✅', 'ลบคอร์สสำเร็จ!');
+            fetchCourses();
+        } else {
+            showToast('❌', 'Error: ' + json.error);
+        }
+    } catch(err) {
+        showToast('❌', 'Request failed');
+    }
+}
+
 async function saveCourse() {
-    const title = document.querySelectorAll('#courseModal .form-control')[0].value;
-    const description = document.querySelector('#courseModal textarea').value;
-    const category = document.querySelector('#courseModal select').value;
-    const price = document.querySelector('#courseModal input[type="number"]').value;
+    const id = document.getElementById('courseId').value;
+    const title = document.getElementById('courseTitle').value;
+    const description = document.getElementById('courseDesc').value;
+    const category = document.getElementById('courseCategory').value;
+    const price = document.getElementById('coursePrice').value;
+    const instructor = document.getElementById('courseInstructor').value;
+    const lessons = document.getElementById('courseLessons').value;
+    const hours = document.getElementById('courseHours').value;
+    const imageFile = document.getElementById('courseImage').files[0];
     
     if (!title || !price) {
-        showToast('⚠️', 'Please fill required fields');
+        showToast('⚠️', 'Please fill required fields (Title, Price)');
         return;
     }
+    
+    // Gather sections
+    const sectionBlocks = document.querySelectorAll('.section-block');
+    const sections = [];
+    sectionBlocks.forEach(block => {
+        const secInput = block.querySelector('.course-section-input');
+        if (secInput && secInput.value.trim() !== '') {
+            const lessonInputs = block.querySelectorAll('.course-lesson-input');
+            const lessons = [];
+            lessonInputs.forEach(lInput => {
+                if (lInput.value.trim() !== '') lessons.push(lInput.value.trim());
+            });
+            sections.push({ section: secInput.value.trim(), lessons: lessons });
+        }
+    });
+    
+    const fd = new FormData();
+    fd.append('action', id ? 'edit' : 'add');
+    if (id) fd.append('id', id);
+    fd.append('title', title);
+    fd.append('description', description);
+    fd.append('category', category);
+    fd.append('price', price);
+    fd.append('instructor', instructor);
+    fd.append('lessons', lessons);
+    fd.append('hours', hours);
+    fd.append('content_json', JSON.stringify(sections));
+    
+    if (imageFile) fd.append('image', imageFile);
     
     try {
         const res = await fetch('/admin/api_courses.php', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({title, description, category, price})
+            body: fd
         });
         const json = await res.json();
         
         if (json.success) {
-            showToast('✅', 'Course saved successfully!');
+            showToast('✅', id ? 'Course updated successfully!' : 'Course added successfully!');
             closeModal('courseModal');
             fetchCourses(); // Reload list
-            
-            // clear form
-            document.querySelectorAll('#courseModal .form-control')[0].value = '';
-            document.querySelector('#courseModal textarea').value = '';
-            document.querySelector('#courseModal input[type="number"]').value = '';
         } else {
             showToast('❌', 'Error saving course: ' + json.error);
         }
@@ -175,4 +379,4 @@ async function saveCourse() {
     }
 }
 
-fetchCourses();renderUsers();renderOrders();
+fetchCourses();fetchUsers();fetchOrders();

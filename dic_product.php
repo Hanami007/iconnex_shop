@@ -69,9 +69,21 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
                 <div
                     style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
                     <div
-                        style="background: #f5f5f5; border-radius: 8px; margin-bottom: 20px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;">
-                        <img src="IMG/chatediter.png" alt="Course"
-                            style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
+                        style="background: #f5f5f5; border-radius: 8px; margin-bottom: 20px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <?php 
+                        $img_val = $course['image'];
+                        if (strpos($img_val, '<img') !== false): 
+                            // Try to strip styling and apply our own, or just echo it
+                            echo str_replace('<img', '<img style="width: 100%; height: 100%; object-fit: cover;"', $img_val);
+                        elseif (strpos($img_val, '.') !== false): 
+                            $img_src = strpos($img_val, 'uploads/') === 0 ? '/' . htmlspecialchars($img_val) : 'IMG/' . htmlspecialchars($img_val);
+                        ?>
+                            <img src="<?php echo $img_src; ?>" alt="<?php echo htmlspecialchars($course['name']); ?>" style="width: 100%; height: 100%; object-fit: cover;" />
+                        <?php else: ?>
+                            <div style="font-size: 120px;">
+                                <?php echo htmlspecialchars($img_val ?: '📚'); ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div style="display: flex; gap: 8px; margin-bottom: 15px;">
                         <span
@@ -207,15 +219,44 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
                     <h3 style="font-size: 20px; font-weight: 700; margin-top: 40px; margin-bottom: 20px; color: #333;">
                         เนื้อหาในคอร์ส</h3>
                     <div style="background: white; border-radius: 8px; padding: 20px; line-height: 1.8; color: #555;">
-                        <p style="margin-bottom: 15px;">คอร์สนี้จะสอนให้คุณเข้าใจและใช้ People Analytics เพื่อเพิ่มประสิทธิภาพการทำงานของพนักงานและขับเคลื่อนธุรกิจของคุณไปข้างหน้า</p>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                            <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #333;">01: Introduction to People Analytics</h4>
-                            <div style="margin-left: 20px;">
-                                <p style="margin-bottom: 10px;">- ความเข้าใจพื้นฐานเกี่ยวกับ People Analytics</p>
-                                <p style="margin-bottom: 10px;">- การวิเคราะห์ข้อมูลบุคลากร</p>
-                                <p style="margin-bottom: 10px;">- การใช้ข้อมูลเพื่อตัดสินใจ</p>
+                        <?php 
+                        $content_json = $course['content_json'];
+                        $sections = [];
+                        if (!empty($content_json)) {
+                            $sections = json_decode($content_json, true);
+                        }
+                        
+                        if (!empty($sections) && is_array($sections)):
+                            foreach($sections as $index => $sec):
+                        ?>
+                        <ul style="list-style: none; padding: 0; margin: 0; margin-bottom: 20px;">
+                            <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #333; display: flex; align-items: center; gap: 8px;">
+                                <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 20px; font-size: 12px; color: #666;"><?php echo str_pad($index + 1, 2, '0', STR_PAD_LEFT); ?></span>
+                                <?php echo htmlspecialchars($sec['section']); ?>
+                            </h4>
+                            <div style="margin-left: 45px; font-size: 14px; color: #777;">
+                                <?php 
+                                if (!empty($sec['lessons']) && is_array($sec['lessons'])):
+                                    foreach($sec['lessons'] as $lesson):
+                                ?>
+                                <p style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 8px;">
+                                    <span style="color: #FF9800; font-size: 12px; margin-top: 2px;">▶</span> 
+                                    <?php echo htmlspecialchars($lesson); ?>
+                                </p>
+                                <?php 
+                                    endforeach;
+                                else:
+                                ?>
+                                <p style="margin-bottom: 10px; color: #aaa;">(ยังไม่มีรายละเอียด)</p>
+                                <?php endif; ?>
                             </div>
                         </ul>
+                        <?php 
+                            endforeach;
+                        else:
+                        ?>
+                        <p style="text-align: center; color: #999; padding: 20px;">ยังไม่มีการระบุเนื้อหาคอร์สเรียน</p>
+                        <?php endif; ?>
                     </div>
                     <!-- REVIEWS SECTION -->
                     <div id="reviews-section" style="margin-top: 50px;">

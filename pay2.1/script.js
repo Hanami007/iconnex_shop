@@ -355,7 +355,7 @@ function copyAccountNumber() {
 }
 
 /* ---------- Validation & Confirm ---------- */
-function confirmPayment() {
+async function confirmPayment() {
   const name    = document.getElementById('inp-name').value.trim();
   const surname = document.getElementById('inp-surname').value.trim();
   const email   = document.getElementById('inp-email').value.trim();
@@ -376,13 +376,50 @@ function confirmPayment() {
     return;
   }
 
+  const btn = document.getElementById('confirm-btn');
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '<span>กำลังประมวลผล...</span>';
+  btn.disabled = true;
+
   const grand = calcGrandTotal();
-  alert(
-    '✅ ระบบบันทึกข้อมูลสำเร็จ!\n' +
-    'เลขที่ใบสั่งซื้อ: ' + orderId + '\n' +
-    'ยอดชำระ: ' + grand.toLocaleString('th-TH') + ' บาท\n\n' +
-    'คุณจะได้รับอีเมลยืนยันที่ ' + email + ' ภายใน 5–10 นาที'
-  );
+  const payload = {
+    order_no: orderId,
+    name: name,
+    surname: surname,
+    email: email,
+    phone: phone,
+    total_amount: grand,
+    payment_method: payMethod,
+    items: fullCartItems
+  };
+
+  try {
+    const res = await fetch('/api_checkout.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      alert(
+        '✅ ระบบบันทึกข้อมูลสำเร็จ!\n' +
+        'เลขที่ใบสั่งซื้อ: ' + orderId + '\n' +
+        'ยอดชำระ: ' + grand.toLocaleString('th-TH') + ' บาท\n\n' +
+        'เราได้รับคำสั่งซื้อของคุณแล้ว เมื่อแอดมินตรวจสอบเสร็จสิ้นจะส่งอีเมลพร้อมลิงก์เข้าเรียนไปที่ ' + email
+      );
+      localStorage.removeItem('checkoutCart');
+      window.location.href = '/index.php#courses';
+    } else {
+      alert('เกิดข้อผิดพลาด: ' + (data.error || 'ไม่สามารถบันทึกข้อมูลได้'));
+      btn.innerHTML = originalHtml;
+      btn.disabled = false;
+    }
+  } catch (err) {
+    alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+    btn.innerHTML = originalHtml;
+    btn.disabled = false;
+  }
 }
 
 /* ---------- Event Listeners ---------- */

@@ -1,4 +1,26 @@
+<?php
+session_start();
+require_once '../db.php';
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header('Location: login.php');
+    exit;
+}
 
+// Fetch real stats
+$stmt = $pdo->query("SELECT count(*) FROM courses");
+$total_courses = $stmt->fetchColumn() ?: 0;
+
+$stmt = $pdo->query("SELECT count(*) FROM users WHERE role = 'user'");
+$total_students = $stmt->fetchColumn() ?: 0;
+
+$stmt = $pdo->query("SELECT SUM(total_amount) FROM orders WHERE status = 'completed'");
+$total_revenue = $stmt->fetchColumn() ?: 0;
+
+$stmt = $pdo->query("SELECT count(*) FROM orders WHERE status = 'pending'");
+$total_orders = $stmt->fetchColumn() ?: 0;
+
+$completion_rate = "0%"; // Keep simple for now
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,32 +39,41 @@
 <div class="modal-overlay" id="courseModal">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">✦ Add New Course</span>
+      <span class="modal-title" id="courseModalTitle">✦ Add New Course</span>
       <button class="modal-close" onclick="closeModal('courseModal')">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group full"><label class="form-label">Course Title</label><input class="form-control" placeholder="e.g. Complete Web Development Bootcamp"/></div>
-        <div class="form-group full"><label class="form-label">Description</label><textarea class="form-control" placeholder="Describe what students will learn..."></textarea></div>
+        <input type="hidden" id="courseId" value="">
+        <div class="form-group full"><label class="form-label">Course Title</label><input id="courseTitle" class="form-control" placeholder="e.g. Complete Web Development Bootcamp"/></div>
+        <div class="form-group full"><label class="form-label">Description</label><textarea id="courseDesc" class="form-control" placeholder="Describe what students will learn..."></textarea></div>
+        <div class="form-group"><label class="form-label">Instructor</label><input id="courseInstructor" class="form-control" placeholder="e.g. John Doe"/></div>
         <div class="form-group"><label class="form-label">Category</label>
-          <select class="form-control"><option>Web Development</option><option>Data Science</option><option>UI/UX Design</option><option>Mobile Development</option><option>DevOps</option><option>Business</option></select>
+          <select id="courseCategory" class="form-control"><option>Web Development</option><option>Data Science</option><option>UI/UX Design</option><option>Mobile Development</option><option>DevOps</option><option>Business</option></select>
         </div>
-        <div class="form-group"><label class="form-label">Price (USD)</label><input class="form-control" type="number" placeholder="49.99"/></div>
-        <div class="form-group full"><label class="form-label">Course Thumbnail</label>
-          <div class="upload-box"><div style="font-size:28px">🖼️</div><p>Click to upload or drag & drop<br>PNG, JPG up to 5MB</p></div>
+        <div class="form-group"><label class="form-label">Price (THB)</label><input id="coursePrice" class="form-control" type="number" placeholder="1500"/></div>
+        <div class="form-group"><label class="form-label">Lessons (Count)</label><input id="courseLessons" class="form-control" type="number" placeholder="10" value="10"/></div>
+        <div class="form-group"><label class="form-label">Duration (Hours)</label><input id="courseHours" class="form-control" type="number" placeholder="20" value="20"/></div>
+        <div class="form-group"><label class="form-label">Course Thumbnail</label>
+          <input type="file" id="courseImage" class="form-control" accept="image/*" style="padding: 10px;">
         </div>
-        <div class="form-group full"><label class="form-label">Preview Video URL</label><input class="form-control" placeholder="https://youtube.com/..."/></div>
         <div class="form-group full"><label class="form-label">Course Sections / Modules</label>
-          <div style="display:flex;flex-direction:column;gap:8px" id="sectionList">
-            <div style="display:flex;gap:8px;align-items:center"><input class="form-control" placeholder="Section 1: Getting Started" style="flex:1"/><button class="act-btn danger" onclick="this.parentElement.remove()">🗑</button></div>
+          <div style="display:flex;flex-direction:column;gap:15px" id="sectionList">
+            <div class="section-block" style="background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #eee;">
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+                <input class="form-control course-section-input" placeholder="Section Title (e.g. Chapter 1)" style="flex:1; font-weight:bold;"/>
+                <button type="button" class="act-btn danger" onclick="this.parentElement.parentElement.remove()">🗑</button>
+              </div>
+              <div class="lesson-list" style="display:flex;flex-direction:column;gap:8px;padding-left:20px;margin-bottom:10px;">
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <input class="form-control course-lesson-input" placeholder="Lesson/Detail (e.g. 1.1 Introduction)" style="flex:1; font-size:13px;"/>
+                  <button type="button" class="act-btn danger" style="width:24px;height:24px;font-size:12px;" onclick="this.parentElement.remove()">✕</button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-ghost btn-sm" style="font-size:12px; padding:4px 8px; margin-left:20px;" onclick="addLesson(this)">＋ Add Lesson</button>
+            </div>
           </div>
-          <button class="btn btn-ghost btn-sm" style="margin-top:8px;align-self:flex-start" onclick="addSection()">＋ Add Section</button>
-        </div>
-        <div class="form-group full">
-          <div class="toggle-row">
-            <div><div class="form-label">Publish Course</div><div style="font-size:.75rem;color:var(--text-3);margin-top:2px">Toggle to make course live immediately</div></div>
-            <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
-          </div>
+          <button type="button" class="btn btn-ghost btn-sm" style="margin-top:8px;align-self:flex-start" onclick="addSection()">＋ Add Section</button>
         </div>
       </div>
     </div>
@@ -68,7 +99,7 @@
       </div>
       <div class="nav-item" onclick="navigate('courses',this)">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        Courses <span class="nav-badge">24</span>
+        Courses <span class="nav-badge"><?php echo $total_courses; ?></span>
       </div>
       <div class="nav-item" onclick="navigate('users',this)">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -76,7 +107,7 @@
       </div>
       <div class="nav-item" onclick="navigate('orders',this)">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        Orders <span class="nav-badge" style="background:var(--green)">3</span>
+        Orders <span class="nav-badge" style="background:var(--green)"><?php echo $total_orders; ?></span>
       </div>
     </div>
     <div class="nav-section">
@@ -95,7 +126,7 @@
     <div class="user-card">
       <div class="avatar">AD</div>
       <div class="user-info"><div class="user-name">Admin User</div><div class="user-role">Super Admin</div></div>
-      <span style="color:var(--text-3);font-size:14px">⚙</span>
+      <a href="../logout.php" style="color:var(--red);font-size:18px; text-decoration:none;" title="Logout">🚪</a>
     </div>
   </div>
 </aside>
@@ -121,25 +152,25 @@
     <div class="page active" id="page-dashboard">
       <div class="page-header">
         <div class="page-header-left"><h1>Good morning, Admin 👋</h1><p>Here's what's happening with your platform today.</p></div>
-        <button class="btn btn-primary" onclick="openModal('courseModal')">＋ Add New Course</button>
+        <button class="btn btn-primary" onclick="openAddCourseModal()">＋ Add New Course</button>
       </div>
 
       <div class="stat-grid">
         <div class="stat-card" style="--glow-color:rgba(108,99,255,.2)">
-          <div class="stat-top"><div class="stat-icon" style="background:rgba(108,99,255,.12);color:var(--accent-2)">📚</div><span class="stat-change up">↑ 12%</span></div>
-          <div class="stat-value">24</div><div class="stat-label">Total Courses</div>
+          <div class="stat-top"><div class="stat-icon" style="background:rgba(108,99,255,.12);color:var(--accent-2)">📚</div><span class="stat-change up"></span></div>
+          <div class="stat-value"><?php echo number_format($total_courses); ?></div><div class="stat-label">Total Courses</div>
         </div>
         <div class="stat-card" style="--glow-color:rgba(34,211,160,.15)">
-          <div class="stat-top"><div class="stat-icon" style="background:rgba(34,211,160,.12);color:var(--green)">👩‍🎓</div><span class="stat-change up">↑ 8%</span></div>
-          <div class="stat-value">4,821</div><div class="stat-label">Total Students</div>
+          <div class="stat-top"><div class="stat-icon" style="background:rgba(34,211,160,.12);color:var(--green)">👩‍🎓</div><span class="stat-change up"></span></div>
+          <div class="stat-value"><?php echo number_format($total_students); ?></div><div class="stat-label">Total Students</div>
         </div>
         <div class="stat-card" style="--glow-color:rgba(251,191,36,.15)">
-          <div class="stat-top"><div class="stat-icon" style="background:rgba(251,191,36,.12);color:var(--yellow)">💰</div><span class="stat-change up">↑ 23%</span></div>
-          <div class="stat-value">$48.2K</div><div class="stat-label">Total Revenue</div>
+          <div class="stat-top"><div class="stat-icon" style="background:rgba(251,191,36,.12);color:var(--yellow)">💰</div><span class="stat-change up"></span></div>
+          <div class="stat-value">฿<?php echo number_format($total_revenue); ?></div><div class="stat-label">Total Revenue</div>
         </div>
         <div class="stat-card" style="--glow-color:rgba(56,189,248,.15)">
-          <div class="stat-top"><div class="stat-icon" style="background:rgba(56,189,248,.12);color:var(--blue)">📈</div><span class="stat-change down">↓ 2%</span></div>
-          <div class="stat-value">87%</div><div class="stat-label">Completion Rate</div>
+          <div class="stat-top"><div class="stat-icon" style="background:rgba(56,189,248,.12);color:var(--blue)">📈</div><span class="stat-change down"></span></div>
+          <div class="stat-value"><?php echo $completion_rate; ?></div><div class="stat-label">Completion Rate</div>
         </div>
       </div>
 
@@ -244,7 +275,7 @@
     <div class="page" id="page-courses">
       <div class="page-header">
         <div class="page-header-left"><h1>Courses</h1><p>Manage all published and draft courses on your platform.</p></div>
-        <button class="btn btn-primary" onclick="openModal('courseModal')">＋ Add New Course</button>
+        <button class="btn btn-primary" onclick="openAddCourseModal()">＋ Add New Course</button>
       </div>
       <div class="filters-row">
         <input class="filter-input" style="flex:1;max-width:280px" placeholder="🔍  Search courses..." oninput="filterTable(this.value,'courseTable')"/>
