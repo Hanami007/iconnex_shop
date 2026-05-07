@@ -1,157 +1,30 @@
 <?php
-$courses = array(
-    1 => array(
-        'id' => 1,
-        'name' => 'Video Editing Pro',
-        'category' => 'Video Editing',
-        'instructor' => 'สมชาย แก้ว',
-        'price' => 1299,
-        'old_price' => 1999,
-        'rating' => 4.8,
-        'reviews' => 250,
-        'lessons' => 12,
-        'hours' => 24,
-        'description' => 'เรียนรู้เทคนิคการตัดต่อวิดีโอขั้นสูง ใช้ Adobe Premiere Pro และเทคนิคมืออาชีพในการแก้ไขวิดีโอ',
-        'short_desc' => 'เรียนรู้เทคนิคการตัดต่อวิดีโอขั้นสูง ใช้ Adobe Premiere Pro',
-        'fullDescription' => 'คอร์สนี้ครอบคลุมเทคนิคการตัดต่อวิดีโอทั้งขั้นพื้นฐานและขั้นสูง ตั้งแต่การปรับปรุงพื้นฐานไปจนถึงการใช้เอฟเฟกต์พิเศษและการสร้างแอนิเมชั่น',
-        'long_desc' => 'คอร์สนี้ครอบคลุมเทคนิคการตัดต่อวิดีโอทั้งขั้นพื้นฐานและขั้นสูง ตั้งแต่การปรับปรุงพื้นฐานไปจนถึงการใช้เอฟเฟกต์พิเศษและการสร้างแอนิเมชั่น ที่จะทำให้วิดีโอของคุณดูเป็นมืออาชีพมากยิ่งขึ้น',
-        'image' => '🎬'
-    ),
-    2 => array(
-        'id' => 2,
-        'name' => 'Color Grading Masterclass',
-        'category' => 'Advanced Color Grading',
-        'instructor' => 'ธวัชชัย ศิริ',
-        'price' => 1599,
-        'old_price' => 2599,
-        'rating' => 4.9,
-        'reviews' => 180,
-        'lessons' => 15,
-        'hours' => 30,
-        'description' => 'เทคนิกปรับสีระดับมืออาชีพสำหรับภาพยนตร์',
-        'short_desc' => 'เทคนิกปรับสีระดับมืออาชีพสำหรับภาพยนตร์',
-        'fullDescription' => 'เรียนรู้วิธีปรับสีและโทนเพื่อให้ภาพยนตร์ของคุณดูมืออาชีพและน่าดึงดูด',
-        'long_desc' => 'เรียนรู้วิธีปรับสีและโทนเพื่อให้ภาพยนตร์ของคุณดูมืออาชีพและน่าดึงดูด ด้วยเทคนิค Color Grading ขั้นสูง',
-        'image' => '🎨'
-    ),
-    3 => array(
-        'id' => 3,
-        'name' => 'Motion Graphics Design',
-        'category' => 'Motion Graphics',
-        'instructor' => 'ณัฐปอ สิทธิพล',
-        'price' => 1899,
-        'old_price' => 2999,
-        'rating' => 4.7,
-        'reviews' => 165,
-        'lessons' => 18,
-        'hours' => 36,
-        'description' => 'สร้างแอนิเมชั่น 2D/3D ที่สวยงามด้วย After Effects',
-        'short_desc' => 'สร้างแอนิเมชั่น 2D/3D ที่สวยงามด้วย After Effects',
-        'fullDescription' => 'คอร์สสอนการสร้างกราฟิกแบบเคลื่อนไหวที่สวยงามเพื่อใช้ในโปรโมชั่นและคลิป',
-        'long_desc' => 'คอร์สสอนการสร้างกราฟิกแบบเคลื่อนไหวที่สวยงามเพื่อใช้ในโปรโมชั่นและคลิป เพิ่มความน่าสนใจให้ชิ้นงานของคุณ',
-        'image' => '✨'
-    ),
-    4 => array(
-        'id' => 4,
-        'name' => 'Digital Marketing Bootcamp',
-        'category' => 'Digital Marketing',
-        'instructor' => 'นพดล ธรรมรักษ์',
-        'price' => 1299,
-        'old_price' => 1999,
-        'rating' => 4.8,
-        'reviews' => 320,
-        'lessons' => 20,
-        'hours' => 40,
-        'description' => 'เทคนิกการตลาดดิจิทัลครบถ้วนตั้งแต่ SEO ถึง Social Media',
-        'short_desc' => 'เทคนิกการตลาดดิจิทัลครบถ้วนตั้งแต่ SEO ถึง Social Media',
-        'fullDescription' => 'เรียนรู้กลยุทธ์การตลาดดิจิทัลทั้งหมด ตั้งแต่การเพิ่มอันดับใน SEO ไปจนถึงการจัดการสื่อสังคม',
-        'long_desc' => 'เรียนรู้กลยุทธ์การตลาดดิจิทัลทั้งหมด ตั้งแต่การเพิ่มอันดับใน SEO ไปจนถึงการจัดการสื่อสังคม เพื่อเพิ่มยอดขายและสร้างการรับรู้แบรนด์',
-        'image' => '📱'
-    ),
-    5 => array(
-      'id' => 5,
-      'name' => 'Build Your Personal Brand',
-      'category' => 'Personal Branding',
-      'instructor' => 'วิชิต สุมนา',
-      'price' => 999,
-      'old_price' => 1599,
-      'rating' => 4.9,
-      'reviews' => 210,
-      'lessons' => 16,
-      'hours' => 28,
-      'description' => 'สร้างแบรนด์ส่วนตัวของคุณให้เป็นที่รู้จักในโลกดิจิทัล',
-      'short_desc' => 'สร้างแบรนด์ส่วนตัวของคุณให้เป็นที่รู้จักในโลกดิจิทัล',
-      'fullDescription' => 'สอนวิธีสร้างและพัฒนาแบรนด์ส่วนตัวของคุณให้เป็นที่รู้จัก',
-      'long_desc' => 'สอนวิธีสร้างและพัฒนาแบรนด์ส่วนตัวของคุณให้เป็นที่รู้จัก สร้างความน่าเชื่อถือและดึงดูดผู้ติดตาม',
-      'image' => '⭐'
-    ),
-    6 => array(
-      'id' => 6,
-      'name' => 'Sales Copywriting Secrets',
-      'category' => 'Copywriting Mastery',
-      'instructor' => 'นิชา ธัญชนก',
-      'price' => 799,
-      'old_price' => 1299,
-      'rating' => 4.8,
-      'reviews' => 190,
-      'lessons' => 14,
-      'hours' => 22,
-      'description' => 'เขียนสัญญาณขายที่ดึงดูดกระตุ้นการซื้อได้อย่างมีประสิทธิ',
-      'short_desc' => 'เขียนสัญญาณขายที่ดึงดูดกระตุ้นการซื้อได้อย่างมีประสิทธิ',
-      'fullDescription' => 'เรียนรู้เทคนิคการเขียนหลักการด้านการขายเพื่อให้สามารถขายผลิตภัณฑ์ได้มากขึ้น',
-      'long_desc' => 'เรียนรู้เทคนิคการเขียนหลักการด้านการขายเพื่อให้สามารถขายผลิตภัณฑ์ได้มากขึ้น ด้วยศิลปะแห่งการใช้คำ',
-      'image' => '✍️'
-    ),
-    7 => array(
-      'id' => 7,
-      'name' => 'How to Go Viral on TikTok',
-      'category' => 'TikTok Viral Mastery',
-      'instructor' => 'อลิเศษ อินสตารา',
-      'price' => 699,
-      'old_price' => 1199,
-      'rating' => 4.9,
-      'reviews' => 450,
-      'lessons' => 12,
-      'hours' => 18,
-      'description' => 'สูตรลับการทำวิดีโอให้ไวรัลและเพิ่มผู้ติดตามอย่างรวดเร็ว',
-      'short_desc' => 'สูตรลับการทำวิดีโอให้ไวรัลและเพิ่มผู้ติดตามอย่างรวดเร็ว',
-      'fullDescription' => 'ค้นพบอัลกอริทึม TikTok และวิธีสร้างเนื้อหาที่ได้รับการสนับสนุนจากแพลตฟอร์ม',
-      'long_desc' => 'ค้นพบอัลกอริทึม TikTok และวิธีสร้างเนื้อหาที่ได้รับการสนับสนุนจากแพลตฟอร์ม เพื่อก้าวสู่การเป็นครีเอเตอร์',
-      'image' => '🎵'
-    ),
-    8 => array(
-      'id' => 8,
-      'name' => 'Professional TikTok Content',
-      'category' => 'TikTok Content Creation',
-      'instructor' => 'สิตา กมลากร',
-      'price' => 599,
-      'old_price' => 999,
-      'rating' => 4.8,
-      'reviews' => 380,
-      'lessons' => 10,
-      'hours' => 15,
-      'description' => 'สร้างคอนเทนต์มีคุณภาพ ทำให้ผู้ชมติดตามและมีส่วนร่วม',
-      'short_desc' => 'สร้างคอนเทนต์มีคุณภาพ ทำให้ผู้ชมติดตามและมีส่วนร่วม',
-      'fullDescription' => 'สอนวิธีสร้างคอนเทนต์ TikTok ที่มีคุณภาพและสามารถดึงดูดผู้ชม',
-      'long_desc' => 'สอนวิธีสร้างคอนเทนต์ TikTok ที่มีคุณภาพและสามารถดึงดูดผู้ชม เพิ่ม Engagement ให้ช่องของคุณเติบโต',
-      'image' => '📸'
-    ),
-    9 => array(
-      'id' => 9,
-      'name' => 'Earn Money on TikTok',
-      'category' => 'TikTok Monetization',
-      'instructor' => 'ศรัณย์ มัสยา',
-      'price' => 899,
-      'old_price' => 1499,
-      'rating' => 4.7,
-      'reviews' => 290,
-      'lessons' => 11,
-      'hours' => 20,
-      'description' => 'วิธีต่างๆ ในการหารายได้จาก TikTok ตั้งแต่ต้น',
-      'short_desc' => 'วิธีต่างๆ ในการหารายได้จาก TikTok ตั้งแต่ต้น',
-      'fullDescription' => 'เรียนรู้วิธีต่างๆ ในการหารายได้จากแพลตฟอร์ม TikTok',
-      'long_desc' => 'เรียนรู้วิธีต่างๆ ในการหารายได้จากแพลตฟอร์ม TikTok อย่างละเอียด ตั้งแต่เริ่มต้นจนสามารถสร้างรายได้',
-      'image' => '💰'
-    )
-);
+require_once 'db.php';
+
+$courses = array();
+
+try {
+    $stmt = $pdo->query("SELECT * FROM courses");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        // Ensure integer fields are properly casted if needed
+        $row['id'] = (int)$row['id'];
+        $row['price'] = (int)$row['price'];
+        $row['old_price'] = (int)$row['old_price'];
+        $row['rating'] = (float)$row['rating'];
+        $row['reviews'] = (int)$row['reviews'];
+        $row['lessons'] = (int)$row['lessons'];
+        $row['hours'] = (int)$row['hours'];
+        
+        $courses[$row['id']] = $row;
+    }
+} catch (PDOException $e) {
+    // Fallback if table doesn't exist yet, we could use courses.json temporarily
+    if (file_exists(__DIR__ . '/courses.json')) {
+        $json = file_get_contents(__DIR__ . '/courses.json');
+        $fallback = json_decode($json, true);
+        foreach($fallback as $item) {
+            $courses[$item['id']] = $item;
+        }
+    }
+}
 ?>

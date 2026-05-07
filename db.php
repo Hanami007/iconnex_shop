@@ -1,7 +1,7 @@
 <?php
 $host = 'localhost';
-$db   = 'ชื่อ_database';
+$db   = 'iconnex';
 $user = 'root';
-$pass = '';
+$pass = 'Baskbask5678';
 $pdo  = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

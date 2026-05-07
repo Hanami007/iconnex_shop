@@ -135,238 +135,64 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             <!-- Category Filters -->
             <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
                 <button class="filter-pill active" onclick="setFilter(this,'all')">ทั้งหมด</button>
-                <button class="filter-pill" onclick="setFilter(this,'editing')">การตัดต่อ</button>
-                <button class="filter-pill" onclick="setFilter(this,'business')">ธุรกิจ</button>
-                <button class="filter-pill" onclick="setFilter(this,'tiktok')">TikTok</button>
+                <?php 
+                $unique_categories = [];
+                foreach ($courses as $c) {
+                    if (!in_array($c['category'], $unique_categories)) {
+                        $unique_categories[] = $c['category'];
+                    }
+                }
+                foreach ($unique_categories as $cat): 
+                ?>
+                <button class="filter-pill" onclick="setFilter(this,'<?php echo htmlspecialchars($cat); ?>')"><?php echo htmlspecialchars($cat); ?></button>
+                <?php endforeach; ?>
             </div>
         </div>
 
-        <div class="category-section" data-category="editing" style="transition: opacity 0.4s ease;">
-            <!-- Category 1 -->
-            <p class="course-desc">ที่สุดของการเรียนรู้และทำความเข้าใจ<br>
-            รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด<br>
-            รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอีย</p>
-        <div class="course-grid" id="editing-grid">
-            <div class="course-card" onclick="goToDetail(1)">
-                <div class="course-card-header">
-                    <img src="IMG/chatediter.png" alt="Video Editing Pro" class="course-card-img" />
-                    <div class="course-card-label">คอร์สตัดต่อวิดีโอ</div>
-                    <div class="course-rating">⭐ 4.8 (250)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">Video Editing Pro</p>
-                    <p class="course-instructor">โดย สมชาย แก้ว</p>
-                    <p class="course-description">เรียนรู้เทคนิคการตัดต่อวิดีโอขั้นสูง ใช้ Adobe Premiere Pro</p>
-                    <div class="course-info">
-                        <span>📚 12 บทเรียน</span>
-                        <span>⏱️ 24 ชั่วโมง</span>
+        <?php foreach ($unique_categories as $cat): ?>
+        <div class="category-section" data-category="<?php echo htmlspecialchars($cat); ?>" style="transition: opacity 0.4s ease;">
+            <div class="course-section-label"><h2 style="text-align: center;"><?php echo mb_strtoupper(htmlspecialchars($cat), 'UTF-8'); ?></h2></div>
+            <div class="course-grid">
+                <?php 
+                foreach ($courses as $course): 
+                    if ($course['category'] === $cat):
+                ?>
+                <div class="course-card" onclick="goToDetail(<?php echo $course['id']; ?>)">
+                    <div class="course-card-header">
+                        <?php if(strpos($course['image'], '.') !== false): ?>
+                            <img src="IMG/<?php echo htmlspecialchars($course['image']); ?>" alt="<?php echo htmlspecialchars($course['name']); ?>" class="course-card-img" />
+                        <?php else: ?>
+                            <div style="height: 180px; display: flex; align-items: center; justify-content: center; font-size: 64px; background: #f5f5f5; border-radius: 8px 8px 0 0;">
+                                <?php echo htmlspecialchars($course['image'] ?: '📚'); ?>
+                            </div>
+                        <?php endif; ?>
+                        <div class="course-card-label"><?php echo htmlspecialchars($course['category']); ?></div>
+                        <div class="course-rating">⭐ <?php echo number_format($course['rating'], 1); ?> (<?php echo $course['reviews']; ?>)</div>
+                    </div>
+                    <div class="course-card-body">
+                        <p class="course-name"><?php echo htmlspecialchars($course['name']); ?></p>
+                        <p class="course-instructor">โดย <?php echo htmlspecialchars($course['instructor']); ?></p>
+                        <p class="course-description"><?php echo htmlspecialchars($course['short_desc']); ?></p>
+                        <div class="course-info">
+                            <span>📚 <?php echo $course['lessons']; ?> บทเรียน</span>
+                            <span>⏱️ <?php echo $course['hours']; ?> ชั่วโมง</span>
+                        </div>
+                    </div>
+                    <div class="course-card-footer">
+                        <span class="course-price">฿ <?php echo number_format($course['price']); ?></span>
+                        <div style="display:flex;gap:8px;">
+                            <button class="course-btn" onclick="event.stopPropagation();addToCart(<?php echo $course['id']; ?>)">🛒</button>
+                            <button class="course-btn" onclick="goToDetail(<?php echo $course['id']; ?>)">ดูเพิ่มเติม</button>
+                        </div>
                     </div>
                 </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 1,299</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(1)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(1)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
-            </div>
-            <div class="course-card" onclick="goToDetail(2)">
-                <div class="course-card-header">
-                    <div class="course-card-label">Advanced Color Grading</div>
-                    <div class="course-rating">⭐ 4.9 (180)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">Color Grading Masterclass</p>
-                    <p class="course-instructor">โดย ธวัชชัย ศิริ</p>
-                    <p class="course-description">เทคนิคปรับสีระดับมืออาชีพสำหรับภาพยนตร์</p>
-                    <div class="course-info">
-                        <span>📚 15 บทเรียน</span>
-                        <span>⏱️ 30 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 1,599</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(2)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(2)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
-            </div>
-            <div class="course-card" onclick="goToDetail(3)">
-                <div class="course-card-header">
-                    <div class="course-card-label">Motion Graphics</div>
-                    <div class="course-rating">⭐ 4.7 (165)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">Motion Graphics Design</p>
-                    <p class="course-instructor">โดย ณัฐปอ สิทธิพล</p>
-                    <p class="course-description">สร้างแอนิเมชั่น 2D/3D ที่สวยงามด้วย After Effects</p>
-                    <div class="course-info">
-                        <span>📚 18 บทเรียน</span>
-                        <span>⏱️ 36 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 1,899</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(3)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(3)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
+                <?php 
+                    endif;
+                endforeach; 
+                ?>
             </div>
         </div>
-
-        </div>
-
-        <!-- Category 2: BUSINESS -->
-        <div class="category-section" data-category="business" style="transition: opacity 0.4s ease;">
-            <div class="course-section-label"><h2 style="text-align: center;">BUSINESS</h2></div>
-            <p class="course-desc" style="text-align: center;">สำหรับผู้ประกอบการและนักพัฒนาธุรกิจที่ต้องการเพิ่มทักษะการตลาดดิจิทัล<br>
-            เรียนรู้จากผู้เชี่ยวชาญในด้านธุรกิจออนไลน์</p>
-        <div class="course-grid" id="business-grid">
-            <div class="course-card" onclick="goToDetail(4)">
-                <div class="course-card-header">
-                    <div class="course-card-label">Digital Marketing</div>
-                    <div class="course-rating">⭐ 4.8 (320)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">Digital Marketing Bootcamp</p>
-                    <p class="course-instructor">โดย นพดล ธรรมรักษ์</p>
-                    <p class="course-description">เทคนิกการตลาดดิจิทัลครบถ้วนตั้งแต่ SEO ถึง Social Media</p>
-                    <div class="course-info">
-                        <span>📚 20 บทเรียน</span>
-                        <span>⏱️ 40 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 1,299</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(4)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(4)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
-            </div>
-            <div class="course-card" onclick="goToDetail(5)">
-                <div class="course-card-header">
-                    <div class="course-card-label">Personal Branding</div>
-                    <div class="course-rating">⭐ 4.9 (210)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">Build Your Personal Brand</p>
-                    <p class="course-instructor">โดย วิชิต สุมนา</p>
-                    <p class="course-description">สร้างแบรนด์ส่วนตัวของคุณให้เป็นที่รู้จักในโลกดิจิทัล</p>
-                    <div class="course-info">
-                        <span>📚 16 บทเรียน</span>
-                        <span>⏱️ 28 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 999</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(5)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(5)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
-            </div>
-            <div class="course-card" onclick="goToDetail(6)">
-                <div class="course-card-header">
-                    <div class="course-card-label">Copywriting Mastery</div>
-                    <div class="course-rating">⭐ 4.8 (190)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">Sales Copywriting Secrets</p>
-                    <p class="course-instructor">โดย นิชา ธัญชนก</p>
-                    <p class="course-description">เขียนสัญญาณขายที่ดึงดูดกระตุ้นการซื้อได้อย่างมีประสิทธิ</p>
-                    <div class="course-info">
-                        <span>📚 14 บทเรียน</span>
-                        <span>⏱️ 22 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 799</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(6)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(6)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        </div>
-
-        <!-- Category 3: TIKTOK -->
-        <div class="category-section" data-category="tiktok" style="transition: opacity 0.4s ease;">
-            <div class="course-section-label"><h2 style="text-align: center;">TIKTOK</h2></div>
-            <p class="course-desc" style="text-align: center;">กลยุทธ์การทำ TikTok ให้ไวรัลและสร้างรายได้จากแพลตฟอร์มนี้<br>
-                เรียนรู้จากผู้สร้างสรรค์ที่มีผู้ติดตามหลักล้านคน</p>
-        <div class="course-grid" id="tiktok-grid">
-            <div class="course-card" onclick="goToDetail(7)">
-                <div class="course-card-header">
-                    <div class="course-card-label">TikTok Viral Mastery</div>
-                    <div class="course-rating">⭐ 4.9 (450)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">How to Go Viral on TikTok</p>
-                    <p class="course-instructor">โดย อลิเศษ อินสตารา</p>
-                    <p class="course-description">สูตรลับการทำวิดีโอให้ไวรัลและเพิ่มผู้ติดตามอย่างรวดเร็ว</p>
-                    <div class="course-info">
-                        <span>📚 12 บทเรียน</span>
-                        <span>⏱️ 18 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 699</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(7)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(7)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
-            </div>
-            <div class="course-card" onclick="goToDetail(8)">
-                <div class="course-card-header">
-                    <div class="course-card-label">TikTok Content Creation</div>
-                    <div class="course-rating">⭐ 4.8 (380)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">Professional TikTok Content</p>
-                    <p class="course-instructor">โดย สิตา กมลากร</p>
-                    <p class="course-description">สร้างคอนเทนต์มีคุณภาพ ทำให้ผู้ชมติดตามและมีส่วนร่วม</p>
-                    <div class="course-info">
-                        <span>📚 10 บทเรียน</span>
-                        <span>⏱️ 15 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 599</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(8)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(8)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
-            </div>
-            <div class="course-card" onclick="goToDetail(9)">
-                <div class="course-card-header">
-                    <div class="course-card-label">TikTok Monetization</div>
-                    <div class="course-rating">⭐ 4.7 (290)</div>
-                </div>
-                <div class="course-card-body">
-                    <p class="course-name">Earn Money on TikTok</p>
-                    <p class="course-instructor">โดย ศรัณย์ มัสยา</p>
-                    <p class="course-description">วิธีต่างๆ ในการหารายได้จาก TikTok ตั้งแต่ต้น</p>
-                    <div class="course-info">
-                        <span>📚 11 บทเรียน</span>
-                        <span>⏱️ 20 ชั่วโมง</span>
-                    </div>
-                </div>
-                <div class="course-card-footer">
-                    <span class="course-price">฿ 899</span>
-                    <div style="display:flex;gap:8px;">
-                        <button class="course-btn" onclick="event.stopPropagation();addToCart(9)">🛒</button>
-                        <button class="course-btn" onclick="goToDetail(9)">ดูเพิ่มเติม</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php endforeach; ?>
     </section>
 
     <!-- TESTIMONIALS -->
