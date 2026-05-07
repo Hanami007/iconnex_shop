@@ -23,6 +23,10 @@ foreach ($items as $id => $qty) {
         href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&family=Sarabun:wght@400;500&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+    <script>
+        const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+    </script>
 </head>
 
 <body>
@@ -167,6 +171,7 @@ foreach ($items as $id => $qty) {
                 });
         }
         function checkout() {
+            if (typeof checkLogin === 'function' && !checkLogin()) return;
             const items = [];
             <?php foreach ($items as $id => $qty): 
                 $c = $courses[$id] ?? null;

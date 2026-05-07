@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode([
                 'success' => true,
                 'role' => $user['role'],
-                'redirect' => $user['role'] === 'admin' ? '/admin/index.php' : '/index.php'
+                'redirect' => $user['role'] === 'admin' ? 'admin/index.php' : 'index.php'
             ]);
         } else {
             echo json_encode(['success' => false, 'error' => 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง']);

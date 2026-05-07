@@ -21,12 +21,10 @@ function switchTab(btn, type) {
 }
 
 // Category filter
-// Category filter
 function filterCategory(category) {
   document.querySelectorAll(".category-section").forEach((section) => {
     if (category === 'all' || section.getAttribute('data-category') === category) {
       section.style.display = "block";
-      // trigger reflow
       void section.offsetWidth;
       section.style.opacity = "1";
     } else {
@@ -52,22 +50,70 @@ const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach((e) => {
       if (e.isIntersecting) {
-        e.target.style.opacity = "1";
-        e.target.style.transform = "translateY(0)";
+        e.target.classList.add('reveal-pro');
       }
     });
   },
   { threshold: 0.1 },
 );
 
-document.querySelectorAll("section, .video-wrap").forEach((el) => {
-  el.style.opacity = "0";
-  el.style.transform = "translateY(24px)";
-  el.style.transition = "opacity .6s ease, transform .6s ease";
+document.querySelectorAll("section, .video-wrap, .category-section, .course-card").forEach((el) => {
   observer.observe(el);
 });
 
+// Login Check Helper
+function checkLogin() {
+  if (typeof isLoggedIn !== 'undefined' && !isLoggedIn) {
+    showLoginModal();
+    return false;
+  }
+  return true;
+}
+
+function showLoginModal() {
+  // Create modal if not exists
+  let modal = document.getElementById('loginRequiredModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'loginRequiredModal';
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+      <div class="login-modal">
+        <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+        <div class="modal-icon">👤</div>
+        <h2>กรุณาเข้าสู่ระบบ</h2>
+        <p>คุณต้องเข้าสู่ระบบก่อนเพื่อทำรายการเพิ่มสินค้าลงตะกร้าหรือสั่งซื้อคอร์สเรียน</p>
+        <div class="modal-actions">
+          <a href="login.php" class="modal-btn modal-btn-login">เข้าสู่ระบบ</a>
+          <a href="register.php" class="modal-btn modal-btn-register">ยังไม่มีบัญชี? สมัครสมาชิก</a>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Close on click overlay
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeLoginModal();
+    });
+  }
+  
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeLoginModal() {
+  const modal = document.getElementById('loginRequiredModal');
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 300);
+  }
+}
+
 function addToCart(courseId) {
+  if (!checkLogin()) return;
+
   fetch("cart_handler.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -85,26 +131,26 @@ function addToCart(courseId) {
 }
 
 function buyNow(course) {
-    // Add to cart via session first (to keep it synced)
-    fetch("cart_handler.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `action=add&course_id=${course.id}`,
-    }).then(() => {
-        // Prepare data for the payment page
-        const item = {
-            id: course.id,
-            name: course.name,
-            price: course.price,
-            qty: 1,
-            instructor: course.instructor,
-            image: course.image,
-            description: course.description,
-            category: course.category
-        };
-        localStorage.setItem('checkoutCart', JSON.stringify([item]));
-        window.location.href = 'pay2.1/index.html';
-    });
+  if (!checkLogin()) return;
+
+  fetch("cart_handler.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `action=add&course_id=${course.id}`,
+  }).then(() => {
+    const item = {
+      id: course.id,
+      name: course.name,
+      price: course.price,
+      qty: 1,
+      instructor: course.instructor,
+      image: course.image,
+      description: course.description,
+      category: course.category
+    };
+    localStorage.setItem('checkoutCart', JSON.stringify([item]));
+    window.location.href = 'pay2.1/index.html';
+  });
 }
 
 // โหลด count ตะกร้าตอนเปิดหน้า
@@ -132,22 +178,17 @@ function setFilter(el, val) {
   el.classList.add('active');
   filterCategory(val);
 }
-// Function for sorting tab
 function switchCourseTab(val) {
-  // Logic to handle popular/latest sorting can be added here
   console.log('Switched tab to:', val);
 }
-// Initialize Course Carousels
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('.course-grid').forEach(grid => {
-    // Check if grid has more than 3 cards
     if (grid.children.length > 3) {
-      // Wrap grid
       const wrapper = document.createElement('div');
       wrapper.className = 'course-carousel-container';
       grid.parentNode.insertBefore(wrapper, grid);
       wrapper.appendChild(grid);
-      // Create buttons
       const prevBtn = document.createElement('button');
       prevBtn.className = 'carousel-btn prev-btn';
       prevBtn.innerHTML = '❮';
@@ -158,9 +199,35 @@ document.addEventListener("DOMContentLoaded", () => {
       nextBtn.onclick = () => { grid.scrollBy({ left: 320, behavior: 'smooth' }); };
       wrapper.appendChild(prevBtn);
       wrapper.appendChild(nextBtn);
-      
-      // Remove margin from grid since wrapper has it
       grid.style.margin = '0';
     }
   });
 });
+
+// Toast Helper (if not defined elsewhere)
+function showToast(msg) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style = `
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            z-index: 3000;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.9rem;
+            display: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        `;
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}

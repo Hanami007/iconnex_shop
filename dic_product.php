@@ -25,9 +25,13 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
     <link
         href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;800&family=Sarabun:wght@400;500;600&display=swap"
         rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="style.css" />
     <script defer src="script.js"></script>
     <script defer src="course_data.js"></script>
+    <script>
+        const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+    </script>
 </head>
 
 <body>
@@ -142,7 +146,7 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
                 </script>
                 <button
                     onclick="buyNow(currentCourseData)"
-                    style="width: 100%; background: linear-gradient(135deg, #ffae35 0%, #f74d2f 100%); color: white; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 20px; transition: all 0.2s; transform: scale(1);"
+                    style="width: 100%; background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; margin-bottom: 20px; transition: all 0.2s; transform: scale(1);"
                     onmouseover="this.style.transform='scale(1.02)'"
                     onmouseout="this.style.transform='scale(1)'">
                     สั่งซื้อเลย

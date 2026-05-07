@@ -14,111 +14,446 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICONNEX - สมัครสมาชิก</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>สมัครสมาชิก - ICONNEX Creators Club</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
-        body { background: linear-gradient(135deg, #022f58 0%, #0f015f 100%); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .login-card { background: white; width: 100%; max-width: 450px; border-radius: 16px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
-        .login-card h2 { text-align: center; color: #333; margin-bottom: 30px; font-weight: 700; font-size: 28px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 600; }
-        .form-control { width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; transition: border 0.2s; }
-        .form-control:focus { border-color: #4A68BD; box-shadow: 0 0 0 3px rgba(74, 104, 189, 0.1); }
-        .btn-submit { width: 100%; padding: 14px; background: #22d3a0; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
-        .btn-submit:hover { background: #1eb387; }
-        .error-msg { color: #E53935; font-size: 14px; margin-bottom: 20px; text-align: center; display: none; background: #ffebee; padding: 10px; border-radius: 6px; }
-        .success-msg { color: #4CAF50; font-size: 14px; margin-bottom: 20px; text-align: center; display: none; background: #E8F5E9; padding: 10px; border-radius: 6px; }
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; font-size: 14px; }
-        .back-link:hover { color: #333; text-decoration: underline; }
+        :root {
+            --primary: #22d3a0;
+            --primary-dark: #1eb387;
+            --accent: #ffae35;
+            --bg-dark: #022f58;
+            --text-main: #333;
+            --text-muted: #666;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            padding: 20px 0;
+        }
+
+        .login-wrapper {
+            display: flex;
+            width: 1000px;
+            max-width: 95%;
+            height: 750px;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Left Side: Image/Info */
+        .login-visual {
+            flex: 1.2;
+            background: linear-gradient(135deg, rgba(2, 47, 88, 0.8) 0%, rgba(15, 1, 95, 0.8) 100%),
+                        url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            padding: 50px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .login-visual::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+        }
+
+        .visual-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .visual-content h1 {
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .visual-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        /* Right Side: Form */
+        .login-container {
+            flex: 1;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #fff;
+            overflow-y: auto;
+        }
+
+        .brand {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-dark);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .login-header h2 {
+            font-size: 1.8rem;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #444;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 36px;
+            color: #aaa;
+            transition: var(--transition);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px 10px 45px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+            background: #fcfcfc;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(34, 211, 160, 0.1);
+        }
+
+        .form-control:focus + .input-icon {
+            color: var(--primary);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(34, 211, 160, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 211, 160, 0.4);
+        }
+
+        .btn-register:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .login-link a {
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-msg, .success-msg {
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-msg {
+            background: #fff5f5;
+            color: #e53e3e;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .success-msg {
+            background: #f0fff4;
+            color: #2f855a;
+            border-left: 4px solid #38a169;
+        }
+
+        .back-to-home {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 10;
+        }
+
+        .back-to-home:hover {
+            color: var(--bg-dark);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .login-wrapper {
+                height: auto;
+                flex-direction: column;
+            }
+            .login-visual {
+                display: none;
+            }
+            .login-container {
+                padding: 40px 25px;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
     </style>
 </head>
 <body>
 
-<div class="login-card">
-    <h2>สมัครสมาชิก</h2>
-    <div class="error-msg" id="errorMsg"></div>
-    <div class="success-msg" id="successMsg"></div>
-    <form id="registerForm" onsubmit="handleRegister(event)">
-        <div class="form-group">
-            <label>ชื่อผู้ใช้งาน (Username)</label>
-            <input type="text" class="form-control" id="username" required>
+    <a href="index.php" class="back-to-home"><i class="fas fa-arrow-left"></i> กลับหน้าหลัก</a>
+
+    <div class="login-wrapper">
+        <!-- Left Side -->
+        <div class="login-visual">
+            <div class="visual-content">
+                <h1>Join the Club of Visionaries.</h1>
+                <p>Start your journey with ICONNEX today. Connect, learn, and grow with thousands of creative minds.</p>
+            </div>
         </div>
-        <div class="form-group">
-            <label>อีเมล (Email)</label>
-            <input type="email" class="form-control" id="email" required>
+
+        <!-- Right Side -->
+        <div class="login-container">
+            <div class="brand">
+                <div class="brand-icon"><i class="fas fa-wind"></i></div>
+                ICONNEX
+            </div>
+
+            <div class="login-header">
+                <h2>สร้างบัญชีใหม่</h2>
+                <p>กรอกข้อมูลเพื่อเริ่มต้นใช้งาน Creators Club</p>
+            </div>
+
+            <div class="error-msg" id="errorMsg">
+                <i class="fas fa-circle-exclamation"></i>
+                <span id="errorText"></span>
+            </div>
+
+            <div class="success-msg" id="successMsg">
+                <i class="fas fa-circle-check"></i>
+                <span id="successText"></span>
+            </div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="username">ชื่อผู้ใช้งาน</label>
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" class="form-control" id="username" placeholder="กรอกชื่อผู้ใช้งาน" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">อีเมล</label>
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" class="form-control" id="email" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">รหัสผ่าน</label>
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-control" id="password" placeholder="อย่างน้อย 6 ตัวอักษร" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">ยืนยันรหัสผ่าน</label>
+                    <i class="fas fa-shield-halved input-icon"></i>
+                    <input type="password" class="form-control" id="confirm_password" placeholder="ยืนยันรหัสผ่านอีกครั้ง" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn-register" id="submitBtn">
+                    <span id="btnText">ลงทะเบียน</span>
+                    <div class="spinner" id="btnSpinner"></div>
+                </button>
+            </form>
+
+            <div class="login-link">
+                มีบัญชีอยู่แล้ว? <a href="login.php">เข้าสู่ระบบที่นี่</a>
+            </div>
         </div>
-        <div class="form-group">
-            <label>รหัสผ่าน (Password)</label>
-            <input type="password" class="form-control" id="password" required minlength="6">
-        </div>
-        <div class="form-group">
-            <label>ยืนยันรหัสผ่าน (Confirm Password)</label>
-            <input type="password" class="form-control" id="confirm_password" required minlength="6">
-        </div>
-        <button type="submit" class="btn-submit" id="submitBtn">ลงทะเบียน</button>
-    </form>
-    <a href="login.php" class="back-link">มีบัญชีผู้ใช้งานแล้ว? เข้าสู่ระบบที่นี่</a>
-    <a href="index.php" class="back-link" style="color:#aaa; font-size:12px; margin-top:10px;">← กลับไปหน้าหลัก</a>
-</div>
+    </div>
 
-<script>
-async function handleRegister(e) {
-    e.preventDefault();
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const confirm_password = document.getElementById('confirm_password').value;
-    
-    const errorMsg = document.getElementById('errorMsg');
-    const successMsg = document.getElementById('successMsg');
-    const submitBtn = document.getElementById('submitBtn');
+    <script>
+    async function handleRegister(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirm_password = document.getElementById('confirm_password').value;
+        
+        const errorMsg = document.getElementById('errorMsg');
+        const errorText = document.getElementById('errorText');
+        const successMsg = document.getElementById('successMsg');
+        const successText = document.getElementById('successText');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
 
-    if (password !== confirm_password) {
-        errorMsg.textContent = 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน';
-        errorMsg.style.display = 'block';
-        successMsg.style.display = 'none';
-        return;
-    }
-
-    submitBtn.textContent = 'กำลังลงทะเบียน...';
-    submitBtn.disabled = true;
-    errorMsg.style.display = 'none';
-    successMsg.style.display = 'none';
-
-    try {
-        const fd = new URLSearchParams();
-        fd.append('username', username);
-        fd.append('email', email);
-        fd.append('password', password);
-
-        const res = await fetch('register_action.php', {
-            method: 'POST',
-            body: fd
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            successMsg.textContent = 'สมัครสมาชิกสำเร็จ! กำลังพากลับไปหน้าเข้าสู่ระบบ...';
-            successMsg.style.display = 'block';
-            document.getElementById('registerForm').reset();
-            setTimeout(() => {
-                window.location.href = 'login.php';
-            }, 2000);
-        } else {
-            errorMsg.textContent = data.error;
-            errorMsg.style.display = 'block';
-            submitBtn.textContent = 'ลงทะเบียน';
-            submitBtn.disabled = false;
+        // Validation
+        if (password !== confirm_password) {
+            showError('รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน');
+            return;
         }
-    } catch (err) {
-        errorMsg.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
-        errorMsg.style.display = 'block';
-        submitBtn.textContent = 'ลงทะเบียน';
-        submitBtn.disabled = false;
+
+        // Loading State
+        errorMsg.style.display = 'none';
+        successMsg.style.display = 'none';
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnSpinner.style.display = 'block';
+
+        try {
+            const fd = new URLSearchParams();
+            fd.append('username', username);
+            fd.append('email', email);
+            fd.append('password', password);
+
+            const res = await fetch('register_action.php', {
+                method: 'POST',
+                body: fd
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                successText.textContent = 'สมัครสมาชิกสำเร็จ! กำลังพาไปหน้าเข้าสู่ระบบ...';
+                successMsg.style.display = 'flex';
+                document.getElementById('registerForm').reset();
+                btnSpinner.style.display = 'none';
+                
+                setTimeout(() => {
+                    window.location.href = 'login.php';
+                }, 2000);
+            } else {
+                showError(data.error);
+            }
+        } catch (err) {
+            showError('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+        }
     }
-}
-</script>
+
+    function showError(msg) {
+        const errorMsg = document.getElementById('errorMsg');
+        const errorText = document.getElementById('errorText');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+
+        errorText.textContent = msg;
+        errorMsg.style.display = 'flex';
+        submitBtn.disabled = false;
+        btnText.style.display = 'block';
+        btnSpinner.style.display = 'none';
+        
+        errorMsg.style.animation = 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both';
+        setTimeout(() => { errorMsg.style.animation = ''; }, 500);
+    }
+    </script>
 
 </body>
 </html>

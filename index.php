@@ -15,9 +15,13 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     <link
         href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;800&family=Sarabun:wght@400;500;600&display=swap"
         rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="style.css" />
     <script defer src="script.js"></script>
-    <script>coursesData = <?php echo json_encode($courses); ?>;</script>
+    <script>
+        const coursesData = <?php echo json_encode($courses); ?>;
+        const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+    </script>
 
 </head>
 
@@ -78,18 +82,18 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         $total_members_display = $total_members > 1000 ? round($total_members / 1000, 1) . 'K' : number_format($total_members);
         if ($total_members == 0) $total_members_display = '0';
         ?>
-        <div class="hero-stats">
-            <div>
-                <div class="stat-num"><?php echo $total_members_display; ?></div>
-                <div class="stat-label">สมาชิก</div>
+        <div class="hero-stats" style="margin-top: 40px; border-top: 1px solid var(--border); padding-top: 30px;">
+            <div class="reveal-pro">
+                <div class="stat-num accent-text"><?php echo $total_members_display; ?></div>
+                <div class="stat-label">สมาชิกทั้งหมด</div>
             </div>
-            <div>
-                <div class="stat-num"><?php echo $total_courses; ?>+</div>
-                <div class="stat-label">คอร์ส</div>
+            <div class="reveal-pro" style="transition-delay: 0.1s;">
+                <div class="stat-num accent-text"><?php echo $total_courses; ?>+</div>
+                <div class="stat-label">คอร์สคุณภาพ</div>
             </div>
-            <div>
-                <div class="stat-num"><?php echo $avg_rating; ?> ★</div>
-                <div class="stat-label">คะแนนรีวิว</div>
+            <div class="reveal-pro" style="transition-delay: 0.2s;">
+                <div class="stat-num accent-text"><?php echo $avg_rating; ?> ★</div>
+                <div class="stat-label">การันตีความพึงพอใจ</div>
             </div>
         </div>
     </section>
@@ -150,12 +154,15 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     <!-- COURSES -->
     <section id="courses">
         <!-- Tabs & Filters -->
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 36px;">
-            <h1 style="font-size: 3rem;">แพ็กเกจ</h1>
-            <p class="section-description">เลือกแพ็กเกจของคุณ <span style="color: var(--accent)">คลิกที่รูปภาพเพื่อดูรายละเอียด</span></p>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 48px;">
+            <div style="text-align: center;">
+                <h2 style="font-size: 3.5rem; font-family: 'Prompt', sans-serif; font-weight: 800; margin-bottom: 12px; color: var(--white);">แพ็กเกจเรียนรู้</h2>
+                <p class="section-description" style="font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;">เลือกเส้นทางสู่การเป็น Creator มืออาชีพ <span style="color: var(--accent); font-weight: 600;">สัมผัสประสบการณ์การเรียนรู้ที่เข้าถึงง่าย</span></p>
+            </div>
+            
             <!-- Category Filters -->
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                <button class="filter-pill active" onclick="setFilter(this,'all')">ทั้งหมด</button>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 10px;">
+                <button class="filter-pill active" onclick="setFilter(this,'all')">คอร์สทั้งหมด</button>
                 <?php 
                 $unique_categories = [];
                 foreach ($courses as $c) {
@@ -171,8 +178,12 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         </div>
 
         <?php foreach ($unique_categories as $cat): ?>
-        <div class="category-section" data-category="<?php echo htmlspecialchars($cat); ?>" style="transition: opacity 0.4s ease;">
-            <div class="course-section-label"><h2 style="text-align: center;"><?php echo mb_strtoupper(htmlspecialchars($cat), 'UTF-8'); ?></h2></div>
+        <div class="category-section" data-category="<?php echo htmlspecialchars($cat); ?>" style="transition: all 0.4s ease; margin-bottom: 60px;">
+            <div class="course-section-label" style="margin-bottom: 30px;">
+                <h3 style="text-align: center; font-size: 1.5rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase;"><?php echo htmlspecialchars($cat); ?></h3>
+                <div style="width: 60px; height: 3px; background: var(--accent); margin: 12px auto; border-radius: 2px;"></div>
+            </div>
+            
             <div class="course-grid">
                 <?php 
                 foreach ($courses as $course): 
@@ -183,34 +194,46 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                         <?php 
                         $img_val = $course['image'];
                         if (strpos($img_val, '<img') !== false): 
-                            // Render raw HTML if it was saved as an img tag previously
-                            echo $img_val;
+                            echo str_replace('<img', '<img class="course-card-img"', $img_val);
                         elseif (strpos($img_val, '.') !== false): 
                             $img_src = strpos($img_val, 'uploads/') === 0 ? '/' . htmlspecialchars($img_val) : 'IMG/' . htmlspecialchars($img_val);
                         ?>
                             <img src="<?php echo $img_src; ?>" alt="<?php echo htmlspecialchars($course['name']); ?>" class="course-card-img" />
                         <?php else: ?>
-                            <div style="height: 180px; display: flex; align-items: center; justify-content: center; font-size: 64px; background: #f5f5f5; border-radius: 8px 8px 0 0;">
+                            <div style="height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 80px; background: #1a1a1a;">
                                 <?php echo htmlspecialchars($img_val ?: '📚'); ?>
                             </div>
                         <?php endif; ?>
-                        <div class="course-card-label"><?php echo htmlspecialchars($course['category']); ?></div>
-                        <div class="course-rating">⭐ <?php echo number_format($course['rating'], 1); ?> (<?php echo $course['reviews']; ?>)</div>
+                        <div class="course-card-label" style="position: absolute; top: 15px; right: 15px; margin: 0;"><?php echo htmlspecialchars($course['category']); ?></div>
+                        <div class="course-rating" style="position: absolute; bottom: 15px; left: 15px; margin: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">⭐ <?php echo number_format($course['rating'], 1); ?></div>
                     </div>
-                    <div class="course-card-body">
-                        <p class="course-name"><?php echo htmlspecialchars($course['name']); ?></p>
-                        <p class="course-instructor">โดย <?php echo htmlspecialchars($course['instructor']); ?></p>
-                        <p class="course-description"><?php echo htmlspecialchars($course['short_desc']); ?></p>
-                        <div class="course-info">
-                            <span>📚 <?php echo $course['lessons']; ?> บทเรียน</span>
-                            <span>⏱️ <?php echo $course['hours']; ?> ชั่วโมง</span>
+                    
+                    <div class="course-card-body" style="padding: 24px;">
+                        <p class="course-name" style="font-size: 1.1rem; margin-bottom: 8px;"><?php echo htmlspecialchars($course['name']); ?></p>
+                        <p class="course-instructor" style="margin-bottom: 16px;">โดย <?php echo htmlspecialchars($course['instructor']); ?></p>
+                        
+                        <div class="course-info" style="flex-direction: row; gap: 15px; margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
+                            <span><i class="fas fa-book-open"></i> <?php echo $course['lessons']; ?> บท</span>
+                            <span><i class="fas fa-clock"></i> <?php echo $course['hours']; ?> ชม.</span>
                         </div>
+                        
+                        <p class="course-description" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.8em;"><?php echo htmlspecialchars($course['short_desc']); ?></p>
                     </div>
-                    <div class="course-card-footer">
-                        <span class="course-price">฿ <?php echo number_format($course['price']); ?></span>
-                        <div style="display:flex;gap:8px;">
-                            <button class="course-btn" onclick="event.stopPropagation();addToCart(<?php echo $course['id']; ?>)">🛒</button>
-                            <button class="course-btn" onclick="goToDetail(<?php echo $course['id']; ?>)">ดูเพิ่มเติม</button>
+                    
+                    <div class="course-card-footer" style="padding: 20px 24px; background: rgba(255,255,255,0.02);">
+                        <div class="course-price-container">
+                            <span class="course-price-new">฿<?php echo number_format($course['price']); ?></span>
+                            <?php if(isset($course['old_price']) && $course['old_price'] > $course['price']): ?>
+                                <span class="course-price-old">฿<?php echo number_format($course['old_price']); ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <div style="display:flex;gap:10px;">
+                            <button class="course-btn" style="width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--accent); color: #000;" onclick="event.stopPropagation();addToCart(<?php echo $course['id']; ?>)">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                            <button class="course-btn" style="padding: 0 15px; border-radius: 10px; background: var(--accent); color: #000; font-weight: 700;" onclick="goToDetail(<?php echo $course['id']; ?>)">
+                                ดูคอร์ส
+                            </button>
                         </div>
                     </div>
                 </div>

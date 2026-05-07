@@ -1,0 +1,6 @@
+﻿
+Fatal error: Uncaught ArgumentCountError: array_values() expects exactly 1 argument, 0 given in Command line code:1
+Stack trace:
+#0 Command line code(1): array_values()
+#1 {main}
+  thrown in Command line code on line 1
