@@ -1,5 +1,6 @@
 <?php
 require_once 'course_data.php';
+require_once 'lang.php';
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $course = isset($courses[$id]) ? $courses[$id] : null;
 
@@ -14,7 +15,7 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
 
 ?>
 <!DOCTYPE html>
-<html lang="th">
+<html lang="<?php echo $current_lang; ?>">
 
 <head>
     <meta charset="UTF-8" />
@@ -42,13 +43,13 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
             ICONNEX
         </div>
         <ul class="nav-links">
-            <li><a href="index.php">หน้าหลัก</a></li>
-            <li><a href="about">เกี่ยวกับ</a></li>
-            <li><a href="services">บริการ</a></li>
-            <li><a href="news">ข่าว</a></li>
-            <li><a href="portfolio">ผลงาน</a></li>
-            <li><a href="contact">ติดต่อเรา</a></li>
-            <li><a href="index.php#courses" class="active">คอร์ส</a></li>
+            <li><a href="index.php"><?php echo __('nav_home'); ?></a></li>
+            <li><a href="#about"><?php echo __('nav_about'); ?></a></li>
+            <li><a href="#services"><?php echo __('nav_services'); ?></a></li>
+            <li><a href="#news"><?php echo __('nav_news'); ?></a></li>
+            <li><a href="#portfolio"><?php echo __('nav_portfolio'); ?></a></li>
+            <li><a href="#contact"><?php echo __('nav_contact'); ?></a></li>
+            <li><a href="index.php#courses" class="active"><?php echo __('nav_courses'); ?></a></li>
         </ul>
     </nav>
 
@@ -58,9 +59,9 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
         
         <!-- Breadcrumb -->
         <div style="max-width: 1200px; margin: 0 auto 20px; font-size: 14px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 10px;">
-            <a href="index.php" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">หน้าหลัก</a>
+            <a href="index.php" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'"><?php echo __('nav_home'); ?></a>
             <span>›</span>
-            <a href="index.php#courses" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">คอร์สเรียน</a>
+            <a href="index.php#courses" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'"><?php echo __('nav_courses'); ?></a>
             <span>›</span>
             <span style="color: white; font-weight: 600;"><?php echo htmlspecialchars($course['name']); ?></span>
         </div>
@@ -149,7 +150,7 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
                     style="width: 100%; background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; margin-bottom: 20px; transition: all 0.2s; transform: scale(1);"
                     onmouseover="this.style.transform='scale(1.02)'"
                     onmouseout="this.style.transform='scale(1)'">
-                    สั่งซื้อเลย
+                    <?php echo __('hero_btn_explore'); ?>
                 </button>
 
                 <div style="background: rgba(255,255,255,0.15); border-radius: 8px; padding: 20px; color: white;">

@@ -1,10 +1,10 @@
 <?php
 require_once 'course_data.php';
-session_start();
+require_once 'lang.php';
 $cartCount = array_sum($_SESSION['cart'] ?? []);
 ?>
 <!DOCTYPE html>
-<html lang="th">
+<html lang="<?php echo $current_lang; ?>">
 
 <head>
     <meta charset="UTF-8" />
@@ -21,6 +21,12 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     <script>
         const coursesData = <?php echo json_encode($courses); ?>;
         const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+        const langData = {
+            cart_popup_title: "<?php echo __('cart_popup_title'); ?>",
+            cart_popup_desc: "<?php echo __('cart_popup_desc'); ?>",
+            btn_login: "<?php echo __('btn_login'); ?>",
+            btn_register: "<?php echo __('btn_register'); ?>"
+        };
     </script>
 
 </head>
@@ -34,13 +40,17 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             ICONNEX
         </div>
         <ul class="nav-links">
-            <li><a href="#hero">หน้าหลัก</a></li>
-            <li><a href="#about">เกี่ยวกับ</a></li>
-            <li><a href="#services">บริการ</a></li>
-            <li><a href="#news">ข่าว</a></li>
-            <li><a href="#portfolio">ผลงาน</a></li>
-            <li><a href="#contact">ติดต่อเรา</a></li>
-            <li><a href="#courses" class="active">คอร์ส</a></li>
+            <li><a href="#hero"><?php echo __('nav_home'); ?></a></li>
+            <li><a href="#about"><?php echo __('nav_about'); ?></a></li>
+            <li><a href="#services"><?php echo __('nav_services'); ?></a></li>
+            <li><a href="#news"><?php echo __('nav_news'); ?></a></li>
+            <li><a href="#portfolio"><?php echo __('nav_portfolio'); ?></a></li>
+            <li><a href="#contact"><?php echo __('nav_contact'); ?></a></li>
+            <li><a href="#courses" class="active"><?php echo __('nav_courses'); ?></a></li>
+            <li class="lang-switcher">
+                <a href="?lang=th" class="<?php echo $current_lang === 'th' ? 'active' : ''; ?>">TH</a> | 
+                <a href="?lang=en" class="<?php echo $current_lang === 'en' ? 'active' : ''; ?>">EN</a>
+            </li>
             <li>
                 <a href="cart.php" style="position:relative">
                     🛒 <span id="cart-count" style="
@@ -52,23 +62,21 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                 </a>
             </li>
             <?php if(isset($_SESSION['user_id'])): ?>
-                <li><a href="logout.php" style="color: #ffae35;">ออกจากระบบ (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a></li>
+                <li><a href="logout.php" style="color: #ffae35;">Logout (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a></li>
                 <?php if($_SESSION['role'] === 'admin'): ?>
                     <li><a href="admin/index.php" style="color: #4CAF50;">Admin Panel</a></li>
                 <?php endif; ?>
             <?php else: ?>
-                <li><a href="login.php" style="color: #4CAF50;">เข้าสู่ระบบ</a></li>
+                <li><a href="login.php" style="color: #4CAF50;"><?php echo __('btn_login'); ?></a></li>
             <?php endif; ?>
         </ul>
     </nav>
 
     <!-- HERO -->
     <section class="hero" id="hero">
-        <h1>Master editing. Grow an audience. Work with your dream clients.</h1>
-        <p>Creators Club is the next gen E-Learning platform for everyone who want to take their editing skills to the
-            next level and connect with like-minded individuals. Unlock your full creative potential and join a
-            community that inspires and elevates your craft.</p>
-        <a href="#courses" class="btn-primary">เริ่มต้น</a>
+        <h1><?php echo __('hero_title'); ?></h1>
+        <p><?php echo __('hero_subtitle'); ?></p>
+        <a href="#courses" class="btn-primary"><?php echo __('hero_btn_explore'); ?></a>
         <?php
         $total_courses = count($courses);
         $total_rating = 0;
@@ -85,15 +93,15 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         <div class="hero-stats" style="margin-top: 40px; border-top: 1px solid var(--border); padding-top: 30px;">
             <div class="reveal-pro">
                 <div class="stat-num accent-text"><?php echo $total_members_display; ?></div>
-                <div class="stat-label">สมาชิกทั้งหมด</div>
+                <div class="stat-label"><?php echo __('stats_members'); ?></div>
             </div>
             <div class="reveal-pro" style="transition-delay: 0.1s;">
                 <div class="stat-num accent-text"><?php echo $total_courses; ?>+</div>
-                <div class="stat-label">คอร์สคุณภาพ</div>
+                <div class="stat-label"><?php echo __('stats_courses'); ?></div>
             </div>
             <div class="reveal-pro" style="transition-delay: 0.2s;">
                 <div class="stat-num accent-text"><?php echo $avg_rating; ?> ★</div>
-                <div class="stat-label">การันตีความพึงพอใจ</div>
+                <div class="stat-label"><?php echo __('stats_rating'); ?></div>
             </div>
         </div>
     </section>
@@ -156,13 +164,13 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         <!-- Tabs & Filters -->
         <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 48px;">
             <div style="text-align: center;">
-                <h2 style="font-size: 3.5rem; font-family: 'Prompt', sans-serif; font-weight: 800; margin-bottom: 12px; color: var(--white);">แพ็กเกจเรียนรู้</h2>
-                <p class="section-description" style="font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;">เลือกเส้นทางสู่การเป็น Creator มืออาชีพ <span style="color: var(--accent); font-weight: 600;">สัมผัสประสบการณ์การเรียนรู้ที่เข้าถึงง่าย</span></p>
+                <h2 style="font-size: 3.5rem; font-family: 'Prompt', sans-serif; font-weight: 800; margin-bottom: 12px; color: var(--white);"><?php echo __('packages_title'); ?></h2>
+                <p class="section-description" style="font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;"><?php echo __('packages_subtitle'); ?></p>
             </div>
             
             <!-- Category Filters -->
             <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 10px;">
-                <button class="filter-pill active" onclick="setFilter(this,'all')">คอร์สทั้งหมด</button>
+                <button class="filter-pill active" onclick="setFilter(this,'all')"><?php echo __('filter_all'); ?></button>
                 <?php 
                 $unique_categories = [];
                 foreach ($courses as $c) {
@@ -210,11 +218,11 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     
                     <div class="course-card-body" style="padding: 24px;">
                         <p class="course-name" style="font-size: 1.1rem; margin-bottom: 8px;"><?php echo htmlspecialchars($course['name']); ?></p>
-                        <p class="course-instructor" style="margin-bottom: 16px;">โดย <?php echo htmlspecialchars($course['instructor']); ?></p>
+                        <p class="course-instructor" style="margin-bottom: 16px;"><?php echo __('course_by'); ?> <?php echo htmlspecialchars($course['instructor']); ?></p>
                         
                         <div class="course-info" style="flex-direction: row; gap: 15px; margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
-                            <span><i class="fas fa-book-open"></i> <?php echo $course['lessons']; ?> บท</span>
-                            <span><i class="fas fa-clock"></i> <?php echo $course['hours']; ?> ชม.</span>
+                            <span><i class="fas fa-book-open"></i> <?php echo $course['lessons']; ?> <?php echo __('course_lessons'); ?></span>
+                            <span><i class="fas fa-clock"></i> <?php echo $course['hours']; ?> <?php echo __('course_hours'); ?></span>
                         </div>
                         
                         <p class="course-description" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.8em;"><?php echo htmlspecialchars($course['short_desc']); ?></p>
@@ -232,7 +240,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                                 <i class="fas fa-shopping-cart"></i>
                             </button>
                             <button class="course-btn" style="padding: 0 15px; border-radius: 10px; background: var(--accent); color: #000; font-weight: 700;" onclick="goToDetail(<?php echo $course['id']; ?>)">
-                                ดูคอร์ส
+                                <?php echo __('btn_view_course'); ?>
                             </button>
                         </div>
                     </div>
@@ -377,10 +385,10 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         <div class="footer-bottom">
             <div>
                 <div class="footer-brand">ICONNEX</div>
-                <div>โดยแพลตฟอร์ม ICONNEX มุ่งนำประโยชน์ใช้สอยดี สร้างความเปลี่ยนแปลงที่ดีให้กับทุกชีวิต</div>
+                <div><?php echo __('footer_desc'); ?></div>
             </div>
-            <div class="col-center">094-546-2224</div>
-            <div class="col-right">ที่อยู่อาคาร: The Metropolis Samrong</div>
+            <div class="col-center"><?php echo __('footer_phone'); ?> 094-546-2224</div>
+            <div class="col-right"><?php echo __('footer_address'); ?></div>
         </div>
     </footer>
 </body>

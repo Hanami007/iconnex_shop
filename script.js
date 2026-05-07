@@ -81,11 +81,11 @@ function showLoginModal() {
       <div class="login-modal">
         <button class="close-modal" onclick="closeLoginModal()">&times;</button>
         <div class="modal-icon">👤</div>
-        <h2>กรุณาเข้าสู่ระบบ</h2>
-        <p>คุณต้องเข้าสู่ระบบก่อนเพื่อทำรายการเพิ่มสินค้าลงตะกร้าหรือสั่งซื้อคอร์สเรียน</p>
+        <h2>${langData.cart_popup_title}</h2>
+        <p>${langData.cart_popup_desc}</p>
         <div class="modal-actions">
-          <a href="login.php" class="modal-btn modal-btn-login">เข้าสู่ระบบ</a>
-          <a href="register.php" class="modal-btn modal-btn-register">ยังไม่มีบัญชี? สมัครสมาชิก</a>
+          <a href="login.php" class="modal-btn modal-btn-login">${langData.btn_login}</a>
+          <a href="register.php" class="modal-btn modal-btn-register">${langData.btn_register}</a>
         </div>
       </div>
     `;
@@ -149,7 +149,7 @@ function buyNow(course) {
       category: course.category
     };
     localStorage.setItem('checkoutCart', JSON.stringify([item]));
-    window.location.href = 'pay2.1/index.html';
+    window.location.href = 'pay2.1/index.php';
   });
 }
 

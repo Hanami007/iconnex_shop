@@ -1,6 +1,6 @@
 <?php
-session_start();
 require_once 'course_data.php';
+require_once 'lang.php';
 
 if (!isset($_SESSION['cart']))
     $_SESSION['cart'] = [];
@@ -14,11 +14,11 @@ foreach ($items as $id => $qty) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="th">
+<html lang="<?php echo $current_lang; ?>">
 
 <head>
     <meta charset="UTF-8">
-    <title>ตะกร้าสินค้า – ICONNEX</title>
+    <title><?php echo __('cart_title'); ?> – ICONNEX</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&family=Sarabun:wght@400;500&display=swap"
         rel="stylesheet">
@@ -35,9 +35,9 @@ foreach ($items as $id => $qty) {
             <div class="logo-icon">🌀</div>ICONNEX
         </div>
         <ul class="nav-links">
-            <li><a href="index.php">หน้าหลัก</a></li>
-            <li><a href="index.php#courses">คอร์ส</a></li>
-            <li><a href="cart.php" class="active">🛒 ตะกร้า
+            <li><a href="index.php"><?php echo __('nav_home'); ?></a></li>
+            <li><a href="index.php#courses"><?php echo __('nav_courses'); ?></a></li>
+            <li><a href="cart.php" class="active">🛒 <?php echo __('cart_title'); ?>
                     <?php if (array_sum($items) > 0): ?>
                         <span
                             style="background:var(--accent,#6c63ff);color:#fff;border-radius:50%;padding:1px 7px;font-size:.75rem;font-weight:700;margin-left:4px;">
@@ -50,26 +50,26 @@ foreach ($items as $id => $qty) {
 
     <!-- Breadcrumb -->
     <div style="max-width: 1200px; margin: 20px auto 0; padding: 0 40px; font-size: 14px; color: #999;">
-        <a href="index.php" style="color: #666; text-decoration: none;">หน้าหลัก</a> <span style="margin: 0 8px;">›</span>
-        <a href="index.php#courses" style="color: #666; text-decoration: none;">คอร์สเรียน</a> <span style="margin: 0 8px;">›</span>
-        <span style="color: #333; font-weight: 600;">ตะกร้าสินค้า</span>
+        <a href="index.php" style="color: #666; text-decoration: none;"><?php echo __('nav_home'); ?></a> <span style="margin: 0 8px;">›</span>
+        <a href="index.php#courses" style="color: #666; text-decoration: none;"><?php echo __('nav_courses'); ?></a> <span style="margin: 0 8px;">›</span>
+        <span style="color: #333; font-weight: 600;"><?php echo __('cart_title'); ?></span>
     </div>
 
     <div class="cart-page">
-        <div class="cart-title">🛒 ตะกร้าสินค้า</div>
+        <div class="cart-title">🛒 <?php echo __('cart_title'); ?></div>
 
         <?php if (empty($items)): ?>
             <div class="cart-empty">
                 <div style="font-size:4rem;margin-bottom:16px;">🛒</div>
-                <p>ตะกร้าของคุณว่างเปล่า</p>
-                <a href="index.php#courses">← เลือกดูคอร์สทั้งหมด</a>
+                <p><?php echo __('empty_cart'); ?></p>
+                <a href="index.php#courses">← <?php echo __('hero_btn_explore'); ?></a>
             </div>
 
         <?php else: ?>
             <table class="cart-table">
                 <thead>
                     <tr>
-                        <th>คอร์ส</th>
+                        <th><?php echo __('nav_courses'); ?></th>
                         <th>ราคา/ชิ้น</th>
                         <th>จำนวน</th>
                         <th>รวม</th>
@@ -114,7 +114,7 @@ foreach ($items as $id => $qty) {
                         <span>ยอดรวม</span>
                         <span id="grand-total">฿<?= number_format($total) ?></span>
                     </div>
-                    <button class="checkout-btn" onclick="checkout()">ดำเนินการชำระเงิน →</button>
+                    <button class="checkout-btn" onclick="checkout()"><?php echo __('btn_checkout'); ?> →</button>
                 </div>
             </div>
         <?php endif; ?>
@@ -191,7 +191,7 @@ foreach ($items as $id => $qty) {
             <?php endif; endforeach; ?>
             
             localStorage.setItem('checkoutCart', JSON.stringify(items));
-            location.href = 'pay2.1/index.html';
+            location.href = 'pay2.1/index.php';
         }
     </script>
 </body>

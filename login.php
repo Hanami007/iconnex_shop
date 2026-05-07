@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'lang.php';
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] === 'admin') {
         header('Location: admin/index.php');
@@ -10,11 +10,11 @@ if (isset($_SESSION['user_id'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="th">
+<html lang="<?php echo $current_lang; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ - ICONNEX Creators Club</title>
+    <title><?php echo __('login_title'); ?> - ICONNEX Creators Club</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
@@ -366,7 +366,7 @@ if (isset($_SESSION['user_id'])) {
 </head>
 <body>
 
-    <a href="index.php" class="back-to-home"><i class="fas fa-arrow-left"></i> กลับหน้าหลัก</a>
+    <a href="index.php" class="back-to-home"><i class="fas fa-arrow-left"></i> <?php echo __('nav_home'); ?></a>
 
     <div class="login-wrapper">
         <!-- Left Side -->
@@ -385,8 +385,8 @@ if (isset($_SESSION['user_id'])) {
             </div>
 
             <div class="login-header">
-                <h2>ยินดีต้อนรับกลับมา</h2>
-                <p>เข้าสู่ระบบเพื่อเรียนรู้และสร้างสรรค์ผลงานของคุณ</p>
+                <h2><?php echo __('login_title'); ?></h2>
+                <p><?php echo __('login_subtitle'); ?></p>
             </div>
 
             <div class="error-msg" id="errorMsg">
@@ -396,15 +396,15 @@ if (isset($_SESSION['user_id'])) {
 
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label for="username">ชื่อผู้ใช้งาน</label>
+                    <label for="username"><?php echo __('label_username'); ?></label>
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" class="form-control" id="username" placeholder="กรอกชื่อผู้ใช้งาน" required>
+                    <input type="text" class="form-control" id="username" placeholder="<?php echo __('label_username'); ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">รหัสผ่าน</label>
+                    <label for="password"><?php echo __('label_password'); ?></label>
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" class="form-control" id="password" placeholder="กรอกรหัสผ่าน" required>
+                    <input type="password" class="form-control" id="password" placeholder="<?php echo __('label_password'); ?>" required>
                 </div>
 
                 <div class="form-options">
@@ -415,7 +415,7 @@ if (isset($_SESSION['user_id'])) {
                 </div>
 
                 <button type="submit" class="btn-login" id="submitBtn">
-                    <span id="btnText">เข้าสู่ระบบ</span>
+                    <span id="btnText"><?php echo __('btn_submit_login'); ?></span>
                     <div class="spinner" id="btnSpinner"></div>
                 </button>
             </form>
@@ -435,7 +435,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
 
             <div class="register-link">
-                ยังไม่มีบัญชีใช่ไหม? <a href="register.php">สมัครสมาชิกที่นี่</a>
+                <?php echo __('link_no_account'); ?> <a href="register.php"><?php echo __('btn_register'); ?></a>
             </div>
         </div>
     </div>

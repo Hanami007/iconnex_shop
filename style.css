@@ -1871,3 +1871,29 @@ footer {
 .course-price-new {
   color: var(--accent) !important;
 }
+/* -- LANGUAGE SWITCHER ---------------- */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-left: 10px;
+}
+
+.lang-switcher a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.lang-switcher a:hover {
+  color: var(--accent);
+}
+
+.lang-switcher a.active {
+  color: var(--accent);
+  text-decoration: underline;
+}
+

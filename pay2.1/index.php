@@ -1,9 +1,12 @@
+<?php
+require_once '../lang.php';
+?>
 <!DOCTYPE html>
-<html lang="th">
+<html lang="<?php echo $current_lang; ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduCourse — ชำระเงินคอร์สเรียน</title>
+<title>EduCourse — <?php echo __('pay_title'); ?></title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -19,7 +22,7 @@
       <div class="logo-text">Edu<span>Course</span></div>
     </div>
     <div class="header-meta">
-      <div class="label">เลขที่ใบสั่งซื้อ</div>
+      <div class="label"><?php echo __('order_no'); ?></div>
       <div class="order-no" id="hdr-order">ORD-———</div>
       <div class="secure-badge">
         <i class="ti ti-shield-check"></i> SSL Secured Checkout
@@ -217,7 +220,7 @@
       <div class="receipt-card">
         <div class="receipt-header">
           <div>
-            <div class="receipt-label">ใบสรุปรายการ</div>
+            <div class="receipt-label"><?php echo __('receipt_summary'); ?></div>
             <div class="receipt-title">Order Summary</div>
           </div>
           <div class="receipt-logo">
@@ -249,11 +252,11 @@
               <span id="tot-sub">5,000 ฿</span>
             </div>
             <div class="rtotal-row vat">
-              <span>ภาษีมูลค่าเพิ่ม (7%)</span>
+              <span><?php echo __('vat'); ?></span>
               <span id="tot-vat">350 ฿</span>
             </div>
             <div class="rtotal-grand">
-              <span class="label"><i class="ti ti-receipt"></i> ยอดชำระทั้งสิ้น</span>
+              <span class="label"><i class="ti ti-receipt"></i> <?php echo __('total_pay'); ?></span>
               <span class="amount" id="tot-grand">5,350 ฿</span>
             </div>
           </div>
@@ -264,7 +267,7 @@
       <div class="payment-form-card">
         <div class="pform-header">
           <div class="pform-header-title">
-            <i class="ti ti-credit-card"></i> ข้อมูลผู้ชำระเงิน &amp; วิธีชำระ
+            <i class="ti ti-credit-card"></i> <?php echo __('customer_info'); ?>
           </div>
         </div>
         <div class="pform-body">
@@ -272,32 +275,32 @@
           <!-- Customer Info -->
           <div class="input-row">
             <div class="input-group">
-              <label class="input-label" for="inp-name">ชื่อ</label>
-              <input class="input-field" type="text" id="inp-name" placeholder="ชื่อจริง">
+              <label class="input-label" for="inp-name"><?php echo __('first_name'); ?></label>
+              <input class="input-field" type="text" id="inp-name" placeholder="<?php echo __('first_name'); ?>">
             </div>
             <div class="input-group">
-              <label class="input-label" for="inp-surname">นามสกุล</label>
-              <input class="input-field" type="text" id="inp-surname" placeholder="นามสกุล">
+              <label class="input-label" for="inp-surname"><?php echo __('last_name'); ?></label>
+              <input class="input-field" type="text" id="inp-surname" placeholder="<?php echo __('last_name'); ?>">
             </div>
           </div>
           <div class="input-group">
-            <label class="input-label" for="inp-email">อีเมล (สำหรับรับใบเสร็จ)</label>
+            <label class="input-label" for="inp-email"><?php echo __('label_email'); ?></label>
             <input class="input-field" type="email" id="inp-email" placeholder="you@example.com">
           </div>
           <div class="input-group">
-            <label class="input-label" for="inp-phone">เบอร์โทรศัพท์</label>
+            <label class="input-label" for="inp-phone"><?php echo __('phone'); ?></label>
             <input class="input-field" type="tel" id="inp-phone" placeholder="086-xxx-xxxx">
           </div>
 
           <!-- Payment Method Tabs -->
           <div class="pay-method-section">
-            <div class="pay-method-label">เลือกวิธีชำระเงิน</div>
+            <div class="pay-method-label"><?php echo __('select_pay_method'); ?></div>
             <div class="pay-tabs">
               <button class="pay-tab" id="tab-qr" data-method="qr">
-                <span class="tab-icon">📱</span>QR PromptPay
+                <span class="tab-icon">📱</span><?php echo __('qr_promptpay'); ?>
               </button>
               <button class="pay-tab" id="tab-bank" data-method="bank">
-                <span class="tab-icon">🏦</span>โอนบัญชีธนาคาร
+                <span class="tab-icon">🏦</span><?php echo __('bank_transfer'); ?>
               </button>
             </div>
           </div>
@@ -347,7 +350,7 @@
           <!-- Confirm Button -->
           <button class="confirm-btn" id="confirm-btn">
             <i class="ti ti-lock"></i>
-            <span>ยืนยันการชำระเงิน</span>
+            <span><?php echo __('confirm_pay'); ?></span>
             <span class="btn-amount" id="btn-amount-lbl">5,350 ฿</span>
           </button>
 

@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'lang.php';
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] === 'admin') {
         header('Location: admin/index.php');
@@ -10,11 +10,11 @@ if (isset($_SESSION['user_id'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="th">
+<html lang="<?php echo $current_lang; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สมัครสมาชิก - ICONNEX Creators Club</title>
+    <title><?php echo __('register_title'); ?> - ICONNEX Creators Club</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
@@ -309,7 +309,7 @@ if (isset($_SESSION['user_id'])) {
 </head>
 <body>
 
-    <a href="index.php" class="back-to-home"><i class="fas fa-arrow-left"></i> กลับหน้าหลัก</a>
+    <a href="index.php" class="back-to-home"><i class="fas fa-arrow-left"></i> <?php echo __('nav_home'); ?></a>
 
     <div class="login-wrapper">
         <!-- Left Side -->
@@ -328,8 +328,8 @@ if (isset($_SESSION['user_id'])) {
             </div>
 
             <div class="login-header">
-                <h2>สร้างบัญชีใหม่</h2>
-                <p>กรอกข้อมูลเพื่อเริ่มต้นใช้งาน Creators Club</p>
+                <h2><?php echo __('register_title'); ?></h2>
+                <p><?php echo __('register_subtitle'); ?></p>
             </div>
 
             <div class="error-msg" id="errorMsg">
@@ -344,37 +344,37 @@ if (isset($_SESSION['user_id'])) {
 
             <form id="registerForm" onsubmit="handleRegister(event)">
                 <div class="form-group">
-                    <label for="username">ชื่อผู้ใช้งาน</label>
+                    <label for="username"><?php echo __('label_username'); ?></label>
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" class="form-control" id="username" placeholder="กรอกชื่อผู้ใช้งาน" required>
+                    <input type="text" class="form-control" id="username" placeholder="<?php echo __('label_username'); ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="email">อีเมล</label>
+                    <label for="email"><?php echo __('label_email'); ?></label>
                     <i class="fas fa-envelope input-icon"></i>
                     <input type="email" class="form-control" id="email" placeholder="example@email.com" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">รหัสผ่าน</label>
+                    <label for="password"><?php echo __('label_password'); ?></label>
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" class="form-control" id="password" placeholder="อย่างน้อย 6 ตัวอักษร" required minlength="6">
+                    <input type="password" class="form-control" id="password" placeholder="<?php echo __('label_password'); ?>" required minlength="6">
                 </div>
 
                 <div class="form-group">
-                    <label for="confirm_password">ยืนยันรหัสผ่าน</label>
+                    <label for="confirm_password"><?php echo __('label_confirm_password'); ?></label>
                     <i class="fas fa-shield-halved input-icon"></i>
-                    <input type="password" class="form-control" id="confirm_password" placeholder="ยืนยันรหัสผ่านอีกครั้ง" required minlength="6">
+                    <input type="password" class="form-control" id="confirm_password" placeholder="<?php echo __('label_confirm_password'); ?>" required minlength="6">
                 </div>
 
                 <button type="submit" class="btn-register" id="submitBtn">
-                    <span id="btnText">ลงทะเบียน</span>
+                    <span id="btnText"><?php echo __('btn_submit_register'); ?></span>
                     <div class="spinner" id="btnSpinner"></div>
                 </button>
             </form>
 
             <div class="login-link">
-                มีบัญชีอยู่แล้ว? <a href="login.php">เข้าสู่ระบบที่นี่</a>
+                <?php echo __('link_has_account'); ?> <a href="login.php"><?php echo __('btn_login'); ?></a>
             </div>
         </div>
     </div>
