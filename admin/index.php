@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../db.php';
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: login.php');
@@ -28,14 +30,14 @@ $completion_rate = "0%"; // Keep simple for now
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CourseFlow — Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/admin/admin.css">
-<script src="/admin/admin.js"></script>        
+<link rel="stylesheet" href="admin.css">
+<script src="admin.js"></script>        
 </head>
 <body>
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- MODAL -->
+<!-- MODAL: COURSE -->
 <div class="modal-overlay" id="courseModal">
   <div class="modal">
     <div class="modal-header">
@@ -49,7 +51,7 @@ $completion_rate = "0%"; // Keep simple for now
         <div class="form-group full"><label class="form-label">Description</label><textarea id="courseDesc" class="form-control" placeholder="Describe what students will learn..."></textarea></div>
         <div class="form-group"><label class="form-label">Instructor</label><input id="courseInstructor" class="form-control" placeholder="e.g. John Doe"/></div>
         <div class="form-group"><label class="form-label">Category</label>
-          <select id="courseCategory" class="form-control"><option>Web Development</option><option>Data Science</option><option>UI/UX Design</option><option>Mobile Development</option><option>DevOps</option><option>Business</option></select>
+          <select id="courseCategory" class="form-control"><option>Web Development</option><option>Data Science</option><option>UI/UX Design</option><option>Mobile Development</option><option>DevOps</option><option>Business</option><option>Video Editing</option></select>
         </div>
         <div class="form-group"><label class="form-label">Price (THB)</label><input id="coursePrice" class="form-control" type="number" placeholder="1500"/></div>
         <div class="form-group"><label class="form-label">Lessons (Count)</label><input id="courseLessons" class="form-control" type="number" placeholder="10" value="10"/></div>
@@ -84,14 +86,14 @@ $completion_rate = "0%"; // Keep simple for now
   </div>
 </div>
 
-<!-- ORDER MODAL -->
+<!-- MODAL: ORDER DETAILS -->
 <div class="modal-overlay" id="orderModal">
-  <div class="modal">
+  <div class="modal" style="max-width: 850px;">
     <div class="modal-header">
       <span class="modal-title" id="orderModalTitle">✦ Order Details</span>
       <button class="modal-close" onclick="closeModal('orderModal')">✕</button>
     </div>
-    <div class="modal-body" id="orderModalBody" style="padding: 20px;">
+    <div class="modal-body" id="orderModalBody" style="padding: 25px;">
       <!-- Details will be injected here via JS -->
     </div>
     <div class="modal-footer">
@@ -131,10 +133,6 @@ $completion_rate = "0%"; // Keep simple for now
       <div class="nav-item" onclick="navigate('settings',this)">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.42 1.42M4.93 4.93l1.42 1.42M19.07 19.07l-1.42-1.42M4.93 19.07l1.42-1.42M20 12h2M2 12h2M12 20v2M12 2v2"/></svg>
         Settings
-      </div>
-      <div class="nav-item">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-        Analytics
       </div>
     </div>
   </nav>
@@ -190,69 +188,6 @@ $completion_rate = "0%"; // Keep simple for now
         </div>
       </div>
 
-      <div class="charts-row">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Revenue &amp; Enrollments — 2025</span>
-            <div style="display:flex;gap:8px">
-              <button class="btn btn-ghost btn-sm">Revenue</button>
-              <button class="btn btn-ghost btn-sm">Users</button>
-            </div>
-          </div>
-          <div class="card-body" style="padding-top:10px">
-            <svg class="chart-svg" viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6c63ff" stop-opacity=".4"/><stop offset="100%" stop-color="#6c63ff" stop-opacity="0"/></linearGradient>
-                <linearGradient id="lg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22d3a0" stop-opacity=".3"/><stop offset="100%" stop-color="#22d3a0" stop-opacity="0"/></linearGradient>
-              </defs>
-              <line x1="0" y1="36" x2="560" y2="36" stroke="#ffffff08" stroke-width="1"/>
-              <line x1="0" y1="72" x2="560" y2="72" stroke="#ffffff08" stroke-width="1"/>
-              <line x1="0" y1="108" x2="560" y2="108" stroke="#ffffff08" stroke-width="1"/>
-              <line x1="0" y1="144" x2="560" y2="144" stroke="#ffffff08" stroke-width="1"/>
-              <path d="M0,140 L80,110 L160,90 L240,115 L320,70 L400,50 L480,30 L560,45 L560,180 L0,180 Z" fill="url(#lg1)" opacity=".8"/>
-              <path d="M0,140 L80,110 L160,90 L240,115 L320,70 L400,50 L480,30 L560,45" fill="none" stroke="#6c63ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M0,155 L80,148 L160,140 L240,132 L320,125 L400,118 L480,105 L560,98 L560,180 L0,180 Z" fill="url(#lg2)" opacity=".7"/>
-              <path d="M0,155 L80,148 L160,140 L240,132 L320,125 L400,118 L480,105 L560,98" fill="none" stroke="#22d3a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="480" cy="30" r="4" fill="#6c63ff" stroke="#0d0f14" stroke-width="2"/>
-              <circle cx="560" cy="45" r="4" fill="#6c63ff" stroke="#0d0f14" stroke-width="2"/>
-              <circle cx="560" cy="98" r="4" fill="#22d3a0" stroke="#0d0f14" stroke-width="2"/>
-              <text x="0" y="175" fill="#555d74" font-size="9" font-family="JetBrains Mono">JAN</text>
-              <text x="75" y="175" fill="#555d74" font-size="9" font-family="JetBrains Mono">FEB</text>
-              <text x="155" y="175" fill="#555d74" font-size="9" font-family="JetBrains Mono">MAR</text>
-              <text x="235" y="175" fill="#555d74" font-size="9" font-family="JetBrains Mono">APR</text>
-              <text x="315" y="175" fill="#555d74" font-size="9" font-family="JetBrains Mono">MAY</text>
-              <text x="395" y="175" fill="#555d74" font-size="9" font-family="JetBrains Mono">JUN</text>
-              <text x="475" y="175" fill="#555d74" font-size="9" font-family="JetBrains Mono">JUL</text>
-              <circle cx="8" cy="12" r="4" fill="#6c63ff"/><text x="16" y="16" fill="#8890a8" font-size="9" font-family="Sora">Revenue</text>
-              <circle cx="80" cy="12" r="4" fill="#22d3a0"/><text x="88" y="16" fill="#8890a8" font-size="9" font-family="Sora">Enrollments</text>
-            </svg>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><span class="card-title">Sales by Category</span></div>
-          <div class="card-body">
-            <div class="donut-wrap">
-              <svg viewBox="0 0 120 120" width="120" height="120" style="flex-shrink:0">
-                <circle cx="60" cy="60" r="48" fill="none" stroke="#1a1e28" stroke-width="20"/>
-                <circle cx="60" cy="60" r="48" fill="none" stroke="#6c63ff" stroke-width="20" stroke-dasharray="120 182" transform="rotate(-90 60 60)"/>
-                <circle cx="60" cy="60" r="48" fill="none" stroke="#22d3a0" stroke-width="20" stroke-dasharray="72 230" stroke-dashoffset="-120" transform="rotate(-90 60 60)"/>
-                <circle cx="60" cy="60" r="48" fill="none" stroke="#fbbf24" stroke-width="20" stroke-dasharray="48 254" stroke-dashoffset="-192" transform="rotate(-90 60 60)"/>
-                <circle cx="60" cy="60" r="48" fill="none" stroke="#38bdf8" stroke-width="20" stroke-dasharray="32 270" stroke-dashoffset="-240" transform="rotate(-90 60 60)"/>
-                <text x="60" y="57" text-anchor="middle" fill="#f0f2f8" font-size="14" font-weight="700" font-family="JetBrains Mono">$48K</text>
-                <text x="60" y="70" text-anchor="middle" fill="#555d74" font-size="7" font-family="Sora">Total</text>
-              </svg>
-              <div class="donut-legend">
-                <div class="legend-item"><span class="legend-dot" style="background:#6c63ff"></span>Web Dev<span class="legend-val">40%</span></div>
-                <div class="legend-item"><span class="legend-dot" style="background:#22d3a0"></span>Data Sci<span class="legend-val">24%</span></div>
-                <div class="legend-item"><span class="legend-dot" style="background:#fbbf24"></span>Design<span class="legend-val">16%</span></div>
-                <div class="legend-item"><span class="legend-dot" style="background:#38bdf8"></span>Mobile<span class="legend-val">11%</span></div>
-                <div class="legend-item"><span class="legend-dot" style="background:#555d74"></span>Other<span class="legend-val">9%</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="card">
         <div class="card-header"><span class="card-title">Recent Activity</span><button class="btn btn-ghost btn-sm">View all</button></div>
         <div class="card-body">
@@ -267,21 +202,6 @@ $completion_rate = "0%"; // Keep simple for now
               <div class="activity-info"><strong>New course published: Python for Beginners</strong><span>Added by instructor James Lee</span></div>
               <span class="activity-time">18m ago</span>
             </div>
-            <div class="activity-item">
-              <div class="activity-dot" style="background:rgba(251,191,36,.12);color:var(--yellow)">💳</div>
-              <div class="activity-info"><strong>Order #4821 completed — $89.00</strong><span>Alex Johnson · UI/UX Masterclass</span></div>
-              <span class="activity-time">1h ago</span>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot" style="background:rgba(56,189,248,.12);color:var(--blue)">👤</div>
-              <div class="activity-info"><strong>New instructor account: Sarah Park</strong><span>Awaiting email verification</span></div>
-              <span class="activity-time">3h ago</span>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot" style="background:rgba(248,113,113,.12);color:var(--red)">⚠️</div>
-              <div class="activity-info"><strong>Course "Node.js Advanced" flagged for review</strong><span>Content policy check required</span></div>
-              <span class="activity-time">5h ago</span>
-            </div>
           </div>
         </div>
       </div>
@@ -292,12 +212,6 @@ $completion_rate = "0%"; // Keep simple for now
       <div class="page-header">
         <div class="page-header-left"><h1>Courses</h1><p>Manage all published and draft courses on your platform.</p></div>
         <button class="btn btn-primary" onclick="openAddCourseModal()">＋ Add New Course</button>
-      </div>
-      <div class="filters-row">
-        <input class="filter-input" style="flex:1;max-width:280px" placeholder="🔍  Search courses..." oninput="filterTable(this.value,'courseTable')"/>
-        <select class="filter-input"><option>All Categories</option><option>Web Development</option><option>Data Science</option><option>Design</option><option>Mobile</option></select>
-        <select class="filter-input"><option>All Status</option><option>Published</option><option>Draft</option></select>
-        <button class="btn btn-ghost btn-sm">⬇ Export</button>
       </div>
       <div class="card">
         <div class="table-wrap">
@@ -314,12 +228,6 @@ $completion_rate = "0%"; // Keep simple for now
     <div class="page" id="page-users">
       <div class="page-header">
         <div class="page-header-left"><h1>Users</h1><p>Manage students, instructors, and administrators.</p></div>
-        <button class="btn btn-primary" onclick="showToast('👤','Invite user dialog opening...')">＋ Invite User</button>
-      </div>
-      <div class="filters-row">
-        <input class="filter-input" style="flex:1;max-width:280px" placeholder="🔍  Search users..."/>
-        <select class="filter-input"><option>All Roles</option><option>Student</option><option>Instructor</option><option>Admin</option></select>
-        <select class="filter-input"><option>All Status</option><option>Active</option><option>Suspended</option></select>
       </div>
       <div class="card">
         <div class="table-wrap">
@@ -336,23 +244,11 @@ $completion_rate = "0%"; // Keep simple for now
     <div class="page" id="page-orders">
       <div class="page-header">
         <div class="page-header-left"><h1>Orders &amp; Enrollments</h1><p>Track purchases and payment statuses across the platform.</p></div>
-        <button class="btn btn-ghost">⬇ Export CSV</button>
-      </div>
-      <div class="mini-stats">
-        <div class="mini-stat"><div class="mini-stat-val" style="color:var(--green)">$48,210</div><div class="mini-stat-label">Total Revenue</div></div>
-        <div class="mini-stat"><div class="mini-stat-val">1,024</div><div class="mini-stat-label">Total Orders</div></div>
-        <div class="mini-stat"><div class="mini-stat-val" style="color:var(--yellow)">17</div><div class="mini-stat-label">Pending</div></div>
-        <div class="mini-stat"><div class="mini-stat-val" style="color:var(--red)">3</div><div class="mini-stat-label">Refunded</div></div>
-      </div>
-      <div class="filters-row">
-        <input class="filter-input" style="flex:1;max-width:280px" placeholder="🔍  Search orders..."/>
-        <select class="filter-input"><option>All Status</option><option>Completed</option><option>Pending</option><option>Refunded</option></select>
-        <input class="filter-input" type="date"/>
       </div>
       <div class="card">
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Order #</th><th>Student</th><th>Course</th><th>Amount</th><th>Payment</th><th>Date</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Order #</th><th>Student</th><th>Course</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
             <tbody id="orderTableBody"></tbody>
           </table>
         </div>
@@ -360,54 +256,8 @@ $completion_rate = "0%"; // Keep simple for now
       </div>
     </div>
 
-    <!-- SETTINGS -->
-    <div class="page" id="page-settings">
-      <div class="page-header">
-        <div class="page-header-left"><h1>Settings</h1><p>Configure your platform and account preferences.</p></div>
-        <button class="btn btn-primary" onclick="showToast('✅','Settings saved!')">Save Changes</button>
-      </div>
-      <div class="settings-grid">
-        <div class="settings-nav">
-          <div class="settings-nav-item active">General</div>
-          <div class="settings-nav-item">Appearance</div>
-          <div class="settings-nav-item">Notifications</div>
-          <div class="settings-nav-item">Payments</div>
-          <div class="settings-nav-item">Security</div>
-          <div class="settings-nav-item">Integrations</div>
-        </div>
-        <div class="settings-section card">
-          <div class="card-header"><span class="card-title">Platform Settings</span></div>
-          <div class="settings-row">
-            <div class="settings-row-info"><strong>Platform Name</strong><span>Displayed across all pages</span></div>
-            <input class="form-control" value="CourseFlow" style="max-width:220px"/>
-          </div>
-          <div class="settings-row">
-            <div class="settings-row-info"><strong>Default Currency</strong><span>Used for pricing display</span></div>
-            <select class="form-control" style="max-width:140px"><option>USD ($)</option><option>EUR (€)</option><option>THB (฿)</option></select>
-          </div>
-          <div class="settings-row">
-            <div class="settings-row-info"><strong>Allow Guest Checkout</strong><span>Users can buy without registering</span></div>
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-          </div>
-          <div class="settings-row">
-            <div class="settings-row-info"><strong>Email Notifications</strong><span>Send emails on new enrollments</span></div>
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-          </div>
-          <div class="settings-row">
-            <div class="settings-row-info"><strong>Maintenance Mode</strong><span>Take the site offline temporarily</span></div>
-            <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
-          </div>
-          <div class="settings-row">
-            <div class="settings-row-info"><strong>Platform Timezone</strong><span>Used for scheduling and reports</span></div>
-            <select class="form-control" style="max-width:200px"><option>UTC+7 (Bangkok)</option><option>UTC+0 (London)</option><option>UTC-5 (New York)</option></select>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 </main>
-
 
 </body>
 </html>
