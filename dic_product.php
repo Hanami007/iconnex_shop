@@ -20,380 +20,258 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ICONNEX – <?php echo $course['name']; ?></title>
+    <title>ICONNEX – <?php echo htmlspecialchars($course['name']); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;800&family=Sarabun:wght@400;500;600&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Prompt:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="style.css" />
     <script defer src="script.js"></script>
     <script defer src="course_data.js"></script>
     <script>
         const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+        const langData = {
+            cart_popup_title: "<?php echo __('cart_popup_title'); ?>",
+            cart_popup_desc: "<?php echo __('cart_popup_desc'); ?>",
+            btn_login: "<?php echo __('btn_login'); ?>",
+            btn_register: "<?php echo __('btn_register'); ?>"
+        };
     </script>
 </head>
 
-<body>
+<body class="course-detail-page">
 
     <nav>
-        <div class="nav-logo">
+        <a href="index.php" class="nav-logo">
             <div class="logo-icon">🌀</div>
             ICONNEX
-        </div>
+        </a>
         <ul class="nav-links">
             <li><a href="index.php"><?php echo __('nav_home'); ?></a></li>
-            <li><a href="#about"><?php echo __('nav_about'); ?></a></li>
-            <li><a href="#services"><?php echo __('nav_services'); ?></a></li>
-            <li><a href="#news"><?php echo __('nav_news'); ?></a></li>
-            <li><a href="#portfolio"><?php echo __('nav_portfolio'); ?></a></li>
-            <li><a href="#contact"><?php echo __('nav_contact'); ?></a></li>
+            <li><a href="index.php#portfolio"><?php echo __('nav_portfolio'); ?></a></li>
             <li><a href="index.php#courses" class="active"><?php echo __('nav_courses'); ?></a></li>
+            <li><a href="index.php#faq"><?php echo __('nav_faq'); ?></a></li>
         </ul>
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
+            <div class="lang-switcher">
+                <a href="?id=<?php echo $id; ?>&lang=th" class="<?php echo $current_lang == 'th' ? 'active' : ''; ?>">TH</a>
+                <span>|</span>
+                <a href="?id=<?php echo $id; ?>&lang=en" class="<?php echo $current_lang == 'en' ? 'active' : ''; ?>">EN</a>
+            </div>
+            <a href="#" class="cart-icon-btn" onclick="openCartModal(event)" style="position: relative; color: white; font-size: 1.4rem; text-decoration: none;">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-count" style="position: absolute; top: -10px; right: -12px; background: var(--gold); color: var(--navy-deep); font-size: 0.7rem; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">0</span>
+            </a>
+        </div>
     </nav>
 
-    <!-- COURSE DETAIL SECTION -->
-    <section id="course-detail" class="course-detail-section"
-        style="background: linear-gradient(135deg, #022f58 0%, #0f015f 100%); padding: 60px 20px;">
-        
-        <!-- Breadcrumb -->
-        <div style="max-width: 1200px; margin: 0 auto 20px; font-size: 14px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 10px;">
-            <a href="index.php" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'"><?php echo __('nav_home'); ?></a>
-            <span>›</span>
-            <a href="index.php#courses" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'"><?php echo __('nav_courses'); ?></a>
-            <span>›</span>
-            <span style="color: white; font-weight: 600;"><?php echo htmlspecialchars($course['name']); ?></span>
-        </div>
-
-        <div class="course-detail-container"
-            style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
-
-            <!-- Left: Course Image & Info -->
-            <div class="course-detail-left">
-                <div
-                    style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-                    <div
-                        style="background: #f5f5f5; border-radius: 8px; margin-bottom: 20px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                        <?php 
-                        $img_val = $course['image'];
-                        if (strpos($img_val, '<img') !== false): 
-                            // Try to strip styling and apply our own, or just echo it
-                            echo str_replace('<img', '<img style="width: 100%; height: 100%; object-fit: cover;"', $img_val);
-                        elseif (strpos($img_val, '.') !== false): 
-                            $img_src = strpos($img_val, 'uploads/') === 0 ? '/' . htmlspecialchars($img_val) : 'IMG/' . htmlspecialchars($img_val);
-                        ?>
-                            <img src="<?php echo $img_src; ?>" alt="<?php echo htmlspecialchars($course['name']); ?>" style="width: 100%; height: 100%; object-fit: cover;" />
-                        <?php else: ?>
-                            <div style="font-size: 120px;">
-                                <?php echo htmlspecialchars($img_val ?: '📚'); ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                    <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                        <span
-                            style="background: #4CAF50; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">ONLINE
-                            COURSE</span>
-                    </div>
-                    <h2 id="course-name" style="font-size: 24px; font-weight: 700; margin-bottom: 15px;"><?php echo htmlspecialchars($course['name']); ?></h2>
-                    <p style="color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 20px;"><?php echo htmlspecialchars($course['short_desc']); ?></p>
-
-                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span style="color: #999; font-size: 13px;">ราคาเดิม</span>
-                            <span style="text-decoration: line-through; color: #999;">฿ <?php echo number_format($course['old_price']); ?>.-</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-weight: 600; color: #333;">ราคาพิเศษ</span>
-                            <span style="font-size: 28px; font-weight: 700; color: #E53935;">฿ <?php echo number_format($course['price']); ?>.-</span>
-                        </div>
-                    </div>
-                </div>
+    <!-- COURSE HERO -->
+    <section class="course-hero">
+        <div class="container">
+            <div class="breadcrumb reveal">
+                <a href="index.php"><?php echo __('nav_home'); ?></a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="index.php#courses"><?php echo __('nav_courses'); ?></a>
+                <i class="fas fa-chevron-right"></i>
+                <span><?php echo htmlspecialchars($course['name']); ?></span>
             </div>
 
-            <!-- Right: Course Details & CTA -->
-            <div class="course-detail-right">
-                <h1 style="font-size: 32px; font-weight: 700; color: white; margin-bottom: 20px;"><?php echo htmlspecialchars($course['name']); ?></h1>
-                <p style="color: rgba(255,255,255,0.9); font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-                    <?php echo htmlspecialchars($course['short_desc']); ?></p>
-
-                <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                    <h3 style="font-weight: 600; margin-bottom: 15px; color: #333;">📦 Price Details</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 12px; color: #999; margin-bottom: 5px;">ราคาปกติ</div>
-                            <div style="font-size: 14px; font-weight: 600; color: #999; text-decoration: line-through;">
-                                ฿ <?php echo number_format($course['old_price']); ?>.-</div>
+            <div class="hero-grid">
+                <div class="hero-content reveal">
+                    <div class="course-badge">ONLINE COURSE</div>
+                    <h1><?php echo htmlspecialchars($course['name']); ?></h1>
+                    <p class="short-desc"><?php echo htmlspecialchars($course['short_desc']); ?></p>
+                    
+                    <div class="course-meta-strip">
+                        <div class="meta-item">
+                            <i class="far fa-clock"></i>
+                            <span><?php echo $course['hours']; ?> <?php echo $current_lang == 'th' ? 'ชั่วโมง' : 'Hours'; ?></span>
                         </div>
-                        <div style="text-align: center; border-left: 1px solid #eee;">
-                            <div style="font-size: 12px; color: #E53935; margin-bottom: 5px; font-weight: 600;">ลดราคา
-                            </div>
-                            <div style="font-size: 20px; font-weight: 700; color: #E53935;">฿ <?php echo number_format($course['price']); ?>.-</div>
+                        <div class="meta-item">
+                            <i class="far fa-play-circle"></i>
+                            <span><?php echo $course['lessons']; ?> <?php echo $current_lang == 'th' ? 'บทเรียน' : 'Lessons'; ?></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-star"></i>
+                            <span><?php echo $course['rating']; ?> (<?php echo $course['reviews']; ?> รีวิว)</span>
+                        </div>
+                    </div>
+                    <div class="hero-instructor">
+                        <div class="instructor-avatar">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div>
+                            <span class="label"><?php echo $current_lang == 'th' ? 'ผู้สอน' : 'Instructor'; ?></span>
+                            <span class="name"><?php echo htmlspecialchars($course['instructor']); ?></span>
                         </div>
                     </div>
                 </div>
 
-                <script>
-                    const currentCourseData = {
-                        id: <?php echo $course['id']; ?>,
-                        name: <?php echo json_encode($course['name']); ?>,
-                        price: <?php echo $course['price']; ?>,
-                        instructor: <?php echo json_encode($course['instructor']); ?>,
-                        image: <?php echo json_encode($course['image']); ?>,
-                        description: <?php echo json_encode($course['description']); ?>,
-                        category: <?php echo json_encode($course['category']); ?>
-                    };
-                </script>
-                <button
-                    onclick="buyNow(currentCourseData)"
-                    style="width: 100%; background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; margin-bottom: 20px; transition: all 0.2s; transform: scale(1);"
-                    onmouseover="this.style.transform='scale(1.02)'"
-                    onmouseout="this.style.transform='scale(1)'">
-                    <?php echo __('hero_btn_explore'); ?>
-                </button>
+                <div class="hero-card-wrap reveal">
+                    <div class="course-buy-card">
+                        <div class="card-image">
+                            <?php 
+                            $img_val = $course['image'];
+                            if (strpos($img_val, '<img') !== false): 
+                                echo str_replace('<img', '<img class="main-img"', $img_val);
+                            elseif (strpos($img_val, '.') !== false): 
+                                $img_src = strpos($img_val, 'uploads/') === 0 ? '/' . htmlspecialchars($img_val) : 'IMG/' . htmlspecialchars($img_val);
+                            ?>
+                                <img src="<?php echo $img_src; ?>" alt="Course" class="main-img" />
+                            <?php else: ?>
+                                <div class="emoji-img"><?php echo htmlspecialchars($img_val ?: '📚'); ?></div>
+                            <?php endif; ?>
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="price-box">
+                                <div class="current-price">฿<?php echo number_format($course['price']); ?></div>
+                                <div class="old-price">฿<?php echo number_format($course['old_price']); ?></div>
+                                <div class="discount-badge"><?php echo round((($course['old_price'] - $course['price']) / $course['old_price']) * 100); ?>% OFF</div>
+                            </div>
+                            
+                            <script>
+                                const currentCourseData = {
+                                    id: <?php echo $course['id']; ?>,
+                                    name: <?php echo json_encode($course['name']); ?>,
+                                    price: <?php echo $course['price']; ?>,
+                                    instructor: <?php echo json_encode($course['instructor']); ?>,
+                                    image: <?php echo json_encode($course['image']); ?>,
+                                    description: <?php echo json_encode($course['description']); ?>,
+                                    category: <?php echo json_encode($course['category']); ?>
+                                };
+                            </script>
+                            
+                            <div class="action-btns">
+                                <button class="btn-primary" onclick="buyNow(currentCourseData)">
+                                    <i class="fas fa-bolt"></i> <?php echo $current_lang == 'th' ? 'สมัครเรียนเลย' : 'Enroll Now'; ?>
+                                </button>
+                                <button class="btn-outline" onclick="addToCart(<?php echo $course['id']; ?>)">
+                                    <i class="fas fa-shopping-cart"></i> <?php echo $current_lang == 'th' ? 'เพิ่มลงตะกร้า' : 'Add to Cart'; ?>
+                                </button>
+                            </div>
 
-                <div style="background: rgba(255,255,255,0.15); border-radius: 8px; padding: 20px; color: white;">
-                    <h4 style="margin-bottom: 12px; font-weight: 600;">📊 สำหรับองค์กร</h4>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 12px;">ซื้อคอร์สนี้ให้ทีมขององค์กร
-                        ลดราคา อัปเดตสมาชิก</p>
-                    <button
-                        style="width: 100%; background: white; color: #FF6B35; border: none; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;">ยอใบเสนอราคา</button>
+                            <ul class="benefit-list">
+                                <li><i class="fas fa-check-circle"></i> <?php echo $current_lang == 'th' ? 'เรียนได้ตลอดชีพ' : 'Lifetime Access'; ?></li>
+                                <li><i class="fas fa-check-circle"></i> <?php echo $current_lang == 'th' ? 'ดูผ่านมือถือ/แท็บเล็ตได้' : 'Mobile/Tablet Support'; ?></li>
+                                <li><i class="fas fa-check-circle"></i> <?php echo $current_lang == 'th' ? 'มีใบประกาศนียบัตร' : 'Certificate of Completion'; ?></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- COURSE CONTENT SECTION -->
-    <section style="padding: 60px 20px; background: #f9f9f9;">
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
+    <!-- CONTENT SECTIONS -->
+    <section class="course-main-content">
+        <div class="container">
+            <div class="content-grid">
+                <div class="main-column">
+                    <div class="content-card reveal">
+                        <div class="content-tabs">
+                            <button class="tab-btn active" onclick="switchContentTab(this, 'overview')"><?php echo $current_lang == 'th' ? 'รายละเอียด' : 'Overview'; ?></button>
+                            <button class="tab-btn" onclick="switchContentTab(this, 'curriculum')"><?php echo $current_lang == 'th' ? 'เนื้อหา' : 'Curriculum'; ?></button>
+                            <button class="tab-btn" onclick="switchContentTab(this, 'reviews')"><?php echo $current_lang == 'th' ? 'รีวิว' : 'Reviews'; ?></button>
+                        </div>
 
-                <!-- Left: Content -->
-                <div>
-                    <!-- Tabs - Simplified -->
-                    <div style="display: flex; gap: 0; margin-bottom: 30px; border-bottom: 2px solid #e0e0e0;">
-                        <button
-                            style="padding: 15px 20px; background: none; border: none; border-bottom: 3px solid #FF9800; color: #FF9800; font-weight: 600; cursor: pointer;">รายละเอียดคอร์ส</button>
-                        <button
-                            style="padding: 15px 20px; background: none; border: none; border-bottom: 2px solid transparent; color: #999; font-weight: 600; cursor: pointer;">โปรแกรมเรียนรู้</button>
-                        <button
-                            style="padding: 15px 20px; background: none; border: none; border-bottom: 2px solid transparent; color: #999; font-weight: 600; cursor: pointer;">รีวิว</button>
-                    </div>
-
-                    <!-- Description Section -->
-                    <h3 style="font-size: 20px; font-weight: 700; margin-top: 40px; margin-bottom: 20px; color: #333;">
-                        รายละเอียด</h3>
-                    <div style="background: white; border-radius: 8px; padding: 20px; line-height: 1.8; color: #555;">
-                        <p style="margin-bottom: 15px;"><strong>ชื่อคอร์ส:</strong> <?php echo htmlspecialchars($course['name']); ?></p>
-                        <p style="margin-bottom: 15px;"><strong>ผู้สอน:</strong> <?php echo htmlspecialchars($course['instructor']); ?></p>
-                        <p style="margin-bottom: 15px;"><strong>ประเภท:</strong> <?php echo htmlspecialchars($course['category']); ?></p>
-                        <p style="margin-bottom: 15px;"><strong>บทเรียน:</strong> <?php echo $course['lessons']; ?> บท | <strong>ระยะเวลา:</strong> <?php echo $course['hours']; ?> ชั่วโมง</p>
-                        <p style="margin-bottom: 15px;"><strong>คะแนน:</strong> ⭐ <?php echo $course['rating']; ?> (<?php echo $course['reviews']; ?> รีวิว)</p>
-                        <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
-                        <p style="margin-bottom: 15px;"><?php echo htmlspecialchars($course['long_desc']); ?></p>
-                    </div>
-
-                    <!-- Related Courses in same category -->
-                    <?php if (count($relatedCourses) > 0): ?>
-                    <h3 style="font-size: 18px; font-weight: 700; margin-top: 40px; margin-bottom: 20px; color: #333;">
-                        คอร์สอื่นในประเภท <?php echo htmlspecialchars($course['category']); ?></h3>
-                    <div style="display: grid; gap: 15px;">
-                        <?php foreach ($relatedCourses as $related): ?>
-                        <a href="dic_product.php?courseId=<?php echo $related['id']; ?>"
-                           style="background: white; border-radius: 8px; overflow: hidden; display: grid; grid-template-columns: 120px 1fr; gap: 15px; padding: 12px; cursor: pointer; text-decoration: none; transition: all 0.3s; border: 2px solid #f5f5f5;"
-                           onmouseover="this.style.borderColor='#FF9800'; this.style.boxShadow='0 4px 12px rgba(255, 152, 0, 0.15)';"
-                           onmouseout="this.style.borderColor='#f5f5f5'; this.style.boxShadow='none';">
-                            <div style="background: #f5f5f5; border-radius: 6px; aspect-ratio: 1;">
-                                <img src="IMG/chatediter.png" alt="Course"
-                                    style="width: 100%; height: 100%; object-fit: cover;" />
+                        <div id="tab-overview" class="tab-pane active">
+                            <h3 class="pane-title"><?php echo $current_lang == 'th' ? 'เกี่ยวกับคอร์สนี้' : 'About this course'; ?></h3>
+                            <div class="rich-text">
+                                <?php echo nl2br(htmlspecialchars($course['long_desc'])); ?>
                             </div>
-                            <div>
-                                <h4 style="font-weight: 600; margin-bottom: 6px; color: #333; font-size: 13px;"><?php echo htmlspecialchars($related['name']); ?></h4>
-                                <p style="font-size: 12px; color: #666; margin-bottom: 8px; line-height: 1.4;">
-                                    <?php echo htmlspecialchars(substr($related['short_desc'], 0, 60)) . '...'; ?></p>
-                                <div style="display: flex; align-items: center; gap: 10px; font-size: 11px; color: #999;">
-                                    <span>⏱️ <?php echo $related['hours']; ?> ชั่วโมง</span>
-                                    <span>⭐ <?php echo $related['rating']; ?></span>
+                        </div>
+
+                        <div id="tab-curriculum" class="tab-pane">
+                            <h3 class="pane-title"><?php echo $current_lang == 'th' ? 'เนื้อหาการเรียน' : 'Curriculum'; ?></h3>
+                            <div class="curriculum-list">
+                                <?php 
+                                $content_json = $course['content_json'];
+                                $sections = !empty($content_json) ? json_decode($content_json, true) : [];
+                                if (!empty($sections) && is_array($sections)):
+                                    foreach($sections as $index => $sec):
+                                ?>
+                                <div class="curriculum-section">
+                                    <div class="section-header">
+                                        <span class="num"><?php echo $index + 1; ?></span>
+                                        <h4><?php echo htmlspecialchars($sec['section']); ?></h4>
+                                    </div>
+                                    <ul class="lesson-list">
+                                        <?php if (!empty($sec['lessons']) && is_array($sec['lessons'])): ?>
+                                            <?php foreach($sec['lessons'] as $lesson): ?>
+                                                <li><i class="far fa-play-circle"></i> <?php echo htmlspecialchars($lesson); ?></li>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <li class="empty"><?php echo $current_lang == 'th' ? 'ไม่มีรายละเอียดบทเรียน' : 'No lessons listed'; ?></li>
+                                        <?php endif; ?>
+                                    </ul>
                                 </div>
-                            </div>
-                        </a>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php endif; ?>
-                    <h3 style="font-size: 20px; font-weight: 700; margin-top: 40px; margin-bottom: 20px; color: #333;">
-                        เนื้อหาในคอร์ส</h3>
-                    <div style="background: white; border-radius: 8px; padding: 20px; line-height: 1.8; color: #555;">
-                        <?php 
-                        $content_json = $course['content_json'];
-                        $sections = [];
-                        if (!empty($content_json)) {
-                            $sections = json_decode($content_json, true);
-                        }
-                        
-                        if (!empty($sections) && is_array($sections)):
-                            foreach($sections as $index => $sec):
-                        ?>
-                        <ul style="list-style: none; padding: 0; margin: 0; margin-bottom: 20px;">
-                            <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #333; display: flex; align-items: center; gap: 8px;">
-                                <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 20px; font-size: 12px; color: #666;"><?php echo str_pad($index + 1, 2, '0', STR_PAD_LEFT); ?></span>
-                                <?php echo htmlspecialchars($sec['section']); ?>
-                            </h4>
-                            <div style="margin-left: 45px; font-size: 14px; color: #777;">
-                                <?php 
-                                if (!empty($sec['lessons']) && is_array($sec['lessons'])):
-                                    foreach($sec['lessons'] as $lesson):
-                                ?>
-                                <p style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 8px;">
-                                    <span style="color: #FF9800; font-size: 12px; margin-top: 2px;">▶</span> 
-                                    <?php echo htmlspecialchars($lesson); ?>
-                                </p>
-                                <?php 
-                                    endforeach;
-                                else:
-                                ?>
-                                <p style="margin-bottom: 10px; color: #aaa;">(ยังไม่มีรายละเอียด)</p>
+                                <?php endforeach; else: ?>
+                                    <p class="empty-state"><?php echo $current_lang == 'th' ? 'ยังไม่มีรายละเอียดเนื้อหา' : 'No curriculum details available'; ?></p>
                                 <?php endif; ?>
                             </div>
-                        </ul>
-                        <?php 
-                            endforeach;
-                        else:
-                        ?>
-                        <p style="text-align: center; color: #999; padding: 20px;">ยังไม่มีการระบุเนื้อหาคอร์สเรียน</p>
+                        </div>
+
+                        <div id="tab-reviews" class="tab-pane">
+                            <div class="reviews-summary">
+                                <div class="rating-avg">
+                                    <div class="num"><?php echo $course['rating']; ?></div>
+                                    <div class="stars">★★★★★</div>
+                                    <div class="count"><?php echo $course['reviews']; ?> รีวิว</div>
+                                </div>
+                            </div>
+                            <div class="review-list">
+                                <div class="review-item">
+                                    <div class="reviewer">
+                                        <div class="avatar">👤</div>
+                                        <div class="info">
+                                            <div class="name">นางสาวสมหญิง</div>
+                                            <div class="date">2 วันที่แล้ว</div>
+                                        </div>
+                                        <div class="stars">★★★★★</div>
+                                    </div>
+                                    <p>เนื้อหาดีมากค่ะ เข้าใจง่าย นำไปปรับใช้กับงานได้จริง แนะนำเลยค่ะ</p>
+                                </div>
+                                <div class="review-item">
+                                    <div class="reviewer">
+                                        <div class="avatar">👤</div>
+                                        <div class="info">
+                                            <div class="name">นายสมชาย</div>
+                                            <div class="date">1 สัปดาห์ที่แล้ว</div>
+                                        </div>
+                                        <div class="stars">★★★★★</div>
+                                    </div>
+                                    <p>อธิบายขั้นตอนได้ชัดเจนมากครับ คุ้มค่ากับราคาที่จ่ายไป</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="side-column reveal">
+                    <div class="sticky-side">
+                        <div class="promo-card">
+                            <h4><i class="fas fa-building"></i> สำหรับองค์กร</h4>
+                            <p>ต้องการซื้อให้ทีม หรือขอใบเสนอราคาแบบองค์กรเพื่อรับส่วนลดพิเศษ</p>
+                            <button class="btn-ghost-gold">ขอใบเสนอราคา</button>
+                        </div>
+
+                        <?php if (count($relatedCourses) > 0): ?>
+                        <div class="related-widget">
+                            <h4>คอร์สที่เกี่ยวข้อง</h4>
+                            <?php foreach (array_slice($relatedCourses, 0, 3) as $related): ?>
+                            <a href="dic_product.php?id=<?php echo $related['id']; ?>" class="related-item">
+                                <div class="rel-img">
+                                    <img src="IMG/chatediter.png" alt="Course">
+                                </div>
+                                <div class="rel-info">
+                                    <div class="rel-name"><?php echo htmlspecialchars($related['name']); ?></div>
+                                    <div class="rel-price">฿<?php echo number_format($related['price']); ?></div>
+                                </div>
+                            </a>
+                            <?php endforeach; ?>
+                        </div>
                         <?php endif; ?>
-                    </div>
-                    <!-- REVIEWS SECTION -->
-                    <div id="reviews-section" style="margin-top: 50px;">
-                        <!-- Title and Rating -->
-                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                            <div style="width: 4px; height: 32px; background: #FFB400; border-radius: 2px;"></div>
-                            <h2 style="font-size: 24px; font-weight: 700; color: #333; margin: 0;">รีวิวจากผู้เรียน</h2>
-                        </div>
-                        
-                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
-                            <div style="color: #FFB400; font-size: 24px;">★★★★<span style="position: relative; display: inline-block; width: 12px; overflow: hidden;">★<span style="position: absolute; left: 0; width: 50%; color: #FFB400; overflow: hidden;">★</span></span></div>
-                            <div style="font-size: 32px; font-weight: 700; color: #FFB400;">4.5</div>
-                            <div style="font-size: 14px; color: #999;">(138 รีวิว)</div>
-                        </div>
-                        <!-- Summary Box -->
-                        <div style="border: 1px solid #eee; border-radius: 12px; padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); background: white;">
-                            
-                            <!-- Left Summary -->
-                            <div style="text-align: center; border-right: 1px solid #eee; padding-right: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                <div style="font-size: 15px; color: #555; margin-bottom: 15px; font-weight: 600;">ความคาดหวังของผู้เรียน</div>
-                                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;">
-                                    <div style="font-size: 48px; font-weight: 700; color: #333; line-height: 1;">96%</div>
-                                    <div style="text-align: left; font-size: 13px; color: #666; line-height: 1.4;">ของรีวิว<br>บอกว่าคอร์สนี้</div>
-                                </div>
-                                <div style="border: 1px solid #00C853; color: #00C853; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                                    ตรงตามความคาดหวัง <span>😊</span>
-                                </div>
-                            </div>
-                            <!-- Right Summary -->
-                            <div style="padding-left: 10px;">
-                                <div style="font-size: 15px; color: #555; margin-bottom: 20px; font-weight: 600;">สิ่งที่ผู้เรียนชอบมากที่สุด</div>
-                                <div style="display: flex; flex-direction: column; gap: 12px;">
-                                    <div style="background: #f5f5f5; border-radius: 6px; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
-                                        <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555;"><span>👍</span> เนื้อหา</div>
-                                        <div style="font-size: 13px; font-weight: 600; color: #333;">73%</div>
-                                    </div>
-                                    <div style="background: #f5f5f5; border-radius: 6px; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
-                                        <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555;"><span>👍</span> ผู้สอน</div>
-                                        <div style="font-size: 13px; font-weight: 600; color: #333;">64%</div>
-                                    </div>
-                                    <div style="background: #f5f5f5; border-radius: 6px; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center;">
-                                        <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555;"><span>👍</span> การจัดเรียงเนื้อหา</div>
-                                        <div style="font-size: 13px; font-weight: 600; color: #333;">59%</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Review List Header -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 style="font-size: 18px; font-weight: 700; color: #333;">ความคิดเห็น (2)</h3>
-                            <div style="font-size: 14px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                                เรียงตามความคิดเห็นแนะนำ <span style="font-size: 10px;">▼</span>
-                            </div>
-                        </div>
-                        <!-- Review Cards -->
-                        <div style="display: flex; flex-direction: column; gap: 20px;">
-                            <!-- Card 1 -->
-                            <div style="background: #F8F9FA; border-radius: 12px; padding: 24px;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                                    <div style="display: flex; gap: 15px;">
-                                        <!-- Avatar -->
-                                        <div style="width: 48px; height: 48px; border-radius: 50%; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #999; background: white;">
-                                            😐
-                                        </div>
-                                        <div>
-                                            <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 4px;">จิ๊บ นลินี</div>
-                                            <div style="font-size: 12px; color: #999;">28 กุมภาพันธ์ 2569 เวลา 07:32</div>
-                                        </div>
-                                    </div>
-                                    <div style="color: #FFB400; font-size: 14px;">★★★★★</div>
-                                </div>
-                                <div style="height: 1px; background: #E0E0E0; margin: 15px 0;"></div>
-                                <p style="color: #555; font-size: 14px; line-height: 1.6; margin: 0;">มีเทคนิคใหม่ที่ไม่เคยรู้คือ Stac และอื่นๆอีกหลายอย่างเลย ดีมากค่ะ</p>
-                            </div>
-                            <!-- Card 2 -->
-                            <div style="background: #F8F9FA; border-radius: 12px; padding: 24px;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                                    <div style="display: flex; gap: 15px;">
-                                        <!-- Avatar -->
-                                        <div style="width: 48px; height: 48px; border-radius: 50%; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #999; background: white;">
-                                            🙂
-                                        </div>
-                                        <div>
-                                            <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 4px;">Nattida Tavarojn</div>
-                                            <div style="font-size: 12px; color: #999;">17 กันยายน 2568 เวลา 21:08</div>
-                                        </div>
-                                    </div>
-                                    <div style="color: #FFB400; font-size: 14px;">★★★<span style="color: #ccc;">★★</span></div>
-                                </div>
-                                <div style="height: 1px; background: #E0E0E0; margin: 15px 0;"></div>
-                                <p style="color: #555; font-size: 14px; line-height: 1.6; margin: 0;">อยากให้โชว์resultที่อยากได้ไว้ด้านข้าง เวลาเขียนcodeจะได้รู้ว่าอยากได้แบบไหน และสามารถมองเห็นตลอด ไม่ต้องกลับไปกลับมา</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                </div>
-
-                <!-- Right: Sidebar -->
-                <div>
-                    <div
-                        style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                        <h4 style="font-weight: 600; margin-bottom: 15px; color: #333;">📊 สำหรับองค์กร</h4>
-                        <p style="font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.6;">
-                            ซื้อคอร์สนี้ให้ทีมขององค์กร ลดราคา อัปเดตสมาชิก</p>
-                        <p style="font-size: 12px; font-weight: 600; color: #FF9800; margin-bottom: 15px;">ขึ้นต่อสินค้า
-                            50%</p>
-                        <button
-                            style="width: 100%; background: #4A68BD; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 10px;">ขอใบเสนอราคา</button>
-                        <button
-                            style="width: 100%; background: white; color: #4A68BD; border: 2px solid #4A68BD; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;">สนใจ
-                            In-House Training</button>
-                    </div>
-
-                    <div style="background: #f5f5f5; border-radius: 8px; padding: 20px;">
-                        <h4 style="font-weight: 600; margin-bottom: 15px; color: #333;">📊 ข้อมูลคอร์ส</h4>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                            <li style="padding: 8px 0; font-size: 13px; color: #555;">📚 <strong>บทเรียน:</strong> <?php echo $course['lessons']; ?> บท</li>
-                            <li style="padding: 8px 0; font-size: 13px; color: #555;">⏱️ <strong>ระยะเวลา:</strong> <?php echo $course['hours']; ?> ชั่วโมง</li>
-                            <li style="padding: 8px 0; font-size: 13px; color: #555;">⭐ <strong>คะแนน:</strong> <?php echo $course['rating']; ?> / 5.0</li>
-                            <li style="padding: 8px 0; font-size: 13px; color: #555;">💬 <strong>รีวิว:</strong> <?php echo $course['reviews']; ?> รีวิว</li>
-                            <li style="padding: 8px 0; font-size: 13px; color: #555;">👨‍🏫 <strong>ผู้สอน:</strong> <?php echo htmlspecialchars($course['instructor']); ?></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- review section -->
-                <div style="margin-top: 40px;"></div>
-                    <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #333;">รีวิวจากผู้เรียน</h3>
-                    <div style="background: white; border-radius: 8px; padding: 20px; line-height: 1.8; color: #555;">
-                        <p style="margin-bottom: 15px;"><strong>นางสาวสมหญิง:</strong> คอร์สนี้ช่วยให้ฉันเข้าใจการวิเคราะห์ข้อมูลบุคลากรและนำไปใช้ในงานได้จริง</p>
-                        <p style="margin-bottom: 15px;"><strong>นายสมชาย:</strong> เนื้อหาครอบคลุมและอธิบายง่ายมาก แนะนำสำหรับคนที่อยากเริ่มต้นกับ People Analytics</p>
-                        <p style="margin-bottom: 15px;"><strong>นางสาวสวยงาม:</strong> ผู้สอนมีความรู้ลึกซึ้งและสามารถตอบคำถามได้ดีมาก คอร์สนี้คุ้มค่ามากๆ</p>
                     </div>
                 </div>
             </div>
@@ -403,14 +281,32 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
     <!-- FOOTER -->
     <footer>
         <div class="footer-socials">
-            <a href="#" class="social-btn">📘</a>
-            <a href="#" class="social-btn">🐦</a>
-            <a href="#" class="social-btn">📷</a>
-            <a href="#" class="social-btn">▶️</a>
-            <span class="social-right">© 2025 ICONNEX. All rights reserved.</span>
+            <a class="social-btn" href="#" title="Facebook">f</a>
+            <a class="social-btn" href="#" title="YouTube">▶</a>
+            <div class="social-right">
+                <a class="social-btn" href="#" title="LinkedIn">in</a>
+                <a class="social-btn" href="#" title="Instagram">📷</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>
+                <div class="footer-brand">ICONNEX</div>
+                <div>Premium E-Learning Platform</div>
+            </div>
+            <div class="col-center">094-546-2224</div>
+            <div class="col-right">© 2025 ICONNEX Creators Club.</div>
         </div>
     </footer>
 
+    <script>
+        function switchContentTab(btn, tabId) {
+            document.querySelectorAll('.content-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            
+            btn.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+    </script>
 </body>
 
 </html>

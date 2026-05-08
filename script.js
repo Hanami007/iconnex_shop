@@ -137,7 +137,29 @@ function addToCart(courseId) {
       showToast("เกิดข้อผิดพลาดในการเชื่อมต่อ");
     });
 }
+function addToCart(courseId) {
+  if (!checkLogin()) return;
 
+  fetch("cart_handler.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `action=add&course_id=${courseId}`,
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      // Update badge
+      const badge = document.getElementById("cart-count");
+      if (badge) {
+        badge.textContent = data.count;
+        badge.style.display = data.count > 0 ? "flex" : "none";
+      }
+      // Show success toast
+      showToast(data.message || "เพิ่มลงตะกร้าเรียบร้อยแล้ว");
+      // ไม่ต้องเปิดตะกร้าเด้งขึ้นมาตามคำขอผู้ใช้
+    }
+  });
+}
 function buyNow(course) {
   if (!checkLogin()) return;
 
@@ -201,10 +223,13 @@ function openCartModal(e) {
   modal.innerHTML = `
     <div class="cart-modal">
       <div class="cart-modal-header">
-        <div style="font-size: 1.25rem; font-weight: 700; color: #1a1a1a;">ตะกร้าสินค้าของคุณ</div>
-        <button class="close-modal" onclick="closeCartModal()" style="font-size: 1.5rem; color: #666; background: none; border: none; cursor: pointer;">&times;</button>
+        <h2>ตะกร้าสินค้าของคุณ</h2>
+        <button class="close-modal" onclick="closeCartModal()">&times;</button>
       </div>
-      <div class="cart-modal-body" style="padding: 40px; text-align: center;">กำลังโหลด...</div>
+      <div class="cart-modal-body" style="padding: 60px 40px; text-align: center;">
+        <div class="spinner"></div>
+        <p style="margin-top: 16px; color: var(--text-muted);">กำลังโหลดข้อมูล...</p>
+      </div>
     </div>
   `;
   setTimeout(() => modal.classList.add('active'), 10);
@@ -251,7 +276,27 @@ function removeFromCartModal(courseId) {
 }
 
 function checkoutCartModal() {
-  window.location.href = 'pay2.1/index.php';
+  if (!checkLogin()) return;
+
+  // Fetch full cart data to ensure localStorage is in sync before redirect
+  fetch("cart_handler.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "action=get_cart",
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success && data.items.length > 0) {
+      localStorage.setItem('checkoutCart', JSON.stringify(data.items));
+      window.location.href = 'pay2.1/index.php';
+    } else {
+      showToast("ตะกร้าว่างเปล่า");
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    showToast("เกิดข้อผิดพลาดในการชำระเงิน");
+  });
 }
 
 function renderCartModal(items, total, count) {
@@ -262,15 +307,13 @@ function renderCartModal(items, total, count) {
     modal.innerHTML = `
       <div class="cart-modal">
         <div class="cart-modal-header">
-          <div>
-            <div style="font-size: 1.25rem; font-weight: 700; color: #1a1a1a;">ตะกร้าสินค้าของคุณ</div>
-            <div style="font-size: 0.9rem; color: #666; margin-top: 4px;">คุณไม่มีรายการในตะกร้าสินค้า</div>
-          </div>
-          <button class="close-modal" onclick="closeCartModal()" style="font-size: 1.5rem; color: #666; background: none; border: none; cursor: pointer;">&times;</button>
+          <h2>ตะกร้าสินค้าของคุณ</h2>
+          <button class="close-modal" onclick="closeCartModal()">&times;</button>
         </div>
-        <div class="cart-modal-body" style="padding: 40px; text-align: center; color: #888;">
-          <div style="font-size: 40px; margin-bottom: 16px;">🛒</div>
-          ตะกร้าสินค้าว่างเปล่า
+        <div class="cart-empty">
+          <div class="cart-empty-icon">🛒</div>
+          <p class="cart-empty-text">ตะกร้าสินค้าของคุณยังว่างเปล่า</p>
+          <button class="btn-checkout" onclick="closeCartModal()" style="margin-top: 24px; max-width: 200px;">ไปเลือกคอร์สเรียน</button>
         </div>
       </div>
     `;
@@ -278,14 +321,13 @@ function renderCartModal(items, total, count) {
   }
 
   let itemsHtml = items.map(item => {
-    let priceHtml = `<span style="color: #e11d48; font-weight: 700; font-size: 1.1rem; font-family: 'Prompt', sans-serif;">฿${Number(item.price).toLocaleString()}</span>`;
+    let priceHtml = `<span class="cart-item-price">฿${Number(item.price).toLocaleString()}</span>`;
     if (item.old_price && item.old_price > item.price) {
-      priceHtml += ` <span style="color: #9ca3af; text-decoration: line-through; font-size: 0.85rem; margin-left: 8px;">${Number(item.old_price).toLocaleString()}</span>`;
+      priceHtml += `<span class="cart-item-price-old">฿${Number(item.old_price).toLocaleString()}</span>`;
     }
     
     let img_src = item.image;
     if (img_src.includes('<img')) {
-      // rough extract if it's html
       const m = img_src.match(/src="([^"]+)"/);
       if (m) img_src = m[1];
     } else if (img_src.includes('.')) {
@@ -293,17 +335,17 @@ function renderCartModal(items, total, count) {
     }
 
     return `
-      <div style="display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid #f0f0f0; position: relative;">
-        <img src="${img_src}" style="width: 120px; height: 75px; object-fit: cover; border-radius: 8px;" alt="${item.name}">
-        <div style="flex: 1; padding-right: 24px;">
-          <div style="font-weight: 600; color: #1f2937; font-size: 0.95rem; line-height: 1.3; margin-bottom: 8px;">${item.name}</div>
-          <div style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #4b5563; margin-bottom: 8px;">
-            <img src="${item.instructor_avatar || 'IMG/default-avatar.png'}" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">
-            ${item.instructor}
+      <div class="cart-item-row">
+        <img src="${img_src}" class="cart-item-img" alt="${item.name}">
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-instructor">
+            <img src="${item.instructor_avatar || 'IMG/default-avatar.png'}" style="width: 18px; height: 18px; border-radius: 50%; object-fit: cover;">
+            <span>${item.instructor}</span>
           </div>
           <div>${priceHtml}</div>
         </div>
-        <button onclick="removeFromCartModal(${item.id})" style="position: absolute; right: 0; top: 16px; background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 1.1rem;">
+        <button class="cart-item-remove" onclick="removeFromCartModal(${item.id})" title="ลบรายการนี้">
           <i class="far fa-trash-alt"></i>
         </button>
       </div>
@@ -312,23 +354,23 @@ function renderCartModal(items, total, count) {
 
   modal.innerHTML = `
     <div class="cart-modal">
-      <div class="cart-modal-header" style="padding: 24px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: flex-start;">
+      <div class="cart-modal-header">
         <div>
-          <div style="font-size: 1.25rem; font-weight: 700; color: #1a1a1a; font-family: 'Prompt', sans-serif;">ตะกร้าสินค้าของคุณ</div>
-          <div style="font-size: 0.9rem; color: #6b7280; margin-top: 4px;">คุณมี ${count} รายการ ในตะกร้าสินค้า</div>
+          <h2>ตะกร้าสินค้าของคุณ</h2>
+          <div class="cart-count-text">คุณมี ${count} รายการในตะกร้า</div>
         </div>
-        <button class="close-modal" onclick="closeCartModal()" style="font-size: 1.5rem; color: #6b7280; background: none; border: none; cursor: pointer;">&times;</button>
+        <button class="close-modal" onclick="closeCartModal()">&times;</button>
       </div>
-      <div class="cart-modal-body" style="padding: 0 24px; max-height: 400px; overflow-y: auto;">
+      <div class="cart-modal-body">
         ${itemsHtml}
       </div>
-      <div class="cart-modal-footer" style="padding: 24px; background: #f9fafb; border-top: 1px solid #f0f0f0; border-radius: 0 0 16px 16px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <div style="color: #4b5563; font-size: 0.95rem;">ยอดชำระทั้งหมด</div>
-          <div style="color: #8b5cf6; font-size: 1.25rem; font-weight: 700; font-family: 'Prompt', sans-serif;">฿${Number(total).toLocaleString()}</div>
+      <div class="cart-modal-footer">
+        <div class="cart-total-row">
+          <div class="cart-total-label">ยอดชำระทั้งหมด</div>
+          <div class="cart-total-value">฿${Number(total).toLocaleString()}</div>
         </div>
-        <button onclick="checkoutCartModal()" style="width: 100%; background: #8b5cf6; color: white; border: none; padding: 14px; border-radius: 8px; font-family: 'Prompt', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s;">
-          ชำระเงิน
+        <button class="btn-checkout" onclick="checkoutCartModal()">
+          ดำเนินการชำระเงิน
         </button>
       </div>
     </div>
@@ -350,6 +392,7 @@ function switchCourseTab(val) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Course Carousel Logic
   document.querySelectorAll('.course-grid').forEach(grid => {
     if (grid.children.length > 3) {
       const wrapper = document.createElement('div');
@@ -369,6 +412,48 @@ document.addEventListener("DOMContentLoaded", () => {
       grid.style.margin = '0';
     }
   });
+
+  // Testimonials Marquee Clone
+  const testimonialsTrack = document.querySelector('.testimonials-track');
+  if (testimonialsTrack) {
+    const cards = Array.from(testimonialsTrack.children);
+    cards.forEach(card => {
+      const clone = card.cloneNode(true);
+      testimonialsTrack.appendChild(clone);
+    });
+  }
+
+  // Scroll Reveal Animation Logic
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.15
+  };
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // Stop observing once revealed
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Navbar Blur on Scroll
+  const navbar = document.querySelector('nav');
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+  }
 });
 
 // Toast Helper (if not defined elsewhere)

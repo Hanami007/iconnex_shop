@@ -116,9 +116,10 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     </div>
 
     <!-- PORTFOLIO -->
-    <section id="portfolio" style="overflow: hidden;">
-        <h2 class="section-title">ผลงาน</h2>
-        <div class="tab-bar">
+    <section id="portfolio">
+        <h2 class="section-title reveal">ผลงาน</h2>
+        <p class="section-description reveal" style="margin-bottom: 40px; opacity: 0.8;">คัดสรรผลงานระดับพรีเมียมที่เราภูมิใจนำเสนอ เพื่อการันตีคุณภาพงานสร้างสรรค์ในทุกมิติ</p>
+        <div class="tab-bar reveal">
             <button class="tab-btn" onclick="switchTab(this,'photo')">ภาพ</button>
             <button class="tab-btn active" onclick="switchTab(this,'video')">วิดีโอ</button>
         </div>
@@ -156,6 +157,102 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                 <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" style="filter: brightness(0.7);" alt="Video 4" /><span class="video-play-icon">▶</span></div>
                 <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" style="filter: brightness(0.7);" alt="Video 5" /><span class="video-play-icon">▶</span></div>
             </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section testimonials-bg" id="testimonials">
+        <h2 class="section-title reveal">เสียงจากลูกค้าของเรา</h2>
+        <div class="testimonials-marquee-container">
+            <div class="testimonials-track">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">
+                        "คอร์สนี้เปลี่ยนชีวิตผมจริงๆ
+                        ตอนนี้มีรายได้จากการตัดต่อวิดีโอเต็มเวลาแล้ว ขอบคุณ ICONNEX มากๆ
+                        ครับ"
+                    </p>
+                <div class="testimonial-author">
+                    <div class="avatar">ก</div>
+                    <div class="author-info">
+                        <div class="name">กิตติภพ ส.</div>
+                        <div class="role">Freelance Editor</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">
+                    "คอร์สนี้เปลี่ยนชีวิตผมจริงๆ
+                    ตอนนี้มีรายได้จากการตัดต่อวิดีโอเต็มเวลาแล้ว ขอบคุณ ICONNEX มากๆ
+                    ครับ"
+                </p>
+                <div class="testimonial-author">
+                    <div class="avatar">ก</div>
+                    <div class="author-info">
+                        <div class="name">กิตติภพ ส.</div>
+                        <div class="role">Freelance Editor</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">
+                    "คอร์สนี้เปลี่ยนชีวิตผมจริงๆ
+                    ตอนนี้มีรายได้จากการตัดต่อวิดีโอเต็มเวลาแล้ว ขอบคุณ ICONNEX มากๆ
+                    ครับ"
+                </p>
+                <div class="testimonial-author">
+                    <div class="avatar">ก</div>
+                    <div class="author-info">
+                        <div class="name">กิตติภพ ส.</div>
+                        <div class="role">Freelance Editor</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">
+                    "เนื้อหาละเอียดมากค่ะ อาจารย์อธิบายเข้าใจง่าย ทำตามได้เลย
+                    ผลงานของเราพัฒนาขึ้นเร็วมากหลังเรียน"
+                </p>
+                <div class="testimonial-author">
+                    <div class="avatar">น</div>
+                    <div class="author-info">
+                        <div class="name">นภัสสร ว.</div>
+                        <div class="role">Content Creator</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">
+                    "ชอบ Workshop สดมากครับ ได้ Feedback ตรงๆ จากผู้เชี่ยวชาญ
+                    ทำให้พัฒนาได้เร็วกว่าเรียนคนเดียวมาก"
+                </p>
+                <div class="testimonial-author">
+                    <div class="avatar">พ</div>
+                    <div class="author-info">
+                        <div class="name">พีระพัฒน์ ล.</div>
+                        <div class="role">Videographer</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">★★★★☆</div>
+                <p class="testimonial-text">
+                    "คุ้มค่ามากค่ะ ตอนแรกกังวลว่าจะยากเกินไป แต่ระบบสอนดี ค่อยๆ เรียนได้
+                    สนุกมากเลยค่ะ"
+                </p>
+                <div class="testimonial-author">
+                    <div class="avatar">ส</div>
+                    <div class="author-info">
+                        <div class="name">สิรินดา ภ.</div>
+                        <div class="role">Social Media Manager</div>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
     </section>
 
@@ -262,69 +359,6 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         <?php endforeach; ?>
     </section>
 
-    <!-- TESTIMONIALS -->
-    <section class="section testimonials-bg" id="testimonials">
-        <h2 class="section-title">เสียงจากลูกค้าของเรา</h2>
-        <div class="testimonials-track reveal">
-            <div class="testimonial-card">
-                <div class="testimonial-stars">★★★★★</div>
-                <p class="testimonial-text">
-                    "คอร์สนี้เปลี่ยนชีวิตผมจริงๆ
-                    ตอนนี้มีรายได้จากการตัดต่อวิดีโอเต็มเวลาแล้ว ขอบคุณ ICONNEX มากๆ
-                    ครับ"
-                </p>
-                <div class="testimonial-author">
-                    <div class="avatar">ก</div>
-                    <div class="author-info">
-                        <div class="name">กิตติภพ ส.</div>
-                        <div class="role">Freelance Editor</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-stars">★★★★★</div>
-                <p class="testimonial-text">
-                    "เนื้อหาละเอียดมากค่ะ อาจารย์อธิบายเข้าใจง่าย ทำตามได้เลย
-                    ผลงานของเราพัฒนาขึ้นเร็วมากหลังเรียน"
-                </p>
-                <div class="testimonial-author">
-                    <div class="avatar">น</div>
-                    <div class="author-info">
-                        <div class="name">นภัสสร ว.</div>
-                        <div class="role">Content Creator</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-stars">★★★★★</div>
-                <p class="testimonial-text">
-                    "ชอบ Workshop สดมากครับ ได้ Feedback ตรงๆ จากผู้เชี่ยวชาญ
-                    ทำให้พัฒนาได้เร็วกว่าเรียนคนเดียวมาก"
-                </p>
-                <div class="testimonial-author">
-                    <div class="avatar">พ</div>
-                    <div class="author-info">
-                        <div class="name">พีระพัฒน์ ล.</div>
-                        <div class="role">Videographer</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-stars">★★★★☆</div>
-                <p class="testimonial-text">
-                    "คุ้มค่ามากค่ะ ตอนแรกกังวลว่าจะยากเกินไป แต่ระบบสอนดี ค่อยๆ เรียนได้
-                    สนุกมากเลยค่ะ"
-                </p>
-                <div class="testimonial-author">
-                    <div class="avatar">ส</div>
-                    <div class="author-info">
-                        <div class="name">สิรินดา ภ.</div>
-                        <div class="role">Social Media Manager</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- FAQ -->
     <section id="faq">
