@@ -1,6 +1,8 @@
 <?php
-session_start();
-require_once '../db.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once dirname(__DIR__) . '/db.php';
 
 header('Content-Type: application/json');
 
@@ -11,6 +13,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
+        // Query columns including slip_image and line_id
         $stmt = $pdo->query("SELECT id, order_no, customer_name, customer_email, customer_phone, line_id, total_amount, payment_method, items_json, slip_image, status, created_at FROM orders ORDER BY id DESC");
         $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
@@ -19,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $course_names = [];
             if (is_array($items)) {
                 foreach($items as $item) {
-                    $course_names[] = $item['name'];
+                    $course_names[] = $item['name'] ?? 'Unnamed Course';
                 }
             }
             $course_string = !empty($course_names) ? implode(', ', $course_names) : 'Unknown Course';
@@ -38,13 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 'payment_method' => $o['payment_method'],
                 'status' => $o['status'],
                 'slip' => $o['slip_image'],
-                'date' => date('M j, Y', strtotime($o['created_at']))
+                'date' => date('M j, Y H:i', strtotime($o['created_at']))
             ];
         }, $orders);
         
         echo json_encode(['success' => true, 'data' => $formatted]);
     } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';

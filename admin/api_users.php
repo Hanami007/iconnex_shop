@@ -1,6 +1,8 @@
 <?php
-session_start();
-require_once '../db.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once dirname(__DIR__) . '/db.php';
 
 header('Content-Type: application/json');
 
@@ -26,6 +28,6 @@ try {
     
     echo json_encode(['success' => true, 'data' => $formatted]);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
 }
 ?>

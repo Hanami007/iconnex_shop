@@ -1,9 +1,12 @@
 <?php
-require_once '../db.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once dirname(__DIR__) . '/db.php';
 
 header('Content-Type: application/json');
 
-$method = $_SERVER['REQUEST_METHOD'];
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
     try {
@@ -16,52 +19,33 @@ if ($method === 'GET') {
             if (strpos($img, '<img') !== false) {
                 // Already an img tag, just override style to fit the thumbnail box
                 $img = preg_replace('/style="[^"]*"/', 'style="width:40px; height:40px; object-fit:cover; border-radius:4px;"', $img);
-            } elseif (strpos($img, '.') !== false) {
-                // It's a path. If it doesn't start with uploads/, assume it's the old format (IMG/)
-                $src = strpos($img, 'uploads/') === 0 ? '/' . $img : '/IMG/' . $img;
-                $img = '<img src="' . $src . '" alt="' . htmlspecialchars($c['name']) . '" style="width:40px; height:40px; object-fit:cover; border-radius:4px;">';
+            } elseif (!empty($img) && $img !== '📚' && strpos($img, '.') !== false) {
+                // Check if it's already a full URL or path
+                $src = (strpos($img, 'uploads/') === 0 || strpos($img, 'IMG/') === 0) ? '../' . $img : $img;
+                $img = '<img src="' . htmlspecialchars($src) . '" alt="' . htmlspecialchars($c['name']) . '" style="width:40px; height:40px; object-fit:cover; border-radius:4px;">';
             }
             return [
                 'id' => $c['id'],
                 'img' => $img,
                 'title' => $c['name'],
-                'description' => $c['description'],
-                'category' => $c['category'],
-                'price' => '฿' . number_format($c['price']),
-                'raw_price' => $c['price'],
-                'instructor' => $c['instructor'],
-                'lessons' => $c['lessons'],
-                'hours' => $c['hours'],
-                'content_json' => $c['content_json'],
-                'students' => $c['reviews'] * 10, // Mock students count based on reviews
-                'status' => 'published' // Assume all are published for now
+                'description' => $c['description'] ?? '',
+                'category' => $c['category'] ?? '',
+                'price' => '฿' . number_format($c['price'] ?? 0),
+                'raw_price' => $c['price'] ?? 0,
+                'instructor' => $c['instructor'] ?? '',
+                'lessons' => $c['lessons'] ?? 0,
+                'hours' => $c['hours'] ?? 0,
+                'content_json' => $c['content_json'] ?? '[]',
+                'students' => intval($c['reviews'] ?? 0) * 10,
+                'status' => 'published'
             ];
         }, $courses);
         
         echo json_encode(['success' => true, 'data' => $formatted]);
-    } catch (PDOException $e) {
-        // Fallback to JSON if DB fails
-        if (file_exists('../courses.json')) {
-            $json = file_get_contents('../courses.json');
-            $data = json_decode($json, true);
-            $formatted = array_map(function($c) {
-                return [
-                    'id' => $c['id'],
-                    'img' => $c['image'] ?: '📚',
-                    'title' => $c['name'],
-                    'category' => $c['category'],
-                    'price' => '฿' . number_format($c['price']),
-                    'students' => $c['reviews'] * 10,
-                    'status' => 'published'
-                ];
-            }, $data);
-            echo json_encode(['success' => true, 'data' => array_values($formatted)]);
-        } else {
-            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-        }
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 } elseif ($method === 'POST') {
-    session_start();
     if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         echo json_encode(['success' => false, 'error' => 'Unauthorized']);
         exit;
@@ -118,7 +102,7 @@ if ($method === 'GET') {
             $target_file = $upload_dir . $new_filename;
             
             if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-                $image_path = 'uploads/' . $new_filename; // Relative path for frontend
+                $image_path = 'uploads/' . $new_filename;
             }
         } else {
             echo json_encode(['success' => false, 'error' => 'Invalid file type']);
@@ -129,11 +113,9 @@ if ($method === 'GET') {
     try {
         if ($action === 'edit' && $id) {
             if ($image_path) {
-                // Update with new image path
                 $stmt = $pdo->prepare("UPDATE courses SET name = ?, category = ?, instructor = ?, price = ?, old_price = ?, lessons = ?, hours = ?, description = ?, short_desc = ?, fullDescription = ?, long_desc = ?, content_json = ?, image = ? WHERE id = ?");
                 $stmt->execute([$title, $category, $instructor, $price, $price + 500, $lessons, $hours, $description, $description, $description, $description, $content_json, $image_path, $id]);
             } else {
-                // Update without changing image
                 $stmt = $pdo->prepare("UPDATE courses SET name = ?, category = ?, instructor = ?, price = ?, old_price = ?, lessons = ?, hours = ?, description = ?, short_desc = ?, fullDescription = ?, long_desc = ?, content_json = ? WHERE id = ?");
                 $stmt->execute([$title, $category, $instructor, $price, $price + 500, $lessons, $hours, $description, $description, $description, $description, $content_json, $id]);
             }
