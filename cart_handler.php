@@ -58,6 +58,25 @@ switch ($action) {
         echo json_encode(['count' => getCount()]);
         break;
 
+    case 'get_cart':
+        $items = [];
+        $total = 0;
+        foreach ($_SESSION['cart'] ?? [] as $id => $qty) {
+            if (isset($courses[$id])) {
+                $c = $courses[$id];
+                $c['qty'] = $qty;
+                $items[] = $c;
+                $total += $c['price'] * $qty;
+            }
+        }
+        echo json_encode([
+            'success' => true,
+            'items' => $items,
+            'total' => $total,
+            'count' => getCount()
+        ]);
+        break;
+
     default:
         echo json_encode(['success' => false, 'message' => 'action ไม่ถูกต้อง']);
 }

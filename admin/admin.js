@@ -122,17 +122,75 @@ function renderOrders(page=1){
   document.getElementById('orderTableBody').innerHTML=items.map(o=>`
     <tr>
       <td style="font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent-2)">${o.order_no}</td>
-      <td class="td-primary">${o.student}</td>
+      <td class="td-primary">
+        <div>${o.student}</div>
+        <div style="font-size:12px; color:var(--text-3);">LINE: ${o.line_id || '-'}</div>
+      </td>
       <td>${o.course}</td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600">${o.amount}</td>
       <td><span class="badge ${sc[o.status]}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:.77rem">${o.date}</td>
       <td><div class="actions">
+        ${o.slip ? `<a href="/${o.slip}" target="_blank" class="act-btn" style="text-decoration:none;" title="ดูสลิปโอนเงิน">📄</a>` : ''}
         ${o.status === 'pending' ? `<button class="btn btn-sm btn-primary" onclick="updateOrderStatus(${o.id}, 'completed')">✅ อนุมัติ</button>` : ''}
-        <button class="act-btn">👁</button>
+        <button class="act-btn" onclick="viewOrderDetails(${o.id})" title="ดูรายละเอียด">👁</button>
       </div></td>
     </tr>`).join('');
   renderPagination('orderPagination',total,page,'renderOrders');
+}
+
+function viewOrderDetails(id) {
+  const o = orders.find(x => x.id === id);
+  if (!o) return;
+  
+  const itemsHtml = o.items.map(item => `
+    <div style="padding: 10px; border: 1px solid #eee; border-radius: 4px; margin-bottom: 8px;">
+      <div style="font-weight: 600;">${item.name}</div>
+      <div style="font-size: 12px; color: var(--text-3);">${item.category || ''}</div>
+      <div style="font-size: 13px; margin-top: 4px; color: var(--green); font-family: 'JetBrains Mono', monospace;">฿${Number(item.price).toLocaleString('th-TH')}</div>
+    </div>
+  `).join('');
+
+  const html = `
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+      <div>
+        <h4 style="margin-bottom: 10px; color: var(--accent-1);"><i class="ti ti-user"></i> ข้อมูลลูกค้า</h4>
+        <div style="font-size: 14px; line-height: 1.6;">
+          <div><strong>ชื่อ-นามสกุล:</strong> ${o.student}</div>
+          <div><strong>อีเมล:</strong> ${o.email}</div>
+          <div><strong>เบอร์โทร:</strong> ${o.phone || '-'}</div>
+          <div><strong>LINE ID:</strong> ${o.line_id || '-'}</div>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-bottom: 10px; color: var(--accent-1);"><i class="ti ti-receipt"></i> ข้อมูลการสั่งซื้อ</h4>
+        <div style="font-size: 14px; line-height: 1.6;">
+          <div><strong>หมายเลข:</strong> <span style="font-family:'JetBrains Mono',monospace;">${o.order_no}</span></div>
+          <div><strong>วันที่:</strong> ${o.date}</div>
+          <div><strong>วิธีชำระเงิน:</strong> ${o.payment_method === 'bank' ? 'โอนเงินผ่านธนาคาร' : (o.payment_method === 'qr' ? 'QR PromptPay' : o.payment_method)}</div>
+          <div><strong>ยอดรวม:</strong> <span style="color:var(--green); font-weight:bold; font-family:'JetBrains Mono',monospace;">฿${Number(o.raw_amount).toLocaleString('th-TH')}</span></div>
+          <div><strong>สถานะ:</strong> ${o.status.toUpperCase()}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <h4 style="margin-bottom: 10px; color: var(--accent-1);"><i class="ti ti-books"></i> รายการคอร์สเรียน</h4>
+      ${itemsHtml}
+    </div>
+    
+    ${o.slip ? `
+    <div style="margin-top: 20px; text-align: center;">
+      <a href="/${o.slip}" target="_blank" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 8px;">
+        <i class="ti ti-external-link"></i> ดูรูปสลิปเต็ม
+      </a>
+    </div>
+    ` : ''}
+  `;
+
+  document.getElementById('orderModalBody').innerHTML = html;
+  document.getElementById('orderModalTitle').textContent = `✦ รายละเอียดคำสั่งซื้อ: ${o.order_no}`;
+  openModal('orderModal');
 }
 
 function navigate(page,el){

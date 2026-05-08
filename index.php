@@ -52,7 +52,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                 <a href="?lang=en" class="<?php echo $current_lang === 'en' ? 'active' : ''; ?>">EN</a>
             </li>
             <li>
-                <a href="cart.php" style="position:relative">
+                <a href="#" onclick="openCartModal(event)" style="position:relative">
                     🛒 <span id="cart-count" style="
             display:none; position:absolute; top:-8px; right:-12px;
             background:#6c63ff; color:#fff; border-radius:50%;
@@ -216,31 +216,39 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                         <div class="course-rating" style="position: absolute; bottom: 15px; left: 15px; margin: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">⭐ <?php echo number_format($course['rating'], 1); ?></div>
                     </div>
                     
-                    <div class="course-card-body" style="padding: 24px;">
-                        <p class="course-name" style="font-size: 1.1rem; margin-bottom: 8px;"><?php echo htmlspecialchars($course['name']); ?></p>
-                        <p class="course-instructor" style="margin-bottom: 16px;"><?php echo __('course_by'); ?> <?php echo htmlspecialchars($course['instructor']); ?></p>
+                    <div class="course-card-body">
+                        <p class="course-name"><?php echo htmlspecialchars($course['name']); ?></p>
+                        <p class="course-instructor">
+                            <?php if (!empty($course['instructor_avatar'])): ?>
+                                <img src="<?php echo htmlspecialchars($course['instructor_avatar']); ?>" alt="Instructor" class="instructor-avatar">
+                            <?php else: ?>
+                                <div class="instructor-avatar-placeholder"><i class="fas fa-user"></i></div>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($course['instructor']); ?>
+                        </p>
                         
-                        <div class="course-info" style="flex-direction: row; gap: 15px; margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
-                            <span><i class="fas fa-book-open"></i> <?php echo $course['lessons']; ?> <?php echo __('course_lessons'); ?></span>
-                            <span><i class="fas fa-clock"></i> <?php echo $course['hours']; ?> <?php echo __('course_hours'); ?></span>
+                        <div class="course-info">
+                            <span><i class="fas fa-users"></i> <?php echo rand(50, 500); ?></span>
+                            <span><i class="far fa-clock"></i> <?php echo $course['hours']; ?> ชม.</span>
+                            <span><i class="fas fa-signal"></i> พื้นฐาน</span>
                         </div>
                         
                         <p class="course-description" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.8em;"><?php echo htmlspecialchars($course['short_desc']); ?></p>
                     </div>
                     
-                    <div class="course-card-footer" style="padding: 20px 24px; background: rgba(255,255,255,0.02);">
+                    <div class="course-card-footer">
                         <div class="course-price-container">
                             <span class="course-price-new">฿<?php echo number_format($course['price']); ?></span>
                             <?php if(isset($course['old_price']) && $course['old_price'] > $course['price']): ?>
                                 <span class="course-price-old">฿<?php echo number_format($course['old_price']); ?></span>
                             <?php endif; ?>
                         </div>
-                        <div style="display:flex;gap:10px;">
-                            <button class="course-btn" style="width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--accent); color: #000;" onclick="event.stopPropagation();addToCart(<?php echo $course['id']; ?>)">
+                        <div class="course-actions">
+                            <button class="course-btn-cart" onclick="event.stopPropagation();addToCart(<?php echo $course['id']; ?>)">
                                 <i class="fas fa-shopping-cart"></i>
                             </button>
-                            <button class="course-btn" style="padding: 0 15px; border-radius: 10px; background: var(--accent); color: #000; font-weight: 700;" onclick="goToDetail(<?php echo $course['id']; ?>)">
-                                <?php echo __('btn_view_course'); ?>
+                            <button class="course-btn-buy" onclick="goToDetail(<?php echo $course['id']; ?>)">
+                                ซื้อคอร์สนี้
                             </button>
                         </div>
                     </div>

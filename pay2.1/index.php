@@ -291,6 +291,10 @@ require_once '../lang.php';
             <label class="input-label" for="inp-phone"><?php echo __('phone'); ?></label>
             <input class="input-field" type="tel" id="inp-phone" placeholder="086-xxx-xxxx">
           </div>
+          <div class="input-group">
+            <label class="input-label" for="inp-line">LINE ID</label>
+            <input class="input-field" type="text" id="inp-line" placeholder="LINE ID ของคุณ">
+          </div>
 
           <!-- Payment Method Tabs -->
           <div class="pay-method-section">
@@ -344,6 +348,14 @@ require_once '../lang.php';
                 <span>ยอดโอน</span>
                 <strong id="bi-amount" style="color:var(--gold)">—</strong>
               </div>
+            </div>
+          </div>
+
+          <!-- Slip Upload -->
+          <div class="pay-method-section" style="margin-top:20px;">
+            <div class="pay-method-label">แนบสลิปโอนเงิน (จำเป็น)</div>
+            <div class="input-group">
+              <input class="input-field" type="file" id="inp-slip" accept="image/*" style="padding:10px;">
             </div>
           </div>
 

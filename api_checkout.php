@@ -5,12 +5,21 @@ require_once 'db.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Receive JSON data
-    $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
+    // Determine content type
+    $isJson = isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false;
+    
+    if ($isJson) {
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+    } else {
+        $data = $_POST;
+        if (isset($data['items']) && is_string($data['items'])) {
+            $data['items'] = json_decode($data['items'], true);
+        }
+    }
 
     if (!$data) {
-        echo json_encode(['success' => false, 'error' => 'Invalid JSON']);
+        echo json_encode(['success' => false, 'error' => 'Invalid data payload']);
         exit;
     }
 
@@ -19,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $surname = $data['surname'] ?? '';
     $email = $data['email'] ?? '';
     $phone = $data['phone'] ?? '';
+    $line_id = $data['line_id'] ?? '';
     $total_amount = $data['total_amount'] ?? 0;
     $payment_method = $data['payment_method'] ?? '';
     $items = $data['items'] ?? [];
@@ -30,17 +40,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Handle slip image upload
+    $slip_path = null;
+    if (isset($_FILES['slip']) && $_FILES['slip']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = 'uploads/slips/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
+        }
+        
+        $file_info = pathinfo($_FILES['slip']['name']);
+        $ext = strtolower($file_info['extension']);
+        $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        
+        if (in_array($ext, $allowed_exts)) {
+            $new_filename = 'slip_' . $order_no . '_' . uniqid() . '.' . $ext;
+            $target_file = $upload_dir . $new_filename;
+            
+            if (move_uploaded_file($_FILES['slip']['tmp_name'], $target_file)) {
+                $slip_path = 'uploads/slips/' . $new_filename;
+            }
+        } else {
+            echo json_encode(['success' => false, 'error' => 'รูปแบบไฟล์สลิปไม่ถูกต้อง (รองรับเฉพาะภาพ)']);
+            exit;
+        }
+    }
+
     try {
-        $stmt = $pdo->prepare("INSERT INTO orders (order_no, customer_name, customer_email, customer_phone, total_amount, payment_method, items_json, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt = $pdo->prepare("INSERT INTO orders (order_no, customer_name, customer_email, customer_phone, line_id, total_amount, payment_method, items_json, slip_image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         
         $stmt->execute([
             $order_no,
             $customer_name,
             $email,
             $phone,
+            $line_id,
             $total_amount,
             $payment_method,
-            json_encode($items, JSON_UNESCAPED_UNICODE)
+            json_encode($items, JSON_UNESCAPED_UNICODE),
+            $slip_path
         ]);
 
         // Clear cart session if successful

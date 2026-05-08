@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
-        $stmt = $pdo->query("SELECT id, order_no, customer_name, customer_email, total_amount, payment_method, items_json, status, created_at FROM orders ORDER BY id DESC");
+        $stmt = $pdo->query("SELECT id, order_no, customer_name, customer_email, customer_phone, line_id, total_amount, payment_method, items_json, slip_image, status, created_at FROM orders ORDER BY id DESC");
         $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         $formatted = array_map(function($o) {
@@ -29,9 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 'order_no' => $o['order_no'],
                 'student' => $o['customer_name'],
                 'email' => $o['customer_email'],
+                'phone' => $o['customer_phone'],
+                'line_id' => $o['line_id'],
                 'course' => $course_string,
+                'items' => is_array($items) ? $items : [],
                 'amount' => '฿' . number_format($o['total_amount']),
+                'raw_amount' => $o['total_amount'],
+                'payment_method' => $o['payment_method'],
                 'status' => $o['status'],
+                'slip' => $o['slip_image'],
                 'date' => date('M j, Y', strtotime($o['created_at']))
             ];
         }, $orders);

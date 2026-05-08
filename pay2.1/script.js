@@ -360,9 +360,11 @@ async function confirmPayment() {
   const surname = document.getElementById('inp-surname').value.trim();
   const email   = document.getElementById('inp-email').value.trim();
   const phone   = document.getElementById('inp-phone').value.trim();
+  const lineId  = document.getElementById('inp-line').value.trim();
+  const slip    = document.getElementById('inp-slip').files[0];
 
-  if (!name || !surname || !email || !phone) {
-    alert('กรุณากรอกข้อมูลผู้ชำระเงินให้ครบถ้วน');
+  if (!name || !surname || !email || !phone || !lineId) {
+    alert('กรุณากรอกข้อมูลผู้ชำระเงินและ LINE ID ให้ครบถ้วน');
     return;
   }
 
@@ -376,28 +378,33 @@ async function confirmPayment() {
     return;
   }
 
+  if (!slip) {
+    alert('กรุณาแนบสลิปโอนเงินเพื่อยืนยันการชำระเงิน');
+    return;
+  }
+
   const btn = document.getElementById('confirm-btn');
   const originalHtml = btn.innerHTML;
   btn.innerHTML = '<span>กำลังประมวลผล...</span>';
   btn.disabled = true;
 
   const grand = calcGrandTotal();
-  const payload = {
-    order_no: orderId,
-    name: name,
-    surname: surname,
-    email: email,
-    phone: phone,
-    total_amount: grand,
-    payment_method: payMethod,
-    items: fullCartItems
-  };
+  const fd = new FormData();
+  fd.append('order_no', orderId);
+  fd.append('name', name);
+  fd.append('surname', surname);
+  fd.append('email', email);
+  fd.append('phone', phone);
+  fd.append('line_id', lineId);
+  fd.append('total_amount', grand);
+  fd.append('payment_method', payMethod);
+  fd.append('items', JSON.stringify(fullCartItems));
+  fd.append('slip', slip);
 
   try {
     const res = await fetch('/api_checkout.php', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: fd
     });
     const data = await res.json();
 
