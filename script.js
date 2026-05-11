@@ -343,25 +343,37 @@ document.addEventListener('click', (e) => {
 async function fetchNotifications() {
   const list = document.getElementById('noti-list');
   if (!list) return;
+
+  const linkify = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--gold); text-decoration:underline;">${url}</a>`);
+  };
   
   list.innerHTML = '<div style="padding:20px; text-align:center; color:var(--gold-soft);">กำลังโหลด...</div>';
   
   try {
     const res = await fetch('api_noti_user.php?action=list');
     const data = await res.json();
-    console.log("Notifications list fetched:", data);
     
     if (data.success && data.data.length > 0) {
-      list.innerHTML = data.data.map(n => `
-        <div class="noti-item ${n.is_read == 0 ? 'unread' : ''}" onclick="markAsRead(${n.id}, this)">
-          <div class="noti-item-header">
-            <span class="noti-type type-${n.type || 'default'}">${(n.type || 'DEFAULT').toUpperCase()}</span>
-            <span class="noti-time">${formatDate(n.created_at)}</span>
+      list.innerHTML = data.data.map(n => {
+        const hasLink = n.link && n.link.trim() !== '';
+        const clickAction = hasLink ? `window.open('${n.link.trim()}', '_blank');` : '';
+        
+        return `
+          <div class="noti-item ${n.is_read == 0 ? 'unread' : ''}" 
+               onclick="${clickAction} markAsRead(${n.id}, this)"
+               style="${hasLink ? 'cursor:pointer;' : ''}">
+            <div class="noti-item-header">
+              <span class="noti-type type-${n.type || 'default'}">${(n.type || 'DEFAULT').toUpperCase()}</span>
+              <span class="noti-time">${formatDate(n.created_at)}</span>
+            </div>
+            <div class="noti-title">${n.title}</div>
+            <div class="noti-msg">${linkify(n.message)}</div>
+            ${hasLink ? `<div style="margin-top:8px; font-size:0.75rem; color:var(--gold); font-weight:700;"><i class="fas fa-external-link-alt"></i> ดูรายละเอียด</div>` : ''}
           </div>
-          <div class="noti-title">${n.title}</div>
-          <div class="noti-msg">${n.message}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     } else {
       list.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">ไม่พบการแจ้งเตือนใหม่</div>';
     }

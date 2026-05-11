@@ -172,12 +172,14 @@ if ($method === 'POST') {
             // Resolve user IDs based on audience
             $userIds = resolveAudience($pdo, $audience, $_POST['custom_user_ids'] ?? '');
 
+            $link     = trim($_POST['link'] ?? '');
+
             if (empty($userIds)) {
                 // Global broadcast (user_id = NULL)
-                insertNotification($pdo, null, null, $title, $message, $type, $priority, $status, $schedAt, $audience, $admin_id);
+                insertNotification($pdo, null, null, $title, $message, $link, $type, $priority, $status, $schedAt, $audience, $admin_id);
             } else {
                 foreach ($userIds as $uid) {
-                    insertNotification($pdo, (int)$uid, null, $title, $message, $type, $priority, $status, $schedAt, $audience, $admin_id);
+                    insertNotification($pdo, (int)$uid, null, $title, $message, $link, $type, $priority, $status, $schedAt, $audience, $admin_id);
                 }
             }
             echo json_encode(['success' => true]);
@@ -196,12 +198,14 @@ if ($method === 'POST') {
         $type    = $_POST['type']    ?? 'order';
         $priority= $_POST['priority']?? 'medium';
 
+        $link    = trim($_POST['link'] ?? '');
+
         if (!$userId || !$title || !$message) {
             echo json_encode(['success' => false, 'error' => 'user_id, title and message required']);
             exit;
         }
         try {
-            insertNotification($pdo, $userId, $orderId, $title, $message, $type, $priority, 'active', null, 'custom', $admin_id);
+            insertNotification($pdo, $userId, $orderId, $title, $message, $link, $type, $priority, 'active', null, 'custom', $admin_id);
             echo json_encode(['success' => true]);
         } catch (PDOException $e) {
             echo json_encode(['success' => false, 'error' => $e->getMessage()]);
@@ -221,7 +225,7 @@ if ($method === 'POST') {
         try {
             $stmt = $pdo->prepare("
                 UPDATE notifications SET
-                    title=:title, message=:message, type=:type,
+                    title=:title, message=:message, link=:link, type=:type,
                     priority=:priority, status=:status,
                     target_audience=:audience,
                     scheduled_at=:sched,
@@ -231,6 +235,7 @@ if ($method === 'POST') {
             $stmt->execute([
                 ':title'    => $title,
                 ':message'  => $message,
+                ':link'     => trim($_POST['link'] ?? ''),
                 ':type'     => $_POST['type']             ?? 'default',
                 ':priority' => $_POST['priority']         ?? 'low',
                 ':status'   => $_POST['status']           ?? 'active',
@@ -269,16 +274,16 @@ echo json_encode(['success' => false, 'error' => 'Invalid request method']);
 // ─────────────────────────────────────────────────────────────────────────────
 function insertNotification(
     PDO $pdo, ?int $userId, ?int $orderId,
-    string $title, string $message,
+    string $title, string $message, ?string $link,
     string $type, string $priority, string $status,
     ?string $scheduledAt, string $audience, int $createdBy
 ): int {
     $stmt = $pdo->prepare("
         INSERT INTO notifications
-            (user_id, order_id, title, message, type, priority, status,
+            (user_id, order_id, title, message, link, type, priority, status,
              target_audience, scheduled_at, created_by, is_read, created_at, updated_at)
         VALUES
-            (:uid, :oid, :title, :msg, :type, :prio, :status,
+            (:uid, :oid, :title, :msg, :link, :type, :prio, :status,
              :audience, :sched, :created_by, 0, NOW(), NOW())
     ");
     $stmt->execute([
@@ -286,6 +291,7 @@ function insertNotification(
         ':oid'        => $orderId,
         ':title'      => $title,
         ':msg'        => $message,
+        ':link'       => $link,
         ':type'       => $type,
         ':prio'       => $priority,
         ':status'     => $status,
