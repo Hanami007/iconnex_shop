@@ -15,7 +15,7 @@ $action = $_GET['action'] ?? '';
 if ($action === 'list') {
     try {
         $stmt = $pdo->prepare("
-            SELECT id, title, message, type, priority, is_read, created_at
+            SELECT id, title, message, link, type, priority, is_read, created_at
             FROM notifications
             WHERE (user_id = ? OR user_id IS NULL)
             AND status = 'active'

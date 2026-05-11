@@ -101,6 +101,65 @@ function getCourseImage($name, $courses) {
             .card-body { flex-direction: column; align-items: flex-start; }
             .order-status-price { text-align: left; align-items: flex-start; margin-top: 15px; border-top: 1px solid var(--navy-border); padding-top: 15px; width: 100%; }
         }
+        /* 🔔 NOTIFICATIONS SYSTEM */
+        .noti-container { position: relative; display: flex; align-items: center; }
+        .noti-dropdown {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            width: 340px;
+            background: #121e34 !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.6) !important;
+            z-index: 9999 !important;
+            display: none !important;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Prompt', sans-serif !important;
+        }
+        .noti-dropdown.active { display: flex !important; }
+        .noti-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #fff;
+            background: rgba(255,255,255,0.02);
+        }
+        .noti-list { max-height: 400px; overflow-y: auto; }
+        .noti-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+            text-align: left;
+        }
+        .noti-item:hover { background: rgba(255,255,255,0.03); }
+        .noti-item.unread { background: rgba(201, 168, 76, 0.04); }
+        .noti-item.unread::after {
+            content: ''; position: absolute; top: 20px; right: 20px;
+            width: 8px; height: 8px; background: #c9a84c; border-radius: 50%;
+            box-shadow: 0 0 10px #c9a84c;
+        }
+        .noti-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .noti-type { font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; }
+        .type-default { background: #172540; color: #8899bb; }
+        .type-promo { background: rgba(201, 168, 76, 0.2); color: #e2c97e; }
+        .type-order { background: rgba(46, 213, 115, 0.15); color: #2ed573; }
+        .noti-title { font-weight: 700; font-size: 0.9rem; color: #fff; margin-bottom: 4px; }
+        .noti-msg { font-size: 0.85rem; color: #8899bb; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        #noti-badge {
+            position: absolute; top: -5px; right: -5px; background: #ff4757; color: #fff;
+            border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem;
+            display: none; align-items: center; justify-content: center; font-weight: 800;
+            border: 2px solid var(--navy-deep); z-index: 10;
+        }
     </style>
     <script>
         const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
