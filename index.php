@@ -16,8 +16,8 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;800&family=Sarabun:wght@400;500;600&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="style.css" />
-    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="style.css?v=1.1" />
+    <script defer src="script.js?v=1.1"></script>
     <script>
         const coursesData = <?php echo json_encode($courses); ?>;
         const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
@@ -29,6 +29,67 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         };
     </script>
 
+    <style>
+        /* 🔔 NOTIFICATIONS SYSTEM */
+        .noti-container { position: relative; display: flex; align-items: center; }
+        .noti-dropdown {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            width: 340px;
+            background: #121e34 !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.6) !important;
+            z-index: 9999 !important;
+            display: none !important;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Prompt', sans-serif !important;
+        }
+        .noti-dropdown.active { display: flex !important; }
+        .noti-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #fff;
+            background: rgba(255,255,255,0.02);
+        }
+        .noti-list { max-height: 400px; overflow-y: auto; }
+        .noti-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+            text-align: left;
+        }
+        .noti-item:hover { background: rgba(255,255,255,0.03); }
+        .noti-item.unread { background: rgba(201, 168, 76, 0.04); }
+        .noti-item.unread::after {
+            content: ''; position: absolute; top: 20px; right: 20px;
+            width: 8px; height: 8px; background: #c9a84c; border-radius: 50%;
+            box-shadow: 0 0 10px #c9a84c;
+        }
+        .noti-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .noti-type { font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; }
+        .type-default { background: #172540; color: #8899bb; }
+        .type-promo { background: rgba(201, 168, 76, 0.2); color: #e2c97e; }
+        .type-order { background: rgba(46, 213, 115, 0.15); color: #2ed573; }
+        .noti-title { font-weight: 700; font-size: 0.9rem; color: #fff; margin-bottom: 4px; }
+        .noti-msg { font-size: 0.85rem; color: #8899bb; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        #noti-badge {
+            position: absolute; top: -5px; right: -5px; background: #ff4757; color: #fff;
+            border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem;
+            display: none; align-items: center; justify-content: center; font-weight: 800;
+            border: 2px solid #0b1221; z-index: 10;
+        }
+    </style>
 </head>
 
 <body>
@@ -51,7 +112,25 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             </li>
         </ul>
         <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
-            <a href="#" onclick="openCartModal(event)" style="position:relative; font-size: 1.2rem; color: #fff; text-decoration:none;">
+            <?php if(isset($_SESSION['user_id'])): ?>
+            <div class="noti-container">
+                <a href="#" onclick="toggleNotiDropdown(event)" style="font-size: 1.25rem; color: #fff; text-decoration:none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: 0.3s; position: relative;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.color='var(--gold)'" onmouseout="this.style.background='transparent'; this.style.color='#fff'">
+                    <i class="fas fa-bell"></i>
+                    <span id="noti-badge">0</span>
+                </a>
+                <div id="noti-dropdown" class="noti-dropdown">
+                    <div class="noti-header">
+                        <span>Notifications</span>
+                        <button onclick="markAllAsRead()" style="background:none; border:none; color:var(--gold); font-size:0.7rem; cursor:pointer;">Mark all as read</button>
+                    </div>
+                    <div id="noti-list" class="noti-list">
+                        <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">ไม่พบการแจ้งเตือนใหม่</div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <a href="#" onclick="openCartModal(event)" style="position:relative; font-size: 1.2rem; color: #fff; text-decoration:none; transition: 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='#fff'">
                 <i class="fas fa-shopping-cart"></i>
                 <span id="cart-count" style="display:none; position:absolute; top:-8px; right:-12px; background:var(--gold); color:var(--navy-deep); border-radius:50%; width:18px; height:18px; font-size:.7rem; align-items:center; justify-content:center; font-weight:800; border: 2px solid var(--navy-deep);">0</span>
             </a>

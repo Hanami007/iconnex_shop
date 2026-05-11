@@ -127,6 +127,10 @@ $completion_rate = "0%"; // Keep simple for now
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         Orders <span class="nav-badge" style="background:var(--green)"><?php echo $total_orders; ?></span>
       </div>
+      <div class="nav-item" onclick="navigate('notifications',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Notifications
+      </div>
     </div>
     <div class="nav-section">
       <div class="nav-label">System</div>
@@ -241,10 +245,6 @@ $completion_rate = "0%"; // Keep simple for now
     </div>
 
     <!-- ORDERS -->
-    <div class="page" id="page-orders">
-      <div class="page-header">
-        <div class="page-header-left"><h1>Orders &amp; Enrollments</h1><p>Track purchases and payment statuses across the platform.</p></div>
-      </div>
       <div class="card">
         <div class="table-wrap">
           <table class="data-table">
@@ -256,8 +256,132 @@ $completion_rate = "0%"; // Keep simple for now
       </div>
     </div>
 
+    <!-- NOTIFICATIONS -->
+    <div class="page" id="page-notifications">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Notifications</h1><p>Send and manage platform announcements.</p></div>
+        <button class="btn btn-primary" onclick="openNotiModal()">＋ Create Notification</button>
+      </div>
+
+      <div class="mini-stats" id="notiStats">
+        <div class="mini-stat"><div class="mini-stat-val" id="ns-total">-</div><div class="mini-stat-label">Total Sent</div></div>
+        <div class="mini-stat"><div class="mini-stat-val" id="ns-active" style="color:var(--green)">-</div><div class="mini-stat-label">Active</div></div>
+        <div class="mini-stat"><div class="mini-stat-val" id="ns-unread" style="color:var(--red)">-</div><div class="mini-stat-label">Unread</div></div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Notification</th>
+                <th>Audience</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="notiTableBody">
+              <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3)">Loading notifications...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="notiPagination"></div>
+      </div>
+    </div>
+
   </div>
 </main>
+
+<!-- MODAL: NOTIFICATION -->
+<div class="modal-overlay" id="notiModal">
+  <div class="modal" style="max-width: 580px;">
+    <div class="modal-header">
+      <span class="modal-title" id="notiModalTitle">✦ Create Announcement</span>
+      <button class="modal-close" onclick="closeModal('notiModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Title</label>
+          <input id="notiTitle" class="form-control" placeholder="Notification heading..."/>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Message</label>
+          <textarea id="notiMessage" class="form-control" placeholder="Write your message here..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select id="notiType" class="form-control">
+            <option value="default">Default</option>
+            <option value="order">Order/Purchase</option>
+            <option value="promo">Promotion</option>
+            <option value="warning">Warning</option>
+            <option value="system">System Update</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select id="notiPriority" class="form-control">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        
+        <div class="form-group full" id="audienceGroup">
+          <label class="form-label">Target Audience</label>
+          <div class="audience-selector" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-top:5px;">
+             <label class="audience-option" style="display:flex; align-items:center; gap:8px; padding:12px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; cursor:pointer;">
+                <input type="radio" name="audience" value="all" checked onchange="toggleAudienceUI()">
+                <div style="font-size:13px;"><strong>Everyone</strong><div style="font-size:11px;color:var(--text-3)">All users</div></div>
+             </label>
+             <label class="audience-option" style="display:flex; align-items:center; gap:8px; padding:12px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; cursor:pointer;">
+                <input type="radio" name="audience" value="purchased" onchange="toggleAudienceUI()">
+                <div style="font-size:13px;"><strong>All Buyers</strong><div style="font-size:11px;color:var(--text-3)">Users with any purchase</div></div>
+             </label>
+             <label class="audience-option" style="display:flex; align-items:center; gap:8px; padding:12px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; cursor:pointer;">
+                <input type="radio" name="audience" value="course_buyers" onchange="toggleAudienceUI()">
+                <div style="font-size:13px;"><strong>Course Buyers</strong><div style="font-size:11px;color:var(--text-3)">Buyers of specific course</div></div>
+             </label>
+             <label class="audience-option" style="display:flex; align-items:center; gap:8px; padding:12px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; cursor:pointer;">
+                <input type="radio" name="audience" value="custom" onchange="toggleAudienceUI()">
+                <div style="font-size:13px;"><strong>Individual</strong><div style="font-size:11px;color:var(--text-3)">Pick specific users</div></div>
+             </label>
+          </div>
+        </div>
+
+        <div class="form-group full" id="courseSelectRow" style="display:none">
+          <label class="form-label">Select Course</label>
+          <select id="notiCourseId" class="form-control"></select>
+        </div>
+
+        <div class="form-group full" id="userSearchRow" style="display:none">
+          <label class="form-label">Search Users</label>
+          <div style="position:relative">
+            <input id="notiUserSearch" class="form-control" placeholder="Search name or email..." oninput="searchUsersForNoti(this.value)"/>
+            <div id="userSearchResults" style="position:absolute; top:100%; left:0; right:0; background:var(--surface-3); border:1px solid var(--border-hi); border-radius:8px; z-index:10; display:none; max-height:200px; overflow-y:auto; box-shadow:var(--shadow-lg);"></div>
+          </div>
+          <div id="selectedUsers" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('notiModal')">Cancel</button>
+      <button class="btn btn-primary" id="btnSendNoti" onclick="sendNotification()">Send Notification</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.audience-option:has(input:checked) { border-color: var(--accent) !important; background: rgba(108,99,255,0.1) !important; }
+.user-res-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background .15s; }
+.user-res-item:hover { background: var(--surface-1); }
+.user-res-item:last-child { border-bottom: none; }
+.user-tag { background: var(--surface-3); border: 1px solid var(--border-hi); padding: 4px 10px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 8px; }
+.user-tag button { color: var(--red); font-size: 14px; line-height: 1; }
+</style>
 
 </body>
 </html>

@@ -14,6 +14,9 @@ async function fetchCourses() {
 }
 let users = [];
 let orders = [];
+let notifications = [];
+let selectedUsers = []; // For custom audience
+const API_NOTI = 'api_notifications.php';
 
 async function fetchOrders() {
     try {
@@ -106,7 +109,7 @@ function renderUsers(page=1){
       <td>${u.status==='active'?'<span class="badge badge-green">Active</span>':u.status==='suspended'?'<span class="badge badge-red">Suspended</span>':'<span class="badge badge-yellow">Pending</span>'}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:.77rem">${u.joined}</td>
       <td><div class="actions">
-        <button class="act-btn">👁</button>
+        <button class="act-btn" onclick="openSendToUser(${u.id}, '${u.name.replace(/'/g, "\\'")}')" title="Send Notification">🔔</button>
         <button class="act-btn" onclick="showToast('✏️','User editor opened')">✏️</button>
         <button class="act-btn danger" onclick="showToast('⛔','User deactivated')">⛔</button>
       </div></td>
@@ -127,6 +130,7 @@ function renderOrders(page=1){
       <td style="font-family:'JetBrains Mono',monospace;font-size:.77rem">${o.date}</td>
       <td><div class="actions">
         <button class="act-btn" onclick="viewOrderDetails(${o.id})" title="View Details">👁</button>
+        <button class="act-btn" onclick="openSendToOrder(${o.id}, '${o.student.replace(/'/g, "\\'")}')" title="Notify Customer">🔔</button>
       </div></td>
     </tr>`).join('');
   renderPagination('orderPagination',total,page,'renderOrders');
@@ -317,9 +321,14 @@ function navigate(page,el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el) el.classList.add('active');
   
-  const titles={dashboard:'Dashboard',courses:'Course Management',users:'User Management',orders:'Orders & Enrollments',settings:'Settings'};
+  const titles={dashboard:'Dashboard',courses:'Course Management',users:'User Management',orders:'Orders & Enrollments',notifications:'Notifications',settings:'Settings'};
   const titleEl = document.getElementById('topbarTitle');
   if(titleEl) titleEl.textContent=titles[page]||page;
+
+  if(page === 'notifications') {
+      fetchNotifications();
+      fetchNotiStats();
+  }
 }
 
 function openModal(id){
@@ -583,3 +592,232 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchUsers();
     fetchOrders();
 });
+
+/* ── NOTIFICATIONS LOGIC ─────────────────────────────────────────── */
+async function fetchNotifications(page = 1) {
+    try {
+        const res = await fetch(`${API_NOTI}?action=admin_list&page=${page}`);
+        const json = await res.json();
+        if (json.success) {
+            notifications = json.data;
+            renderNotifications(page, json.total);
+        }
+    } catch (err) {
+        console.error('Failed to fetch notifications:', err);
+    }
+}
+
+async function fetchNotiStats() {
+    try {
+        const res = await fetch(`${API_NOTI}?action=admin_stats`);
+        const json = await res.json();
+        if (json.success) {
+            const s = json.data;
+            document.getElementById('ns-total').textContent = s.total;
+            document.getElementById('ns-active').textContent = s.active;
+            document.getElementById('ns-unread').textContent = s.unread;
+        }
+    } catch (err) {}
+}
+
+function renderNotifications(page, total) {
+    const tbody = document.getElementById('notiTableBody');
+    if (!notifications.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3)">No notifications found.</td></tr>`;
+        return;
+    }
+    const priorityBadge = { low: 'badge-green', medium: 'badge-yellow', high: 'badge-red' };
+    
+    tbody.innerHTML = notifications.map(n => `
+        <tr>
+            <td class="td-primary">
+                <div style="font-weight:600">${n.title}</div>
+                <div style="font-size:12px;color:var(--text-3);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.message}</div>
+            </td>
+            <td><span style="font-size:12px;text-transform:capitalize">${n.target_audience.replace('_',' ')}</span></td>
+            <td><span class="badge badge-purple">${n.type}</span></td>
+            <td><span class="badge ${priorityBadge[n.priority] || 'badge-blue'}">${n.status}</span></td>
+            <td style="font-family:'JetBrains Mono';font-size:11px">${n.created_at}</td>
+            <td>
+                <div class="actions">
+                    <button class="act-btn danger" onclick="deleteNoti(${n.id})">🗑</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    renderPagination('notiPagination', total, page, 'fetchNotifications', 20);
+}
+
+function openNotiModal() {
+    // Reset form
+    document.getElementById('notiTitle').value = '';
+    document.getElementById('notiMessage').value = '';
+    document.getElementById('notiType').value = 'default';
+    document.getElementById('notiPriority').value = 'medium';
+    document.querySelector('input[name="audience"][value="all"]').checked = true;
+    selectedUsers = [];
+    renderSelectedUsers();
+    toggleAudienceUI();
+    
+    // Fill course select
+    const cSel = document.getElementById('notiCourseId');
+    cSel.innerHTML = courses.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+    
+    document.getElementById('audienceGroup').style.display = 'block';
+    document.getElementById('notiModalTitle').textContent = '✦ Create Announcement';
+    openModal('notiModal');
+}
+
+function toggleAudienceUI() {
+    const aud = document.querySelector('input[name="audience"]:checked').value;
+    document.getElementById('courseSelectRow').style.display = aud === 'course_buyers' ? 'block' : 'none';
+    document.getElementById('userSearchRow').style.display = aud === 'custom' ? 'block' : 'none';
+}
+
+async function searchUsersForNoti(q) {
+    if (q.length < 2) {
+        document.getElementById('userSearchResults').style.display = 'none';
+        return;
+    }
+    try {
+        const res = await fetch(`${API_NOTI}?action=search_users&q=${encodeURIComponent(q)}`);
+        const json = await res.json();
+        if (json.success) {
+            const results = json.data;
+            const container = document.getElementById('userSearchResults');
+            if (results.length === 0) {
+                container.innerHTML = `<div class="user-res-item" style="color:var(--text-3)">No users found</div>`;
+            } else {
+                container.innerHTML = results.map(u => `
+                    <div class="user-res-item" onclick="selectUserForNoti(${u.id}, '${u.username.replace(/'/g, "\\'")}', '${u.email}')">
+                        <strong>${u.username}</strong>
+                        <div style="font-size:11px;color:var(--text-3)">${u.email}</div>
+                    </div>
+                `).join('');
+            }
+            container.style.display = 'block';
+        }
+    } catch (err) {}
+}
+
+function selectUserForNoti(id, name, email) {
+    if (!selectedUsers.find(u => u.id === id)) {
+        selectedUsers.push({ id, name, email });
+        renderSelectedUsers();
+    }
+    document.getElementById('userSearchResults').style.display = 'none';
+    document.getElementById('notiUserSearch').value = '';
+}
+
+function removeUserFromNoti(id) {
+    selectedUsers = selectedUsers.filter(u => u.id !== id);
+    renderSelectedUsers();
+}
+
+function renderSelectedUsers() {
+    const container = document.getElementById('selectedUsers');
+    container.innerHTML = selectedUsers.map(u => `
+        <div class="user-tag">
+            <span>${u.name}</span>
+            <button onclick="removeUserFromNoti(${u.id})">✕</button>
+        </div>
+    `).join('');
+}
+
+async function sendNotification() {
+    const title = document.getElementById('notiTitle').value;
+    const message = document.getElementById('notiMessage').value;
+    const type = document.getElementById('notiType').value;
+    const priority = document.getElementById('notiPriority').value;
+    const audience = document.querySelector('input[name="audience"]:checked').value;
+    
+    if (!title || !message) {
+        showToast('⚠️', 'Please enter title and message');
+        return;
+    }
+
+    const fd = new FormData();
+    fd.append('action', 'create');
+    fd.append('title', title);
+    fd.append('message', message);
+    fd.append('type', type);
+    fd.append('priority', priority);
+    fd.append('target_audience', audience);
+
+    if (audience === 'course_buyers') {
+        fd.append('custom_user_ids', document.getElementById('notiCourseId').value);
+    } else if (audience === 'custom') {
+        if (selectedUsers.length === 0) {
+            showToast('⚠️', 'Please select at least one user');
+            return;
+        }
+        fd.append('custom_user_ids', selectedUsers.map(u => u.id).join(','));
+    }
+
+    const btn = document.getElementById('btnSendNoti');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+        const res = await fetch(API_NOTI, { method: 'POST', body: fd });
+        const json = await res.json();
+        if (json.success) {
+            showToast('✅', 'Notification sent successfully!');
+            closeModal('notiModal');
+            if (document.getElementById('page-notifications').classList.contains('active')) {
+                fetchNotifications();
+                fetchNotiStats();
+            }
+        } else {
+            showToast('❌', json.error || 'Failed to send');
+        }
+    } catch (err) {
+        showToast('❌', 'Connection error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send Notification';
+    }
+}
+
+async function deleteNoti(id) {
+    if (!confirm('Delete this notification?')) return;
+    try {
+        const fd = new FormData();
+        fd.append('action', 'delete');
+        fd.append('id', id);
+        const res = await fetch(API_NOTI, { method: 'POST', body: fd });
+        const json = await res.json();
+        if (json.success) {
+            showToast('✅', 'Deleted');
+            fetchNotifications();
+            fetchNotiStats();
+        }
+    } catch (err) {}
+}
+
+function openSendToUser(userId, userName) {
+    openNotiModal();
+    document.getElementById('notiModalTitle').textContent = `✦ Message to ${userName}`;
+    document.querySelector('input[name="audience"][value="custom"]').checked = true;
+    selectedUsers = [{ id: userId, name: userName, email: '' }];
+    renderSelectedUsers();
+    toggleAudienceUI();
+    document.getElementById('audienceGroup').style.display = 'none'; // Hide selection to focus on this user
+}
+
+function openSendToOrder(orderId, customerName) {
+    // We need to find the user ID for this order
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    
+    // In our api_orders.php or api_notifications.php, we might need a way to get user_id from order
+    // But since orders has student email, we can find user in `users` array if loaded
+    const user = users.find(u => u.email === order.email);
+    if (user) {
+        openSendToUser(user.id, customerName);
+        document.getElementById('notiTitle').value = `Update for Order ${order.order_no}`;
+        document.getElementById('notiType').value = 'order';
+    } else {
+        showToast('⚠️', 'User account not found for this email');
+    }
+}

@@ -17,6 +17,7 @@ try {
     
     $formatted = array_map(function($u) {
         return [
+            'id' => $u['id'],
             'name' => $u['username'],
             'email' => $u['email'],
             'role' => $u['role'] === 'admin' ? 'Admin' : 'Student',

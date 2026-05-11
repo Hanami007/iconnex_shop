@@ -30,8 +30,8 @@ $recommended = array_slice($recommended, 0, 3);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="style.css" />
-    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="style.css?v=1.1" />
+    <script defer src="script.js?v=1.1"></script>
     <script>
         const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
     </script>
@@ -154,11 +154,26 @@ $recommended = array_slice($recommended, 0, 3);
             </li>
         </ul>
         <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
-            <a href="#" onclick="openCartModal(event)" style="position:relative; font-size: 1.2rem; color: #fff; text-decoration:none;">
+            <a href="#" onclick="openCartModal(event)" style="position:relative; font-size: 1.2rem; color: #fff; text-decoration:none; transition: 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='#fff'">
                 <i class="fas fa-shopping-cart"></i>
                 <span id="cart-count" style="display:none; position:absolute; top:-8px; right:-12px; background:var(--gold); color:var(--navy-deep); border-radius:50%; width:18px; height:18px; font-size:.7rem; align-items:center; justify-content:center; font-weight:800; border: 2px solid var(--navy-deep);">0</span>
             </a>
             <?php if(isset($_SESSION['user_id'])): ?>
+                <div class="noti-container" style="position:relative;">
+                    <a href="#" onclick="toggleNotiDropdown(event)" style="font-size: 1.2rem; color: #fff; text-decoration:none; transition: 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='#fff'">
+                        <i class="fa-solid fa-bell"></i>
+                        <span id="noti-badge" style="display:none; position:absolute; top:-8px; right:-8px; background:#ff4757; color:#fff; border-radius:50%; width:16px; height:16px; font-size:.65rem; align-items:center; justify-content:center; font-weight:800; border: 2px solid var(--navy-deep);">0</span>
+                    </a>
+                    <div id="noti-dropdown" class="noti-dropdown">
+                        <div class="noti-header">
+                            <span>Notifications</span>
+                            <button onclick="markAllAsRead()" style="background:none; border:none; color:var(--gold); font-size:0.7rem; cursor:pointer;">Mark all as read</button>
+                        </div>
+                        <div id="noti-list" class="noti-list">
+                            <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">No new notifications</div>
+                        </div>
+                    </div>
+                </div>
                 <div style="display: flex; align-items: center; gap: 15px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
                     <a href="my_orders.php" style="color: var(--gold-soft); font-size: 0.85rem; font-weight: 700; text-decoration:none;">
                         <i class="fas fa-history"></i> <?php echo __('nav_my_orders'); ?>
