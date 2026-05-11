@@ -5,6 +5,9 @@ useService('db');
 
 header('Content-Type: application/json');
 
+// Security: Validate CSRF for state-changing actions
+validateCsrf();
+
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'error' => 'Not logged in']);
     exit;

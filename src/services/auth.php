@@ -5,6 +5,9 @@ useService('db');
 
 header('Content-Type: application/json');
 
+// Security: Validate CSRF for all POST actions
+validateCsrf();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';

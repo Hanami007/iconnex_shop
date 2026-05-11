@@ -93,7 +93,11 @@ async function addToCart(id) {
     formData.append('action', 'add');
     formData.append('course_id', id);
     
-    const res = await fetch('api/cart.php', { method: 'POST', body: formData });
+    const res = await fetch('api/cart.php', { 
+      method: 'POST', 
+      headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+      body: formData 
+    });
     const data = await res.json();
     
     if (data.success) {
@@ -150,7 +154,11 @@ async function renderCart(showLoading = false) {
 
   const formData = new FormData();
   formData.append('action', 'get_cart');
-  const res = await fetch('api/cart.php', { method: 'POST', body: formData });
+  const res = await fetch('api/cart.php', { 
+    method: 'POST', 
+    headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+    body: formData 
+  });
   const data = await res.json();
 
   if (data.success && data.items.length > 0) {
@@ -199,7 +207,11 @@ async function silentRemove(id) {
   const formData = new FormData();
   formData.append('action', 'remove');
   formData.append('course_id', id);
-  const res = await fetch('api/cart.php', { method: 'POST', body: formData });
+  const res = await fetch('api/cart.php', { 
+    method: 'POST', 
+    headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+    body: formData 
+  });
   const data = await res.json();
   if (data.success) {
     updateCartBadge(data.count);
@@ -211,7 +223,11 @@ async function goToPayment() {
   // Sync PHP Cart with LocalStorage for pay2.1
   const formData = new FormData();
   formData.append('action', 'get_cart');
-  const res = await fetch('api/cart.php', { method: 'POST', body: formData });
+  const res = await fetch('api/cart.php', { 
+    method: 'POST', 
+    headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+    body: formData 
+  });
   const data = await res.json();
   
   if (data.success && data.items.length > 0) {
@@ -285,7 +301,11 @@ document.addEventListener("DOMContentLoaded", () => {
     cards.forEach(c => track.appendChild(c.cloneNode(true)));
   }
 
-  fetch('api/cart.php', { method: 'POST', body: new URLSearchParams({ action: 'count' }) })
+  fetch('api/cart.php', { 
+    method: 'POST', 
+    headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+    body: new URLSearchParams({ action: 'count' }) 
+  })
     .then(res => res.json()).then(data => updateCartBadge(data.count));
 
   const checkLogin = typeof isLoggedIn !== 'undefined' ? isLoggedIn : (window.isLoggedIn || false);

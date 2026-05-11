@@ -5,6 +5,9 @@ useService('db');
 
 header('Content-Type: application/json');
 
+// Security: Validate CSRF for all POST actions
+validateCsrf();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Determine content type
     $isJson = isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false;
