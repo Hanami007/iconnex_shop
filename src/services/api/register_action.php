@@ -1,5 +1,6 @@
 <?php
-require_once 'db.php';
+global $pdo;
+useService('db');
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

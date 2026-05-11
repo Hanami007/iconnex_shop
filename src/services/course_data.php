@@ -1,5 +1,6 @@
 <?php
-require_once 'db.php';
+global $courses, $pdo;
+useService('db');
 
 $courses = array();
 
@@ -19,8 +20,9 @@ try {
     }
 } catch (PDOException $e) {
     // Fallback if table doesn't exist yet, we could use courses.json temporarily
-    if (file_exists(__DIR__ . '/courses.json')) {
-        $json = file_get_contents(__DIR__ . '/courses.json');
+    $jsonPath = dirname(BASE_DIR) . '/database/courses.json';
+    if (file_exists($jsonPath)) {
+        $json = file_get_contents($jsonPath);
         $fallback = json_decode($json, true);
         foreach($fallback as $item) {
             $courses[$item['id']] = $item;

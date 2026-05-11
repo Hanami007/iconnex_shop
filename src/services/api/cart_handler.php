@@ -1,6 +1,7 @@
 <?php
-session_start();
-require_once 'course_data.php';
+global $courses, $pdo;
+
+useService('course_data');
 
 header('Content-Type: application/json');
 

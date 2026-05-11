@@ -1,6 +1,7 @@
 <?php
-session_start();
-require_once 'db.php';
+global $pdo;
+
+useService('db');
 
 header('Content-Type: application/json');
 

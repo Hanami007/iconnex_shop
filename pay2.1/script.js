@@ -402,7 +402,7 @@ async function confirmPayment() {
   fd.append('slip', slip);
 
   try {
-    const res = await fetch('/api_checkout.php', {
+    const res = await fetch('../api/checkout.php', {
       method: 'POST',
       body: fd
     });
@@ -416,7 +416,7 @@ async function confirmPayment() {
         'เราได้รับคำสั่งซื้อของคุณแล้ว เมื่อแอดมินตรวจสอบเสร็จสิ้นจะส่งอีเมลพร้อมลิงก์เข้าเรียนไปที่ ' + email
       );
       localStorage.removeItem('checkoutCart');
-      window.location.href = '/index.php#courses';
+      window.location.href = '../index.php#courses';
     } else {
       alert('เกิดข้อผิดพลาด: ' + (data.error || 'ไม่สามารถบันทึกข้อมูลได้'));
       btn.innerHTML = originalHtml;

@@ -1,6 +1,7 @@
 <?php
-session_start();
-require_once 'db.php';
+global $pdo;
+
+useService('db');
 
 header('Content-Type: application/json');
 
@@ -43,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle slip image upload
     $slip_path = null;
     if (isset($_FILES['slip']) && $_FILES['slip']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = 'uploads/slips/';
+        $upload_dir = UPLOADS_DIR . '/slips/';
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0755, true);
         }
@@ -65,13 +66,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Auto-migrate: ensure user_id column exists
+    // Auto-migrate: ensure table and columns exist
     try {
-        $pdo->query("SELECT user_id FROM orders LIMIT 1");
-    } catch (PDOException $e) {
+        $pdo->query("SELECT 1 FROM orders LIMIT 1");
+        // Table exists, check for user_id
         try {
+            $pdo->query("SELECT user_id FROM orders LIMIT 1");
+        } catch (PDOException $e) {
             $pdo->exec("ALTER TABLE orders ADD COLUMN user_id INT NULL AFTER id");
-        } catch (PDOException $ex) {}
+        }
+    } catch (PDOException $e) {
+        // Table doesn't exist, create it
+        $pdo->exec("CREATE TABLE IF NOT EXISTS orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NULL,
+            order_no VARCHAR(50) NOT NULL UNIQUE,
+            customer_name VARCHAR(100) NOT NULL,
+            customer_email VARCHAR(100) NOT NULL,
+            customer_phone VARCHAR(20) NOT NULL,
+            line_id VARCHAR(255) NULL,
+            total_amount DECIMAL(10,2) NOT NULL,
+            payment_method VARCHAR(50) NOT NULL,
+            items_json TEXT NOT NULL,
+            slip_image VARCHAR(255) NULL,
+            status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
     }
 
     try {

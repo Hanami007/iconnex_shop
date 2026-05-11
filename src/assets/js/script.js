@@ -93,7 +93,7 @@ async function addToCart(id) {
     formData.append('action', 'add');
     formData.append('course_id', id);
     
-    const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+    const res = await fetch('api/cart.php', { method: 'POST', body: formData });
     const data = await res.json();
     
     if (data.success) {
@@ -150,7 +150,7 @@ async function renderCart(showLoading = false) {
 
   const formData = new FormData();
   formData.append('action', 'get_cart');
-  const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+  const res = await fetch('api/cart.php', { method: 'POST', body: formData });
   const data = await res.json();
 
   if (data.success && data.items.length > 0) {
@@ -162,7 +162,7 @@ async function renderCart(showLoading = false) {
       itemEl.className = 'cart-item';
       itemEl.style = "display: grid; grid-template-columns: 120px 1fr 30px; gap: 20px; margin-bottom: 25px; align-items: center; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s;";
       
-      const imgPath = item.image.startsWith('uploads/') ? '/' + item.image : 'IMG/' + item.image;
+      const imgPath = item.image.startsWith('uploads/') ? '/' + item.image : '/src/assets/img/' + item.image;
       
       itemEl.innerHTML = `
         <div style="width: 120px; height: 75px; border-radius: 12px; overflow: hidden; border: 1px solid var(--navy-border);">
@@ -199,7 +199,7 @@ async function silentRemove(id) {
   const formData = new FormData();
   formData.append('action', 'remove');
   formData.append('course_id', id);
-  const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+  const res = await fetch('api/cart.php', { method: 'POST', body: formData });
   const data = await res.json();
   if (data.success) {
     updateCartBadge(data.count);
@@ -211,7 +211,7 @@ async function goToPayment() {
   // Sync PHP Cart with LocalStorage for pay2.1
   const formData = new FormData();
   formData.append('action', 'get_cart');
-  const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+  const res = await fetch('api/cart.php', { method: 'POST', body: formData });
   const data = await res.json();
   
   if (data.success && data.items.length > 0) {
@@ -285,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cards.forEach(c => track.appendChild(c.cloneNode(true)));
   }
 
-  fetch('cart_handler.php', { method: 'POST', body: new URLSearchParams({ action: 'count' }) })
+  fetch('api/cart.php', { method: 'POST', body: new URLSearchParams({ action: 'count' }) })
     .then(res => res.json()).then(data => updateCartBadge(data.count));
 
   const checkLogin = typeof isLoggedIn !== 'undefined' ? isLoggedIn : (window.isLoggedIn || false);
@@ -296,130 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-/* 🔔 NOTIFICATION LOGIC */
-async function updateNotiBadge() {
-  try {
-    const res = await fetch('api_noti_user.php?action=unread_count');
-    const data = await res.json();
-    console.log("Unread count fetched:", data);
-    const badge = document.getElementById('noti-badge');
-    if (badge) {
-      if (data.success && data.count > 0) {
-        badge.textContent = data.count > 9 ? '9+' : data.count;
-        badge.style.display = 'flex';
-      } else {
-        badge.style.display = 'none';
-      }
-    }
-  } catch (err) {
-    console.error("Failed to update notification badge:", err);
-  }
-}
 
-async function toggleNotiDropdown(e) {
-  if (e) e.preventDefault();
-  const dropdown = document.getElementById('noti-dropdown');
-  if (!dropdown) return;
-  
-  const isOpen = dropdown.classList.contains('active');
-  if (!isOpen) {
-    dropdown.classList.add('active');
-    console.log("Opening notification dropdown...");
-    fetchNotifications();
-  } else {
-    dropdown.classList.remove('active');
-  }
-}
-
-// Close dropdown on click outside
-document.addEventListener('click', (e) => {
-  const container = document.querySelector('.noti-container');
-  const dropdown = document.getElementById('noti-dropdown');
-  if (container && !container.contains(e.target) && dropdown) {
-    dropdown.classList.remove('active');
-  }
-});
-
-async function fetchNotifications() {
-  const list = document.getElementById('noti-list');
-  if (!list) return;
-
-  const linkify = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--gold); text-decoration:underline;">${url}</a>`);
-  };
-  
-  list.innerHTML = '<div style="padding:20px; text-align:center; color:var(--gold-soft);">กำลังโหลด...</div>';
-  
-  try {
-    const res = await fetch('api_noti_user.php?action=list');
-    const data = await res.json();
-    
-    if (data.success && data.data.length > 0) {
-      list.innerHTML = data.data.map(n => {
-        const hasLink = n.link && n.link.trim() !== '';
-        const clickAction = hasLink ? `window.open('${n.link.trim()}', '_blank');` : '';
-        
-        return `
-          <div class="noti-item ${n.is_read == 0 ? 'unread' : ''}" 
-               onclick="${clickAction} markAsRead(${n.id}, this)"
-               style="${hasLink ? 'cursor:pointer;' : ''}">
-            <div class="noti-item-header">
-              <span class="noti-type type-${n.type || 'default'}">${(n.type || 'DEFAULT').toUpperCase()}</span>
-              <span class="noti-time">${formatDate(n.created_at)}</span>
-            </div>
-            <div class="noti-title">${n.title}</div>
-            <div class="noti-msg">${linkify(n.message)}</div>
-            ${hasLink ? `<div style="margin-top:8px; font-size:0.75rem; color:var(--gold); font-weight:700;"><i class="fas fa-external-link-alt"></i> ดูรายละเอียด</div>` : ''}
-          </div>
-        `;
-      }).join('');
-    } else {
-      list.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">ไม่พบการแจ้งเตือนใหม่</div>';
-    }
-  } catch (err) {
-    console.error("Fetch notifications failed:", err);
-    list.innerHTML = '<div style="padding:20px; text-align:center; color:var(--red);">ไม่สามารถโหลดข้อมูลได้</div>';
-  }
-}
-
-async function markAsRead(id, el) {
-  if (el && !el.classList.contains('unread')) return;
-  try {
-    const fd = new FormData();
-    fd.append('id', id);
-    const res = await fetch('api_noti_user.php?action=mark_read', { method: 'POST', body: fd });
-    const data = await res.json();
-    if (data.success) {
-      if (el) el.classList.remove('unread');
-      updateNotiBadge();
-    }
-  } catch (err) {}
-}
-
-async function markAllAsRead() {
-    const unreadItems = document.querySelectorAll('.noti-item.unread');
-    for (let item of unreadItems) {
-        const id_match = item.getAttribute('onclick').match(/\d+/);
-        if (id_match) {
-            markAsRead(id_match[0], item);
-        }
-    }
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const date = new Date(dateStr.replace(/-/g, "/")); // Fix for Safari
-  if (isNaN(date.getTime())) return '';
-  
-  const now = new Date();
-  const diff = Math.floor((now - date) / 1000);
-  
-  if (diff < 60) return 'เมื่อสักครู่';
-  if (diff < 3600) return Math.floor(diff / 60) + ' นาทีที่แล้ว';
-  if (diff < 86400) return Math.floor(diff / 3600) + ' ชม. ที่แล้ว';
-  return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
-}
 
 function showToast(msg) {
   let toast = document.getElementById('toast');

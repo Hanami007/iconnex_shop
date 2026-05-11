@@ -1,6 +1,7 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) session_start();
-require_once 'db.php';
+global $pdo;
+
+useService('db');
 
 header('Content-Type: application/json');
 
@@ -11,6 +12,9 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = (int)$_SESSION['user_id'];
 $action = $_GET['action'] ?? '';
+
+// DEBUG
+file_put_contents(ROOT_DIR . '/debug_noti.log', "User: $user_id, Action: $action, Session: " . json_encode($_SESSION) . "\n", FILE_APPEND);
 
 if ($action === 'list') {
     try {

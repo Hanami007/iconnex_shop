@@ -69,7 +69,7 @@ async function handleLogin(e) {
         fd.append('password', password);
         fd.append('login_type', 'admin');
 
-        const res = await fetch('../auth.php', {
+        const res = await fetch('../api/auth.php', {
             method: 'POST',
             body: fd
         });

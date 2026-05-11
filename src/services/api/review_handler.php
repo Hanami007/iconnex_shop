@@ -1,6 +1,7 @@
 <?php
-require_once 'db.php';
-require_once 'lang.php';
+global $pdo;
+useService('db');
+useService('lang');
 
 header('Content-Type: application/json');
 
