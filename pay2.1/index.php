@@ -30,6 +30,7 @@ if (!$currentUser) {
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link rel="stylesheet" href="styles.css">
+<script>const csrfToken = "<?php echo getCsrfToken(); ?>";</script>
 </head>
 <body>
 <div class="page-wrapper">

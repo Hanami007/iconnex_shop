@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once '../src/bootstrap.php';
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] === 'admin') {
         header('Location: index.php');
@@ -16,6 +16,7 @@ if (isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICONNEX - Admin Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>const csrfToken = "<?php echo getCsrfToken(); ?>";</script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
         body { background: #0d0f14; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
@@ -68,6 +69,7 @@ async function handleLogin(e) {
         fd.append('username', username);
         fd.append('password', password);
         fd.append('login_type', 'admin');
+        fd.append('csrf_token', csrfToken);
 
         const res = await fetch('../api/auth.php', {
             method: 'POST',

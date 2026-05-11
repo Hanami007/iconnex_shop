@@ -4,9 +4,11 @@
  * Handles: admin_stats, admin_list, create, update, delete, send_to_user, get_orders
  */
 if (session_status() === PHP_SESSION_NONE) session_start();
-require_once dirname(__DIR__) . '/src/services/db.php';
+require_once dirname(__DIR__) . '/src/bootstrap.php';
+useService('db');
 
 header('Content-Type: application/json');
+validateCsrf();
 header('Cache-Control: no-store');
 
 // Auth guard

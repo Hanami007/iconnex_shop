@@ -401,6 +401,7 @@ async function confirmPayment() {
   try {
     const res = await fetch('../api/checkout.php', {
       method: 'POST',
+      headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
       body: fd
     });
     const data = await res.json();

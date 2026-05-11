@@ -4,6 +4,7 @@ useService('db');
 useService('lang');
 
 header('Content-Type: application/json');
+validateCsrf();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';

@@ -41,6 +41,7 @@ async function updateOrderStatus(id, status) {
         fd.append('status', status);
         const res = await fetch('api_orders.php', {
             method: 'POST',
+            headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
             body: fd
         });
         const json = await res.json();
@@ -295,6 +296,7 @@ async function sendEmail() {
         
         const res = await fetch('api_send_mail.php', {
             method: 'POST',
+            headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
             body: fd
         });
         const json = await res.json();
@@ -509,7 +511,11 @@ async function deleteCourse(id) {
         fd.append('action', 'delete');
         fd.append('id', id);
         
-        const res = await fetch('api_courses.php', { method: 'POST', body: fd });
+        const res = await fetch('api_courses.php', { 
+            method: 'POST', 
+            headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+            body: fd 
+        });
         const json = await res.json();
         
         if (json.success) {
@@ -570,6 +576,7 @@ async function saveCourse() {
     try {
         const res = await fetch('api_courses.php', {
             method: 'POST',
+            headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
             body: fd
         });
         const json = await res.json();

@@ -1,10 +1,9 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require_once dirname(__DIR__) . '/src/services/db.php';
+require_once dirname(__DIR__) . '/src/bootstrap.php';
+useService('db');
 
 header('Content-Type: application/json');
+validateCsrf();
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     echo json_encode(['success' => false, 'error' => 'Unauthorized']);

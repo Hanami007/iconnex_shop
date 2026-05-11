@@ -179,3 +179,5 @@ User: 4, Action: unread_count, Session: {"csrf_token":"3f32351eca64778f4caa65180
 User: 4, Action: unread_count, Session: {"csrf_token":"3f32351eca64778f4caa65180ea61d46a02f0e44d99e11e06f1cf4e201fb9f5e","lang":"th","cart":[],"user_id":4,"username":"Tratep","role":"user"}
 User: 4, Action: unread_count, Session: {"csrf_token":"3f32351eca64778f4caa65180ea61d46a02f0e44d99e11e06f1cf4e201fb9f5e","lang":"th","cart":[],"user_id":4,"username":"Tratep","role":"user"}
 User: 4, Action: unread_count, Session: {"csrf_token":"3f32351eca64778f4caa65180ea61d46a02f0e44d99e11e06f1cf4e201fb9f5e","lang":"th","cart":[],"user_id":4,"username":"Tratep","role":"user"}
+User: 4, Action: unread_count, Session: {"csrf_token":"3f32351eca64778f4caa65180ea61d46a02f0e44d99e11e06f1cf4e201fb9f5e","lang":"th","cart":[],"user_id":4,"username":"Tratep","role":"user"}
+User: 4, Action: unread_count, Session: {"csrf_token":"b0e8fd265e40afcdc8452c6fa28efada0ccfdcaf433c0db1fcc563dc3b6014f7","lang":"th","cart":[],"user_id":4,"username":"Tratep","role":"user"}

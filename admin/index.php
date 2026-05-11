@@ -1,8 +1,7 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require_once '../src/services/db.php';
+require_once '../src/bootstrap.php';
+useService('db');
+
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit;
@@ -31,6 +30,7 @@ $completion_rate = "0%"; // Keep simple for now
 <title>CourseFlow — Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="admin.css">
+<script>const csrfToken = "<?php echo getCsrfToken(); ?>";</script>
 <script src="admin.js"></script>        
 </head>
 <body>

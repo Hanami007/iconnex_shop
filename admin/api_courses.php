@@ -1,10 +1,9 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require_once dirname(__DIR__) . '/src/services/db.php';
+require_once dirname(__DIR__) . '/src/bootstrap.php';
+useService('db');
 
 header('Content-Type: application/json');
+validateCsrf();
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
