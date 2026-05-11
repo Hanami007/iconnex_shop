@@ -357,14 +357,13 @@ function copyAccountNumber() {
 /* ---------- Validation & Confirm ---------- */
 async function confirmPayment() {
   const name    = document.getElementById('inp-name').value.trim();
-  const surname = document.getElementById('inp-surname').value.trim();
   const email   = document.getElementById('inp-email').value.trim();
   const phone   = document.getElementById('inp-phone').value.trim();
   const lineId  = document.getElementById('inp-line').value.trim();
   const slip    = document.getElementById('inp-slip').files[0];
 
-  if (!name || !surname || !email || !phone || !lineId) {
-    alert('กรุณากรอกข้อมูลผู้ชำระเงินและ LINE ID ให้ครบถ้วน');
+  if (!name || !email || !phone || !lineId) {
+    alert('กรุณากรอกข้อมูลเบอร์โทรศัพท์และ LINE ID ให้ครบถ้วน');
     return;
   }
 
@@ -391,9 +390,7 @@ async function confirmPayment() {
   const grand = calcGrandTotal();
   const fd = new FormData();
   fd.append('order_no', orderId);
-  fd.append('name', name);
-  fd.append('surname', surname);
-  fd.append('email', email);
+  // Backend will fetch real name/email from session for security
   fd.append('phone', phone);
   fd.append('line_id', lineId);
   fd.append('total_amount', grand);

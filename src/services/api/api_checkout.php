@@ -25,19 +25,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $order_no = $data['order_no'] ?? '';
-    $name = $data['name'] ?? '';
-    $surname = $data['surname'] ?? '';
-    $email = $data['email'] ?? '';
     $phone = $data['phone'] ?? '';
     $line_id = $data['line_id'] ?? '';
     $total_amount = $data['total_amount'] ?? 0;
     $payment_method = $data['payment_method'] ?? '';
     $items = $data['items'] ?? [];
 
-    $customer_name = trim($name . ' ' . $surname);
+    // SECURITY: Get user info from session/DB, not from frontend inputs
+    $user_id = $_SESSION['user_id'] ?? null;
+    if (!$user_id) {
+        echo json_encode(['success' => false, 'error' => 'กรุณาเข้าสู่ระบบก่อนชำระเงิน']);
+        exit;
+    }
 
-    if (empty($order_no) || empty($customer_name) || empty($email) || empty($items)) {
-        echo json_encode(['success' => false, 'error' => 'Missing required fields']);
+    $stmtUser = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
+    $stmtUser->execute([$user_id]);
+    $userRow = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+    if (!$userRow) {
+        echo json_encode(['success' => false, 'error' => 'ไม่พบข้อมูลผู้ใช้งาน']);
+        exit;
+    }
+
+    $customer_name = $userRow['username'];
+    $email = $userRow['email'];
+
+    if (empty($order_no) || empty($items)) {
+        echo json_encode(['success' => false, 'error' => 'ข้อมูลคำสั่งซื้อไม่สมบูรณ์']);
         exit;
     }
 

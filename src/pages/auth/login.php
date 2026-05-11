@@ -458,10 +458,14 @@ if (isset($_SESSION['user_id'])) {
         btnSpinner.style.display = 'block';
 
         try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirect = urlParams.get('redirect') || '';
+
             const fd = new URLSearchParams();
             fd.append('username', username);
             fd.append('password', password);
             fd.append('login_type', 'user');
+            if (redirect) fd.append('redirect', redirect);
 
             const res = await fetch('api/auth.php', {
                 method: 'POST',
