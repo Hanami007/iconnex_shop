@@ -65,11 +65,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Auto-migrate: ensure user_id column exists
     try {
-        $stmt = $pdo->prepare("INSERT INTO orders (order_no, customer_name, customer_email, customer_phone, line_id, total_amount, payment_method, items_json, slip_image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $pdo->query("SELECT user_id FROM orders LIMIT 1");
+    } catch (PDOException $e) {
+        try {
+            $pdo->exec("ALTER TABLE orders ADD COLUMN user_id INT NULL AFTER id");
+        } catch (PDOException $ex) {}
+    }
+
+    try {
+        $user_id = $_SESSION['user_id'] ?? null;
+        $stmt = $pdo->prepare("INSERT INTO orders (order_no, user_id, customer_name, customer_email, customer_phone, line_id, total_amount, payment_method, items_json, slip_image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         
         $stmt->execute([
             $order_no,
+            $user_id,
             $customer_name,
             $email,
             $phone,

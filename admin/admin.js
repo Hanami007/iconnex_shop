@@ -150,34 +150,105 @@ function viewOrderDetails(orderId) {
         : `<div style="color:#aaa; font-style:italic;">No payment slip uploaded</div>`;
 
     document.getElementById('orderModalBody').innerHTML = `
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div style="display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 32px;">
+            <!-- Left Column: Info & Items -->
             <div>
-                <h4 style="margin-bottom:15px; color:var(--accent-2)">👤 Customer Information</h4>
-                <p style="margin-bottom:8px;"><strong>Name:</strong> ${order.student}</p>
-                <p style="margin-bottom:8px;"><strong>Email:</strong> ${order.email}</p>
-                <p style="margin-bottom:8px;"><strong>Phone:</strong> ${order.phone || '-'}</p>
-                <p style="margin-bottom:8px;"><strong>Line ID:</strong> ${order.line_id || '-'}</p>
-                <p style="margin-bottom:8px;"><strong>Date:</strong> ${order.date}</p>
-                <p style="margin-bottom:15px;"><strong>Status:</strong> <span class="badge ${order.status === 'completed' ? 'badge-green' : (order.status === 'pending' ? 'badge-yellow' : 'badge-red')}">${order.status.toUpperCase()}</span></p>
-
-                <h4 style="margin:20px 0 10px; color:var(--accent-2)">🛒 Order Items</h4>
-                <div style="background:#f8f9fa; padding:15px; border-radius:10px;">
-                    ${itemsHtml}
-                    <div style="text-align:right; font-weight:bold; font-size:1.1rem; margin-top:10px; color:var(--green);">
-                        Total: ${order.amount}
+                <!-- Customer Info -->
+                <div style="margin-bottom: 30px;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px; color:var(--accent-2);">
+                        <span style="font-size:1.2rem;">👤</span>
+                        <h4 style="margin:0; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; font-size:0.9rem;">Customer Information</h4>
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px; background:var(--surface-2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <span style="font-size:0.7rem; color:var(--text-3); text-transform:uppercase; font-weight:700;">Name</span>
+                            <span style="font-weight:600; font-size:0.95rem;">${order.student}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <span style="font-size:0.7rem; color:var(--text-3); text-transform:uppercase; font-weight:700;">Email</span>
+                            <span style="font-size:0.85rem; color:var(--text-2); overflow:hidden; text-overflow:ellipsis;">${order.email}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <span style="font-size:0.7rem; color:var(--text-3); text-transform:uppercase; font-weight:700;">Phone</span>
+                            <span style="font-size:0.9rem;">${order.phone || '-'}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <span style="font-size:0.7rem; color:var(--text-3); text-transform:uppercase; font-weight:700;">Line ID</span>
+                            <span style="font-size:0.9rem; color:var(--green); font-weight:600;">${order.line_id || '-'}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding:0 5px;">
+                        <span style="font-size:0.75rem; color:var(--text-3);">Ordered on: <strong style="color:var(--text-2)">${order.date}</strong></span>
+                        <span class="badge ${order.status === 'completed' ? 'badge-green' : (order.status === 'pending' ? 'badge-yellow' : 'badge-red')}" style="font-size:0.65rem;">${order.status.toUpperCase()}</span>
                     </div>
                 </div>
-                
-                <div style="margin-top:25px; display:flex; gap:10px;">
-                    ${order.status === 'pending' ? `
-                        <button class="btn btn-primary" style="flex:1" onclick="updateOrderStatus(${order.id}, 'completed')">✅ Approve Order</button>
-                        <button class="btn btn-ghost" style="flex:1; border-color:var(--red); color:var(--red)" onclick="updateOrderStatus(${order.id}, 'cancelled')">❌ Reject</button>
-                    ` : ''}
+
+                <!-- Order Items -->
+                <div>
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; color:var(--accent-2);">
+                        <span style="font-size:1.2rem;">🛒</span>
+                        <h4 style="margin:0; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; font-size:0.9rem;">Order Items</h4>
+                    </div>
+                    
+                    <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; overflow:hidden;">
+                        <div style="padding:15px 20px; border-bottom:1px solid var(--border); background:rgba(255,255,255,0.03); display:flex; font-size:0.7rem; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:1px;">
+                            <span style="flex:1;">Product Name</span>
+                            <span style="width:80px; text-align:right;">Subtotal</span>
+                        </div>
+                        <div style="max-height:200px; overflow-y:auto; padding:5px 0;">
+                            ${order.items.map(item => `
+                                <div style="display:flex; align-items:center; padding:12px 20px; border-bottom:1px solid rgba(255,255,255,0.03);">
+                                    <div style="flex:1;">
+                                        <div style="font-weight:600; font-size:0.9rem; color:var(--text-1);">${item.name}</div>
+                                        <div style="font-size:0.75rem; color:var(--text-3);">Quantity: ${item.qty || 1}</div>
+                                    </div>
+                                    <div style="width:100px; text-align:right; font-family:'JetBrains Mono'; font-weight:600; color:var(--text-2);">
+                                        ฿${(item.price * (item.qty || 1)).toLocaleString()}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="background:rgba(34,211,160,0.05); padding:18px 20px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.8rem; font-weight:700; color:var(--text-3); text-transform:uppercase;">Grand Total</span>
+                            <span style="font-size:1.4rem; font-weight:800; color:var(--green); font-family:'JetBrains Mono';">
+                                ${order.amount}
+                            </span>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Actions -->
+                ${order.status === 'pending' ? `
+                <div style="margin-top:32px; display:flex; gap:12px;">
+                    <button class="btn btn-primary" style="flex:1.5; justify-content:center; padding:14px; font-size:0.9rem; box-shadow:0 10px 20px rgba(108,99,255,0.2);" onclick="updateOrderStatus(${order.id}, 'completed')">
+                        ✅ Approve Order
+                    </button>
+                    <button class="btn btn-ghost" style="flex:1; justify-content:center; padding:14px; border-color:var(--red); color:var(--red); font-size:0.9rem;" onclick="updateOrderStatus(${order.id}, 'cancelled')">
+                        ❌ Reject
+                    </button>
+                </div>
+                ` : ''}
             </div>
-            <div style="text-align:center;">
-                <h4 style="margin-bottom:15px; color:var(--accent-2)">🖼 Payment Proof (Slip)</h4>
-                ${slipHtml}
+
+            <!-- Right Column: Slip -->
+            <div style="text-align:center; display:flex; flex-direction:column;">
+                <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:18px; color:var(--accent-2);">
+                    <span style="font-size:1.2rem;">🧾</span>
+                    <h4 style="margin:0; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; font-size:0.9rem;">Payment Proof</h4>
+                </div>
+                
+                <div style="flex:1; background:var(--surface-2); border:1px solid var(--border); border-radius:16px; padding:15px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                    ${order.slip 
+                        ? `<img src="../${order.slip}" style="max-width:100%; max-height:450px; border-radius:8px; box-shadow:var(--shadow); cursor:zoom-in; transition:transform 0.3s;" onclick="window.open('../${order.slip}')" title="Click to view full image">`
+                        : `<div style="padding:40px; color:var(--text-3); text-align:center;">
+                            <div style="font-size:3rem; margin-bottom:10px; opacity:0.3;">📄</div>
+                            <div style="font-style:italic;">No payment slip uploaded</div>
+                           </div>`
+                    }
+                    ${order.slip ? `<div style="position:absolute; bottom:25px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:white; font-size:0.65rem; padding:5px 12px; border-radius:20px; backdrop-filter:blur(4px); pointer-events:none;">Click to enlarge</div>` : ''}
+                </div>
             </div>
         </div>
     `;

@@ -1,5 +1,3 @@
-// Course data
-
 // Navigate to detail page
 function goToDetail(courseId) {
   window.location.href = "dic_product.php?id=" + courseId;
@@ -7,576 +5,298 @@ function goToDetail(courseId) {
 
 // Tab: portfolio
 function switchTab(btn, type) {
-  document
-    .querySelectorAll(".tab-btn")
-    .forEach((b) => b.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
+  const photo = document.getElementById('portfolio-photo-content');
+  const video = document.getElementById('portfolio-video-content');
   if (type === 'video') {
-    document.getElementById('portfolio-photo-content').style.display = 'none';
-    document.getElementById('portfolio-video-content').style.display = 'block';
+    if(photo) photo.style.display = 'none';
+    if(video) video.style.display = 'block';
   } else {
-    document.getElementById('portfolio-photo-content').style.display = 'block';
-    document.getElementById('portfolio-video-content').style.display = 'none';
+    if(photo) photo.style.display = 'block';
+    if(video) video.style.display = 'none';
   }
 }
 
-// Category filter
+// Category filter & Pagination logic
 let showingAll = false;
-function filterCategory(category) {
+function setFilter(btn, category) {
+  if (btn) {
+    document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
   showingAll = false;
   const seeMoreBtn = document.getElementById('see-more-container');
-  if (seeMoreBtn) seeMoreBtn.style.display = 'none';
-
-  let totalVisibleCards = 0;
+  const cards = document.querySelectorAll(".course-card");
+  
+  let count = 0;
   const limit = 3;
+  let totalMatch = 0;
 
-  document.querySelectorAll(".category-section").forEach((section) => {
-    const isMatch = category === 'all' || section.getAttribute('data-category') === category;
+  cards.forEach((card) => {
+    const cardCat = card.getAttribute('data-category');
+    const isMatch = category === 'all' || cardCat === category;
+    
     if (isMatch) {
-      section.style.display = "block";
-      void section.offsetWidth;
-      section.style.opacity = "1";
-      
-      const cards = section.querySelectorAll('.course-card');
-      let visibleInThisSection = 0;
-      cards.forEach(card => {
-        if (category === 'all') {
-          if (totalVisibleCards < limit) {
-            card.style.display = "flex";
-            visibleInThisSection++;
-          } else {
-            card.style.display = "none";
-          }
-          totalVisibleCards++;
-        } else {
+      totalMatch++;
+      if (category === 'all') {
+        if (count < limit) {
           card.style.display = "flex";
-          visibleInThisSection++;
+        } else {
+          card.style.display = "none";
         }
-      });
-
-      // Hide section if no cards are visible in it
-      if (visibleInThisSection === 0 && category === 'all') {
-        section.style.display = "none";
+        count++;
       } else {
-        section.style.display = "block";
-        section.style.opacity = "1";
+        card.style.display = "flex";
       }
-
-      // Hide carousel arrows if limiting to 3 items
-      const carouselBtns = section.querySelectorAll('.carousel-btn');
-      carouselBtns.forEach(btn => {
-        btn.style.display = (category === 'all' && totalVisibleCards > limit && !showingAll) ? 'none' : 'flex';
-      });
-
-      // Hide category labels if 'all' is selected and we're limiting
-      const label = section.querySelector('.course-section-label');
-      if (label) label.style.display = (category === 'all' && totalVisibleCards > limit && !showingAll) ? 'none' : 'block';
-
     } else {
-      section.style.display = "none";
-      section.style.opacity = "0";
+      card.style.display = "none";
     }
   });
 
-  if (category === 'all' && totalVisibleCards > limit) {
-    if (seeMoreBtn) seeMoreBtn.style.display = 'flex';
+  if (seeMoreBtn) {
+    if (category === 'all' && totalMatch > limit) {
+      seeMoreBtn.style.display = 'flex';
+    } else {
+      seeMoreBtn.style.display = 'none';
+    }
   }
 }
 
 function showAllCourses() {
   showingAll = true;
-  document.querySelectorAll(".category-section").forEach(section => {
-    section.style.display = "block";
-    section.style.opacity = "1";
-    
-    const label = section.querySelector('.course-section-label');
-    if (label) label.style.display = 'block';
-    
-    const carouselBtns = section.querySelectorAll('.carousel-btn');
-    carouselBtns.forEach(btn => btn.style.display = 'flex');
-    
-    section.querySelectorAll('.course-card').forEach(card => {
-      card.style.display = "flex";
-    });
+  const cards = document.querySelectorAll(".course-card");
+  cards.forEach(card => {
+    card.style.display = "flex";
   });
-  
   const seeMoreBtn = document.getElementById('see-more-container');
   if (seeMoreBtn) seeMoreBtn.style.display = 'none';
 }
 
 // FAQ accordion
 document.querySelectorAll(".faq-item").forEach((item) => {
-  item.querySelector(".faq-question").addEventListener("click", () => {
-    const isOpen = item.classList.contains("open");
-    document
-      .querySelectorAll(".faq-item")
-      .forEach((i) => i.classList.remove("open"));
-    if (!isOpen) item.classList.add("open");
-  });
-});
-
-// Scroll reveal
-const observer = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) {
-        e.target.classList.add('reveal-pro');
-      }
+  const question = item.querySelector(".faq-question");
+  if (question) {
+    question.addEventListener("click", () => {
+      const isOpen = item.classList.contains("open");
+      document.querySelectorAll(".faq-item").forEach((i) => i.classList.remove("open"));
+      if (!isOpen) item.classList.add("open");
     });
-  },
-  { threshold: 0.1 },
-);
-
-document.querySelectorAll("section, .video-wrap, .category-section, .course-card").forEach((el) => {
-  observer.observe(el);
+  }
 });
 
-// Login Check Helper
-function checkLogin() {
-  if (typeof isLoggedIn !== 'undefined' && !isLoggedIn) {
-    showLoginModal();
+/* 🛒 PREMIUM CART LOGIC (Sync with Checkout) */
+async function addToCart(id) {
+  try {
+    const formData = new FormData();
+    formData.append('action', 'add');
+    formData.append('course_id', id);
+    
+    const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+    const data = await res.json();
+    
+    if (data.success) {
+      updateCartBadge(data.count);
+      showToast("เพิ่มลงตะกร้าเรียบร้อยแล้ว");
+      return true;
+    } else {
+      showToast(data.message || "เกิดข้อผิดพลาด");
+      return false;
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว");
     return false;
   }
-  return true;
 }
 
-function showLoginModal() {
-  // Create modal if not exists
-  let modal = document.getElementById('loginRequiredModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'loginRequiredModal';
-    modal.className = 'modal-overlay';
-    modal.innerHTML = `
-      <div class="login-modal">
-        <button class="close-modal" onclick="closeLoginModal()">&times;</button>
-        <div class="modal-icon">👤</div>
-        <h2>${langData.cart_popup_title}</h2>
-        <p>${langData.cart_popup_desc}</p>
-        <div class="modal-actions">
-          <a href="login.php" class="modal-btn modal-btn-login">${langData.btn_login}</a>
-          <a href="register.php" class="modal-btn modal-btn-register">${langData.btn_register}</a>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-    
-    // Close on click overlay
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeLoginModal();
-    });
-  }
-  
-  modal.style.display = 'flex';
-  setTimeout(() => modal.classList.add('active'), 10);
-}
-
-function closeLoginModal() {
-  const modal = document.getElementById('loginRequiredModal');
-  if (modal) {
-    modal.classList.remove('active');
-    setTimeout(() => {
-      modal.style.display = 'none';
-    }, 300);
-  }
-}
-
-function addToCart(courseId) {
-  if (!checkLogin()) return;
-
-  fetch("cart_handler.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `action=add&course_id=${courseId}`,
-  })
-    .then((r) => r.json())
-    .then((data) => {
-      if (data.success) {
-        const badge = document.getElementById("cart-count");
-        if (badge) {
-          badge.textContent = data.count;
-          badge.style.display = "flex";
-        }
-        showToast("เพิ่มลงตะกร้าแล้ว ✓");
-      } else {
-        showToast("เกิดข้อผิดพลาด: " + (data.message || "ไม่สามารถเพิ่มสินค้าได้"));
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      showToast("เกิดข้อผิดพลาดในการเชื่อมต่อ");
-    });
-}
-function addToCart(courseId) {
-  if (!checkLogin()) return;
-
-  fetch("cart_handler.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `action=add&course_id=${courseId}`,
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.success) {
-      // Update badge
-      const badge = document.getElementById("cart-count");
-      if (badge) {
-        badge.textContent = data.count;
-        badge.style.display = data.count > 0 ? "flex" : "none";
-      }
-      // Show success toast
-      showToast(data.message || "เพิ่มลงตะกร้าเรียบร้อยแล้ว");
-      // ไม่ต้องเปิดตะกร้าเด้งขึ้นมาตามคำขอผู้ใช้
+function updateCartBadge(count) {
+  const badges = document.querySelectorAll('#cart-count');
+  badges.forEach(badge => {
+    if (count > 0) {
+      badge.textContent = count;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
     }
   });
 }
-function buyNow(course) {
-  if (!checkLogin()) return;
 
-  fetch("cart_handler.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `action=add&course_id=${course.id}`,
-  }).then(() => {
-    const item = {
-      id: course.id,
-      name: course.name,
-      price: course.price,
-      qty: 1,
-      instructor: course.instructor,
-      image: course.image,
-      description: course.description,
-      category: course.category
-    };
-    localStorage.setItem('checkoutCart', JSON.stringify([item]));
-    window.location.href = 'pay2.1/index.php';
-  });
-}
-
-// โหลด count ตะกร้าตอนเปิดหน้า
-fetch("cart_handler.php", {
-  method: "POST",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  body: "action=count",
-})
-  .then((r) => r.json())
-  .then((data) => {
-    if (data.count > 0) {
-      const badge = document.getElementById("cart-count");
-      if (badge) {
-        badge.textContent = data.count;
-        badge.style.display = "flex";
-      }
-    }
-  });
-
-// --- CART MODAL LOGIC ---
-function openCartModal(e) {
+async function openCartModal(e) {
   if (e) e.preventDefault();
-  
-  let modal = document.getElementById('cartModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'cartModal';
-    modal.className = 'modal-overlay';
-    document.body.appendChild(modal);
-    
-    // Close on click overlay
-    modal.addEventListener('click', (ev) => {
-      if (ev.target === modal) closeCartModal();
-    });
-  }
-  
+  let modal = document.getElementById('cart-modal');
+  if (!modal) { createCartModal(); modal = document.getElementById('cart-modal'); }
   modal.style.display = 'flex';
-  
-  // Show loading
-  modal.innerHTML = `
-    <div class="cart-modal">
-      <div class="cart-modal-header">
-        <h2>ตะกร้าสินค้าของคุณ</h2>
-        <button class="close-modal" onclick="closeCartModal()">&times;</button>
-      </div>
-      <div class="cart-modal-body" style="padding: 60px 40px; text-align: center;">
-        <div class="spinner"></div>
-        <p style="margin-top: 16px; color: var(--text-muted);">กำลังโหลดข้อมูล...</p>
-      </div>
-    </div>
-  `;
-  setTimeout(() => modal.classList.add('active'), 10);
-
-  // Fetch cart data
-  fetch("cart_handler.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "action=get_cart",
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.success) {
-      renderCartModal(data.items, data.total, data.count);
-    }
-  });
+  document.body.style.overflow = 'hidden';
+  await renderCart(true);
 }
 
 function closeCartModal() {
-  const modal = document.getElementById('cartModal');
-  if (modal) {
-    modal.classList.remove('active');
-    setTimeout(() => { modal.style.display = 'none'; }, 300);
-  }
+  const modal = document.getElementById('cart-modal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
-function removeFromCartModal(courseId) {
-  fetch("cart_handler.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `action=remove&course_id=${courseId}`,
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.success) {
-      // Update badge
-      const badge = document.getElementById("cart-count");
-      if (badge) {
-        badge.textContent = data.count;
-        badge.style.display = data.count > 0 ? "flex" : "none";
-      }
+async function renderCart(showLoading = false) {
+  const list = document.getElementById('cart-items-list');
+  const totalEl = document.getElementById('cart-total-price');
+  const countEl = document.getElementById('cart-subtitle-count');
+  if (!list) return;
+
+  if (showLoading) {
+    list.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--gold-soft);">กำลังโหลดข้อมูล...</div>';
+  }
+
+  const formData = new FormData();
+  formData.append('action', 'get_cart');
+  const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+  const data = await res.json();
+
+  if (data.success && data.items.length > 0) {
+    countEl.textContent = `คุณมี ${data.items.length} รายการในตะกร้า`;
+    list.innerHTML = '';
+    data.items.forEach(item => {
+      const itemEl = document.createElement('div');
+      itemEl.id = `cart-item-${item.id}`;
+      itemEl.className = 'cart-item';
+      itemEl.style = "display: grid; grid-template-columns: 120px 1fr 30px; gap: 20px; margin-bottom: 25px; align-items: center; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s;";
       
-      if (data.count === 0) {
-        // If empty, re-render to show empty state
-        renderCartModal([], 0, 0);
-      } else {
-        // Otherwise, just remove the row and update total
-        const row = document.getElementById(`cart-item-${courseId}`);
-        if (row) {
-          row.style.opacity = '0';
-          row.style.transform = 'translateX(20px)';
-          setTimeout(() => {
-            row.remove();
-          }, 300);
-        }
-        
-        // Update total and count text
-        const totalEl = document.getElementById('cart-total-value');
-        if (totalEl) totalEl.textContent = `฿${Number(data.total).toLocaleString()}`;
-        
-        const countEl = document.getElementById('cart-count-text');
-        if (countEl) countEl.textContent = `คุณมี ${data.count} รายการในตะกร้า`;
-      }
-    }
-  });
-}
-
-function checkoutCartModal() {
-  if (!checkLogin()) return;
-
-  // Fetch full cart data to ensure localStorage is in sync before redirect
-  fetch("cart_handler.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "action=get_cart",
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.success && data.items.length > 0) {
-      localStorage.setItem('checkoutCart', JSON.stringify(data.items));
-      window.location.href = 'pay2.1/index.php';
-    } else {
-      showToast("ตะกร้าว่างเปล่า");
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    showToast("เกิดข้อผิดพลาดในการชำระเงิน");
-  });
-}
-
-function renderCartModal(items, total, count) {
-  const modal = document.getElementById('cartModal');
-  if (!modal) return;
-  
-  if (items.length === 0) {
-    modal.innerHTML = `
-      <div class="cart-modal">
-        <div class="cart-modal-header">
-          <h2>ตะกร้าสินค้าของคุณ</h2>
-          <button class="close-modal" onclick="closeCartModal()">&times;</button>
+      const imgPath = item.image.startsWith('uploads/') ? '/' + item.image : 'IMG/' + item.image;
+      
+      itemEl.innerHTML = `
+        <div style="width: 120px; height: 75px; border-radius: 12px; overflow: hidden; border: 1px solid var(--navy-border);">
+          <img src="${imgPath}" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
-        <div class="cart-empty">
-          <div class="cart-empty-icon">🛒</div>
-          <p class="cart-empty-text">ตะกร้าสินค้าของคุณยังว่างเปล่า</p>
-          <button class="btn-checkout" onclick="closeCartModal()" style="margin-top: 24px; max-width: 200px;">ไปเลือกคอร์สเรียน</button>
-        </div>
-      </div>
-    `;
-    return;
-  }
-
-  let itemsHtml = items.map(item => {
-    let priceHtml = `<span class="cart-item-price">฿${Number(item.price).toLocaleString()}</span>`;
-    if (item.old_price && item.old_price > item.price) {
-      priceHtml += `<span class="cart-item-price-old">฿${Number(item.old_price).toLocaleString()}</span>`;
-    }
-    
-    let img_src = item.image;
-    if (img_src.includes('<img')) {
-      const m = img_src.match(/src="([^"]+)"/);
-      if (m) img_src = m[1];
-    } else if (img_src.includes('.')) {
-      img_src = img_src.startsWith('uploads/') ? '/' + img_src : 'IMG/' + img_src;
-    }
-
-    return `
-      <div class="cart-item-row" id="cart-item-${item.id}" style="transition: all 0.3s ease;">
-        <img src="${img_src}" class="cart-item-img" alt="${item.name}">
-        <div class="cart-item-info">
-          <div class="cart-item-name">${item.name}</div>
-          <div class="cart-item-instructor">
-            <img src="${item.instructor_avatar || 'IMG/default-avatar.png'}" style="width: 18px; height: 18px; border-radius: 50%; object-fit: cover;">
-            <span>${item.instructor}</span>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+          <div style="font-weight: 700; color: #fff; font-size: 1.05rem;">${item.name}</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-muted);">
+             <div style="width: 18px; height: 18px; background: var(--navy-light); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user" style="font-size: 0.6rem;"></i></div>
+             ${item.instructor}
           </div>
-          <div>${priceHtml}</div>
+          <div style="display: flex; align-items: baseline; gap: 10px; margin-top: 5px;">
+            <span style="color: var(--gold); font-weight: 800; font-size: 1.1rem;">฿${item.price.toLocaleString()}</span>
+            ${item.old_price > item.price ? `<span style="color: var(--text-subtle); text-decoration: line-through; font-size: 0.85rem;">฿${item.old_price.toLocaleString()}</span>` : ''}
+          </div>
         </div>
-        <button class="cart-item-remove" onclick="removeFromCartModal(${item.id})" title="ลบรายการนี้">
-          <i class="far fa-trash-alt"></i>
+        <button onclick="silentRemove(${item.id})" style="background: none; border: none; color: var(--text-subtle); cursor: pointer; transition: 0.3s;" onmouseover="this.style.color='#ff4757'" onmouseout="this.style.color='var(--text-subtle)'">
+          <i class="far fa-trash-alt" style="font-size: 1.1rem;"></i>
         </button>
-      </div>
-    `;
-  }).join('');
+      `;
+      list.appendChild(itemEl);
+    });
+    totalEl.textContent = `฿${data.total.toLocaleString()}`;
+  } else {
+    countEl.textContent = 'ตะกร้าของคุณยังว่างอยู่';
+    list.innerHTML = '<div style="text-align:center; padding: 60px; color: var(--text-muted); font-size: 0.95rem;">ยังไม่มีสินค้าในตะกร้าของคุณ</div>';
+    totalEl.textContent = '฿0';
+  }
+}
 
+async function silentRemove(id) {
+  const itemEl = document.getElementById(`cart-item-${id}`);
+  if (itemEl) { itemEl.style.opacity = '0'; itemEl.style.transform = 'translateX(20px)'; }
+  const formData = new FormData();
+  formData.append('action', 'remove');
+  formData.append('course_id', id);
+  const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+  const data = await res.json();
+  if (data.success) {
+    updateCartBadge(data.count);
+    await renderCart(false);
+  }
+}
+
+async function goToPayment() {
+  // Sync PHP Cart with LocalStorage for pay2.1
+  const formData = new FormData();
+  formData.append('action', 'get_cart');
+  const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+  const data = await res.json();
+  
+  if (data.success && data.items.length > 0) {
+    localStorage.setItem('checkoutCart', JSON.stringify(data.items));
+    window.location.href = 'pay2.1/index.php';
+  } else {
+    showToast("ไม่มีสินค้าในตะกร้า");
+  }
+}
+
+function createCartModal() {
+  const modal = document.createElement('div');
+  modal.id = 'cart-modal';
+  modal.style = `
+    position: fixed; inset: 0; background: rgba(7, 12, 22, 0.85); backdrop-filter: blur(15px);
+    z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px;
+    font-family: 'Prompt', sans-serif;
+  `;
   modal.innerHTML = `
-    <div class="cart-modal">
-      <div class="cart-modal-header">
+    <div style="background: var(--navy-card); width: 100%; max-width: 580px; border-radius: 32px; border: 1px solid var(--navy-border2); overflow: hidden; box-shadow: 0 50px 120px rgba(0,0,0,0.8);">
+      <div style="padding: 35px 40px 25px; display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
-          <h2>ตะกร้าสินค้าของคุณ</h2>
-          <div class="cart-count-text" id="cart-count-text">คุณมี ${count} รายการในตะกร้า</div>
+          <h2 style="margin: 0 0 8px; color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 1.6rem;">ตะกร้าสินค้าของคุณ</h2>
+          <p id="cart-subtitle-count" style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">กำลังคำนวณรายการ...</p>
         </div>
-        <button class="close-modal" onclick="closeCartModal()">&times;</button>
+        <button onclick="closeCartModal()" style="background: rgba(255,255,255,0.05); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">&times;</button>
       </div>
-      <div class="cart-modal-body">
-        ${itemsHtml}
-      </div>
-      <div class="cart-modal-footer">
-        <div class="cart-total-row">
-          <div class="cart-total-label">ยอดชำระทั้งหมด</div>
-          <div class="cart-total-value" id="cart-total-value">฿${Number(total).toLocaleString()}</div>
+      <div id="cart-items-list" style="padding: 10px 40px; max-height: 420px; overflow-y: auto;"></div>
+      <div style="padding: 35px 40px 45px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; border-top: 1px solid var(--navy-border); padding-top: 30px;">
+          <span style="color: var(--text-muted); font-weight: 600; font-size: 1.1rem;">ยอดชำระทั้งหมด</span>
+          <span id="cart-total-price" style="font-size: 2.2rem; font-weight: 800; color: #fff; font-family: var(--font-display);">฿0</span>
         </div>
-        <button class="btn-checkout" onclick="checkoutCartModal()">
+        <button onclick="goToPayment()" style="
+          width: 100%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); 
+          color: var(--navy-deep); border: none; padding: 20px; border-radius: 18px; 
+          font-weight: 800; font-size: 1.2rem; cursor: pointer; transition: 0.4s;
+          box-shadow: 0 15px 35px rgba(201, 168, 76, 0.25);
+        " onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 20px 45px rgba(201, 168, 76, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 15px 35px rgba(201, 168, 76, 0.25)';">
           ดำเนินการชำระเงิน
         </button>
       </div>
     </div>
   `;
+  modal.onclick = (e) => { if (e.target === modal) closeCartModal(); };
+  document.body.appendChild(modal);
 }
 
-function setTab(el, val) {
-  document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  switchCourseTab(val);
-}
-function setFilter(el, val) {
-  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  filterCategory(val);
-}
-function switchCourseTab(val) {
-  console.log('Switched tab to:', val);
-}
-
+// DOM Ready
 document.addEventListener("DOMContentLoaded", () => {
-  // Course Carousel Logic
-  document.querySelectorAll('.course-grid').forEach(grid => {
-    // Only apply carousel if not in 'All' mode or if we want horizontal scroll for categories
-    // For now, we'll keep it but it might look better disabled for vertical "See More" flow
-    if (grid.children.length > 3) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'course-carousel-container';
-      grid.parentNode.insertBefore(wrapper, grid);
-      wrapper.appendChild(grid);
-      const prevBtn = document.createElement('button');
-      prevBtn.className = 'carousel-btn prev-btn';
-      prevBtn.innerHTML = '❮';
-      prevBtn.onclick = () => { grid.scrollBy({ left: -320, behavior: 'smooth' }); };
-      const nextBtn = document.createElement('button');
-      nextBtn.className = 'carousel-btn next-btn';
-      nextBtn.innerHTML = '❯';
-      nextBtn.onclick = () => { grid.scrollBy({ left: 320, behavior: 'smooth' }); };
-      wrapper.appendChild(prevBtn);
-      wrapper.appendChild(nextBtn);
-      grid.style.margin = '0';
-    }
-  });
-  
-  // Initial filter to apply 3-item limit
-  filterCategory('all');
+  const activeF = document.querySelector('.filter-pill.active');
+  if (activeF) setFilter(activeF, 'all');
 
-  // Testimonials Marquee Clone
-  const testimonialsTrack = document.querySelector('.testimonials-track');
-  if (testimonialsTrack) {
-    const cards = Array.from(testimonialsTrack.children);
-    cards.forEach(card => {
-      const clone = card.cloneNode(true);
-      testimonialsTrack.appendChild(clone);
-    });
-  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('section, .course-card').forEach(el => observer.observe(el));
 
-  // Scroll Reveal Animation Logic
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.15
-  };
-
-  const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target); // Stop observing once revealed
-      }
-    });
-  }, observerOptions);
-
-  document.querySelectorAll('.reveal').forEach(el => {
-    observer.observe(el);
-  });
-
-  // Navbar Blur on Scroll
   const navbar = document.querySelector('nav');
   if (navbar) {
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
+      if (window.scrollY > 50) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
     });
   }
+
+  fetch('cart_handler.php', { method: 'POST', body: new URLSearchParams({ action: 'count' }) })
+    .then(res => res.json()).then(data => updateCartBadge(data.count));
 });
 
-// Toast Helper (if not defined elsewhere)
 function showToast(msg) {
-    let toast = document.getElementById('toast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast';
-        toast.style = `
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            z-index: 3000;
-            font-family: 'Prompt', sans-serif;
-            font-size: 0.9rem;
-            display: none;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        `;
-        document.body.appendChild(toast);
-    }
-    toast.textContent = msg;
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style = `
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.95); color: white; padding: 14px 28px;
+      border-radius: 50px; z-index: 10000; font-family: 'Prompt', sans-serif;
+      font-size: 0.95rem; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: none;
+      border: 1px solid var(--navy-border);
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 3000);
 }

@@ -35,48 +35,52 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
 
     <!-- NAV -->
     <nav>
-        <div class="nav-logo">
+        <a href="index.php" class="nav-logo">
             <div class="logo-icon">🌀</div>
             ICONNEX
-        </div>
+        </a>
         <ul class="nav-links">
             <li><a href="#hero"><?php echo __('nav_home'); ?></a></li>
-            <li><a href="#about"><?php echo __('nav_about'); ?></a></li>
-            <li><a href="#services"><?php echo __('nav_services'); ?></a></li>
-            <li><a href="#news"><?php echo __('nav_news'); ?></a></li>
+            <li><a href="#courses"><?php echo __('nav_courses'); ?></a></li>
             <li><a href="#portfolio"><?php echo __('nav_portfolio'); ?></a></li>
             <li><a href="#contact"><?php echo __('nav_contact'); ?></a></li>
-            <li><a href="#courses" class="active"><?php echo __('nav_courses'); ?></a></li>
             <li class="lang-switcher">
-                <a href="?lang=th" class="<?php echo $current_lang === 'th' ? 'active' : ''; ?>">TH</a> | 
+                <a href="?lang=th" class="<?php echo $current_lang === 'th' ? 'active' : ''; ?>">TH</a>
+                <span>|</span>
                 <a href="?lang=en" class="<?php echo $current_lang === 'en' ? 'active' : ''; ?>">EN</a>
             </li>
-            <li>
-                <a href="#" onclick="openCartModal(event)" style="position:relative">
-                    🛒 <span id="cart-count" style="
-            display:none; position:absolute; top:-8px; right:-12px;
-            background:#6c63ff; color:#fff; border-radius:50%;
-            width:18px; height:18px; font-size:.7rem;
-            align-items:center; justify-content:center; font-weight:700;
-        ">0</span>
-                </a>
-            </li>
-            <?php if(isset($_SESSION['user_id'])): ?>
-                <li><a href="logout.php" style="color: #ffae35;">Logout (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a></li>
-                <?php if($_SESSION['role'] === 'admin'): ?>
-                    <li><a href="admin/index.php" style="color: #4CAF50;">Admin Panel</a></li>
-                <?php endif; ?>
-            <?php else: ?>
-                <li><a href="login.php" style="color: #4CAF50;"><?php echo __('btn_login'); ?></a></li>
-            <?php endif; ?>
         </ul>
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
+            <a href="#" onclick="openCartModal(event)" style="position:relative; font-size: 1.2rem; color: #fff; text-decoration:none;">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-count" style="display:none; position:absolute; top:-8px; right:-12px; background:var(--gold); color:var(--navy-deep); border-radius:50%; width:18px; height:18px; font-size:.7rem; align-items:center; justify-content:center; font-weight:800; border: 2px solid var(--navy-deep);">0</span>
+            </a>
+            <?php if(isset($_SESSION['user_id'])): ?>
+                <div style="display: flex; align-items: center; gap: 15px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
+                    <a href="my_orders.php" style="color: var(--gold-soft); font-size: 0.85rem; font-weight: 700; text-decoration:none;">
+                        <i class="fas fa-history"></i> <?php echo __('nav_my_orders'); ?>
+                    </a>
+                    <a href="logout.php" style="background: rgba(255,255,255,0.05); color: #fff; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; text-decoration:none;">
+                        <?php echo __('nav_logout'); ?>
+                    </a>
+                </div>
+            <?php else: ?>
+                <a href="login.php" style="background: var(--gold); color: var(--navy-deep); padding: 8px 25px; border-radius: 30px; font-weight: 800; text-decoration:none; font-size: 0.85rem;">
+                    <?php echo __('btn_login'); ?>
+                </a>
+            <?php endif; ?>
+        </div>
     </nav>
 
     <!-- HERO -->
-    <section class="hero" id="hero">
-        <h1><?php echo __('hero_title'); ?></h1>
-        <p><?php echo __('hero_subtitle'); ?></p>
-        <a href="#courses" class="btn-primary"><?php echo __('hero_btn_explore'); ?></a>
+    <section class="hero" id="hero" style="padding: 140px 5% 100px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+        <h1 style="font-size: 4.5rem; background: linear-gradient(135deg, #fff 0%, var(--gold-soft) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 25px;"><?php echo __('hero_title'); ?></h1>
+        <p style="font-size: 1.25rem; max-width: 800px; line-height: 1.6; margin-bottom: 40px; color: var(--text-muted);"><?php echo __('hero_subtitle'); ?></p>
+        <div style="display: flex; gap: 20px;">
+            <a href="#courses" class="btn-primary" style="padding: 18px 45px; border-radius: 50px; font-size: 1.1rem; font-weight: 800;"><?php echo __('hero_btn_explore'); ?></a>
+            <a href="#about" class="btn-outline" style="padding: 18px 45px; border-radius: 50px; font-size: 1.1rem; font-weight: 800; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03);"><?php echo __('hero_btn_about'); ?></a>
+        </div>
+        
         <?php
         $total_courses = count($courses);
         $total_rating = 0;
@@ -86,284 +90,226 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             $total_reviews += intval($c['reviews']);
         }
         $avg_rating = $total_courses > 0 ? number_format($total_rating / $total_courses, 1) : "5.0";
-        $total_members = $total_reviews * 10; // Mock calculation based on reviews
+        $total_members = $total_reviews * 10;
         $total_members_display = $total_members > 1000 ? round($total_members / 1000, 1) . 'K' : number_format($total_members);
-        if ($total_members == 0) $total_members_display = '0';
         ?>
-        <div class="hero-stats" style="margin-top: 40px; border-top: 1px solid var(--border); padding-top: 30px;">
-            <div class="reveal-pro">
-                <div class="stat-num accent-text"><?php echo $total_members_display; ?></div>
-                <div class="stat-label"><?php echo __('stats_members'); ?></div>
+        <div class="hero-stats-premium reveal-pro" style="margin-top: 80px;">
+            <div class="stat-item" style="padding: 0 40px; border-right: 1px solid rgba(255,255,255,0.1);">
+                <div style="font-family: 'Sora', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold);"><?php echo $total_members_display; ?></div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;"><?php echo __('stats_members'); ?></div>
             </div>
-            <div class="reveal-pro" style="transition-delay: 0.1s;">
-                <div class="stat-num accent-text"><?php echo $total_courses; ?>+</div>
-                <div class="stat-label"><?php echo __('stats_courses'); ?></div>
+            <div class="stat-item" style="padding: 0 40px; border-right: 1px solid rgba(255,255,255,0.1);">
+                <div style="font-family: 'Sora', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold);"><?php echo $total_courses; ?>+</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;"><?php echo __('stats_courses'); ?></div>
             </div>
-            <div class="reveal-pro" style="transition-delay: 0.2s;">
-                <div class="stat-num accent-text"><?php echo $avg_rating; ?> ★</div>
-                <div class="stat-label"><?php echo __('stats_rating'); ?></div>
+            <div class="stat-item" style="padding: 0 40px;">
+                <div style="font-family: 'Sora', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold);"><?php echo $avg_rating; ?> ★</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;"><?php echo __('stats_rating'); ?></div>
             </div>
         </div>
     </section>
 
     <!-- VIDEO -->
-    <div class="video-section">
-        <div class="video-container">
-            <iframe width="900" height="506" src="https://www.youtube.com/embed/PorE9ETx9Ek" frameborder="0"
-                allowfullscreen>
-            </iframe>
+    <div class="video-section" style="padding: 0 5% 100px;">
+        <div class="video-container" style="border-radius: 30px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.5); border: 1px solid var(--navy-border2);">
+            <iframe width="100%" height="600" src="https://www.youtube.com/embed/PorE9ETx9Ek" frameborder="0" allowfullscreen></iframe>
         </div>
     </div>
 
     <!-- PORTFOLIO -->
-    <section id="portfolio">
-        <h2 class="section-title reveal">ผลงาน</h2>
-        <p class="section-description reveal" style="margin-bottom: 40px; opacity: 0.8;">คัดสรรผลงานระดับพรีเมียมที่เราภูมิใจนำเสนอ เพื่อการันตีคุณภาพงานสร้างสรรค์ในทุกมิติ</p>
-        <div class="tab-bar reveal">
-            <button class="tab-btn" onclick="switchTab(this,'photo')">ภาพ</button>
-            <button class="tab-btn active" onclick="switchTab(this,'video')">วิดีโอ</button>
+    <section id="portfolio" style="padding: 120px 0; background: radial-gradient(circle at 50% 0%, rgba(168, 133, 46, 0.05), transparent 70%);">
+        <div style="text-align: center; margin-bottom: 70px; padding: 0 5%;">
+            <span style="color: var(--gold); font-weight: 800; letter-spacing: 3px; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; display: block;">Our Creations</span>
+            <h2 style="font-size: 3.5rem; font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; margin-bottom: 20px;"><?php echo __('nav_portfolio'); ?></h2>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; font-size: 1.1rem; line-height: 1.6;">สัมผัสผลงานระดับ Masterpiece ที่คัดสรรมาเพื่อการันตีความเป็นมืออาชีพในทุกมิติ</p>
         </div>
 
-        <!-- PHOTOS MARQUEE -->
-        <div id="portfolio-photo-content" class="portfolio-marquee-container">
-            <div class="portfolio-marquee">
-                <!-- Original set -->
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" alt="THAIFEX 2025" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Event" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Stage" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" alt="Media" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" alt="Event 2" /></div>
-                <!-- Duplicated set for seamless scrolling -->
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" alt="THAIFEX 2025" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Event" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Stage" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" alt="Media" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" alt="Event 2" /></div>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 60px;">
+            <button class="tab-btn active" onclick="switchTab(this,'video')" style="padding: 14px 35px; border-radius: 40px; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; font-weight: 700; font-family: 'Sora', sans-serif; transition: 0.3s;">VIDEOS</button>
+            <button class="tab-btn" onclick="switchTab(this,'photo')" style="padding: 14px 35px; border-radius: 40px; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; font-weight: 700; font-family: 'Sora', sans-serif; transition: 0.3s;">PHOTOS</button>
+        </div>
+
+        <div id="portfolio-photo-content" class="testimonials-marquee-container" style="display: none;">
+            <div class="portfolio-marquee" style="display: flex; gap: 30px; width: max-content; animation: scroll-marquee 40s linear infinite;">
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <!-- Duplicate for seamless scroll -->
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
             </div>
         </div>
-        <!-- VIDEOS MARQUEE -->
-        <div id="portfolio-video-content" class="portfolio-marquee-container" style="display: none;">
-            <div class="portfolio-marquee">
-                <!-- Original set -->
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" style="filter: brightness(0.7);" alt="Video 1" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" style="filter: brightness(0.7);" alt="Video 2" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" style="filter: brightness(0.7);" alt="Video 3" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" style="filter: brightness(0.7);" alt="Video 4" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" style="filter: brightness(0.7);" alt="Video 5" /><span class="video-play-icon">▶</span></div>
-                <!-- Duplicated set for seamless scrolling -->
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" style="filter: brightness(0.7);" alt="Video 1" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=600&q=80" style="filter: brightness(0.7);" alt="Video 2" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" style="filter: brightness(0.7);" alt="Video 3" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" style="filter: brightness(0.7);" alt="Video 4" /><span class="video-play-icon">▶</span></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1516280440502-861054b1f6f8?w=600&q=80" style="filter: brightness(0.7);" alt="Video 5" /><span class="video-play-icon">▶</span></div>
+
+        <div id="portfolio-video-content" class="testimonials-marquee-container">
+            <div class="portfolio-marquee" style="display: flex; gap: 30px; width: max-content; animation: scroll-marquee 35s linear infinite;">
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <!-- Duplicate -->
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
             </div>
         </div>
     </section>
 
     <!-- TESTIMONIALS -->
-    <section class="section testimonials-bg" id="testimonials">
-        <h2 class="section-title reveal">เสียงจากลูกค้าของเรา</h2>
-        <div class="testimonials-marquee-container">
-            <div class="testimonials-track">
-                <div class="testimonial-card">
-                    <div class="testimonial-stars">★★★★★</div>
-                    <p class="testimonial-text">
-                        "คอร์สนี้เปลี่ยนชีวิตผมจริงๆ
-                        ตอนนี้มีรายได้จากการตัดต่อวิดีโอเต็มเวลาแล้ว ขอบคุณ ICONNEX มากๆ
-                        ครับ"
-                    </p>
-                <div class="testimonial-author">
-                    <div class="avatar">ก</div>
-                    <div class="author-info">
-                        <div class="name">กิตติภพ ส.</div>
-                        <div class="role">Freelance Editor</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-stars">★★★★★</div>
-                <p class="testimonial-text">
-                    "คอร์สนี้เปลี่ยนชีวิตผมจริงๆ
-                    ตอนนี้มีรายได้จากการตัดต่อวิดีโอเต็มเวลาแล้ว ขอบคุณ ICONNEX มากๆ
-                    ครับ"
-                </p>
-                <div class="testimonial-author">
-                    <div class="avatar">ก</div>
-                    <div class="author-info">
-                        <div class="name">กิตติภพ ส.</div>
-                        <div class="role">Freelance Editor</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-stars">★★★★★</div>
-                <p class="testimonial-text">
-                    "คอร์สนี้เปลี่ยนชีวิตผมจริงๆ
-                    ตอนนี้มีรายได้จากการตัดต่อวิดีโอเต็มเวลาแล้ว ขอบคุณ ICONNEX มากๆ
-                    ครับ"
-                </p>
-                <div class="testimonial-author">
-                    <div class="avatar">ก</div>
-                    <div class="author-info">
-                        <div class="name">กิตติภพ ส.</div>
-                        <div class="role">Freelance Editor</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-stars">★★★★★</div>
-                <p class="testimonial-text">
-                    "เนื้อหาละเอียดมากค่ะ อาจารย์อธิบายเข้าใจง่าย ทำตามได้เลย
-                    ผลงานของเราพัฒนาขึ้นเร็วมากหลังเรียน"
-                </p>
-                <div class="testimonial-author">
-                    <div class="avatar">น</div>
-                    <div class="author-info">
-                        <div class="name">นภัสสร ว.</div>
-                        <div class="role">Content Creator</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-stars">★★★★★</div>
-                <p class="testimonial-text">
-                    "ชอบ Workshop สดมากครับ ได้ Feedback ตรงๆ จากผู้เชี่ยวชาญ
-                    ทำให้พัฒนาได้เร็วกว่าเรียนคนเดียวมาก"
-                </p>
-                <div class="testimonial-author">
-                    <div class="avatar">พ</div>
-                    <div class="author-info">
-                        <div class="name">พีระพัฒน์ ล.</div>
-                        <div class="role">Videographer</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-stars">★★★★☆</div>
-                <p class="testimonial-text">
-                    "คุ้มค่ามากค่ะ ตอนแรกกังวลว่าจะยากเกินไป แต่ระบบสอนดี ค่อยๆ เรียนได้
-                    สนุกมากเลยค่ะ"
-                </p>
-                <div class="testimonial-author">
-                    <div class="avatar">ส</div>
-                    <div class="author-info">
-                        <div class="name">สิรินดา ภ.</div>
-                        <div class="role">Social Media Manager</div>
-                    </div>
-                </div>
-            </div>
+    <section id="testimonials" style="padding: 120px 0; background: #0b1221; border-top: 1px solid var(--navy-border); border-bottom: 1px solid var(--navy-border);">
+        <div style="text-align: center; margin-bottom: 60px; padding: 0 5%;">
+            <span style="color: var(--gold); font-weight: 800; letter-spacing: 3px; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; display: block;">Reviews</span>
+            <h2 style="font-size: 3rem; font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; margin-bottom: 20px;"><?php echo __('testimonials_title') ?? 'ความประทับใจจากลูกค้า'; ?></h2>
         </div>
+        
+        <div class="testimonials-marquee-container">
+            <div class="testimonials-track" style="display: flex; gap: 30px; padding: 20px 0;">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px; width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                    <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
+                    <p style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; font-family: 'Prompt', sans-serif;">"คอร์สเรียนนี้ช่วยให้ผมประหยัดเวลาในการลองผิดลองถูกไปได้เยอะมาก เนื้อหากระชับ เข้าใจง่าย และที่สำคัญคือเทคนิคที่สอนมันใช้งานได้จริงในระดับมืออาชีพครับ"</p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">K</div>
+                        <div>
+                            <div style="color: #fff; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif;">คุณกิตติศักดิ์</div>
+                            <div style="color: var(--gold-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Creative Director</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px; width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                    <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
+                    <p style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; font-family: 'Prompt', sans-serif;">"ประทับใจระบบหลังบ้านและทีมสนับสนุนมากค่ะ เวลาติดปัญหาตรงไหนถามไปก็ได้คำตอบที่ชัดเจนตลอด คุ้มค่าแก่การลงทุนเพื่อพัฒนาตัวเองจริงๆ ค่ะ"</p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">N</div>
+                        <div>
+                            <div style="color: #fff; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif;">คุณนภัสสร</div>
+                            <div style="color: var(--gold-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Content Strategist</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px; width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                    <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
+                    <p style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; font-family: 'Prompt', sans-serif;">"ผมเรียนจบคอร์สนี้แล้วสามารถรับงานตัดต่อวิดีโอได้เลย คุ้มค่ามากครับ อาจารย์สอนเทคนิคที่หาเรียนที่ไหนไม่ได้ และคอมมูนิตี้ในกลุ่มก็น่ารักมากครับ"</p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">P</div>
+                        <div>
+                            <div style="color: #fff; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif;">คุณพีระพัฒน์</div>
+                            <div style="color: var(--gold-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Professional YouTuber</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- COURSES -->
-    <section id="courses">
-        <!-- Tabs & Filters -->
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 48px;">
-            <div style="text-align: center;">
-                <h2 style="font-size: 3.5rem; font-family: 'Prompt', sans-serif; font-weight: 800; margin-bottom: 12px; color: var(--white);"><?php echo __('packages_title'); ?></h2>
-                <p class="section-description" style="font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;"><?php echo __('packages_subtitle'); ?></p>
-            </div>
-            
-            <!-- Category Filters -->
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 10px;">
-                <button class="filter-pill active" onclick="setFilter(this,'all')"><?php echo __('filter_all'); ?></button>
-                <?php 
-                $unique_categories = [];
-                foreach ($courses as $c) {
-                    if (!in_array($c['category'], $unique_categories)) {
-                        $unique_categories[] = $c['category'];
-                    }
-                }
-                foreach ($unique_categories as $cat): 
-                ?>
-                <button class="filter-pill" onclick="setFilter(this,'<?php echo htmlspecialchars($cat); ?>')"><?php echo htmlspecialchars($cat); ?></button>
-                <?php endforeach; ?>
-            </div>
+    <section id="courses" style="padding: 100px 5%;">
+        <div style="text-align: center; margin-bottom: 50px;">
+            <h2 style="font-size: 3.5rem; font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 20px; color: #fff;"><?php echo __('packages_title'); ?></h2>
+            <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 700px; margin: 0 auto;"><?php echo __('packages_subtitle'); ?></p>
         </div>
 
-        <?php foreach ($unique_categories as $cat): ?>
-        <div class="category-section" data-category="<?php echo htmlspecialchars($cat); ?>" style="transition: all 0.4s ease; margin-bottom: 60px;">
-            <div class="course-section-label" style="margin-bottom: 30px;">
-                <h3 style="text-align: center; font-size: 1.5rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase;"><?php echo htmlspecialchars($cat); ?></h3>
-                <div style="width: 60px; height: 3px; background: var(--accent); margin: 12px auto; border-radius: 2px;"></div>
-            </div>
-            
-            <div class="course-grid">
-                <?php 
-                foreach ($courses as $course): 
-                    if ($course['category'] === $cat):
-                ?>
-                <div class="course-card" onclick="goToDetail(<?php echo $course['id']; ?>)">
+        <!-- Category Filters -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 60px;">
+            <button class="filter-pill active" onclick="setFilter(this,'all')"><?php echo __('filter_all'); ?></button>
+            <?php 
+            $unique_categories = [];
+            foreach ($courses as $c) {
+                if (!in_array($c['category'], $unique_categories)) {
+                    $unique_categories[] = $c['category'];
+                }
+            }
+            foreach ($unique_categories as $cat): 
+            ?>
+            <button class="filter-pill" onclick="setFilter(this,'<?php echo htmlspecialchars($cat); ?>')"><?php echo htmlspecialchars($cat); ?></button>
+            <?php endforeach; ?>
+        </div>
+        
+        <div class="course-grid" id="courseGrid">
+            <?php 
+            $count = 0;
+            foreach ($courses as $course): 
+                $img_val = $course['image'];
+                $img_src = '';
+                if (strpos($img_val, '<img') !== false) {
+                    if (preg_match('/src="([^"]+)"/', $img_val, $m)) $img_src = $m[1];
+                } else {
+                    $img_src = strpos($img_val, 'uploads/') === 0 ? '/' . $img_val : 'IMG/' . $img_val;
+                }
+                $count++;
+                $displayClass = $count > 3 ? 'extra-course' : '';
+                $catData = htmlspecialchars($course['category']);
+            ?>
+                <div class="course-card <?php echo $displayClass; ?>" data-category="<?php echo $catData; ?>" onclick="goToDetail(<?php echo $course['id']; ?>)" style="<?php echo $count > 3 ? 'display: none;' : ''; ?>">
                     <div class="course-card-header">
-                        <?php 
-                        $img_val = $course['image'];
-                        if (strpos($img_val, '<img') !== false): 
-                            echo str_replace('<img', '<img class="course-card-img"', $img_val);
-                        elseif (strpos($img_val, '.') !== false): 
-                            $img_src = strpos($img_val, 'uploads/') === 0 ? '/' . htmlspecialchars($img_val) : 'IMG/' . htmlspecialchars($img_val);
-                        ?>
-                            <img src="<?php echo $img_src; ?>" alt="<?php echo htmlspecialchars($course['name']); ?>" class="course-card-img" />
-                        <?php else: ?>
-                            <div style="height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 80px; background: #1a1a1a;">
-                                <?php echo htmlspecialchars($img_val ?: '📚'); ?>
-                            </div>
-                        <?php endif; ?>
-                        <div class="course-card-label" style="position: absolute; top: 15px; right: 15px; margin: 0;"><?php echo htmlspecialchars($course['category']); ?></div>
-                        <div class="course-rating" style="position: absolute; bottom: 15px; left: 15px; margin: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">⭐ <?php echo number_format($course['rating'], 1); ?></div>
-                    </div>
-                    
-                    <div class="course-card-body">
-                        <p class="course-name"><?php echo htmlspecialchars($course['name']); ?></p>
-                        <p class="course-instructor">
-                            <?php if (!empty($course['instructor_avatar'])): ?>
-                                <img src="<?php echo htmlspecialchars($course['instructor_avatar']); ?>" alt="Instructor" class="instructor-avatar">
-                            <?php else: ?>
-                                <div class="instructor-avatar-placeholder"><i class="fas fa-user"></i></div>
-                            <?php endif; ?>
-                            <?php echo htmlspecialchars($course['instructor']); ?>
-                        </p>
-                        
-                        <div class="course-info">
-                            <span><i class="fas fa-users"></i> <?php echo rand(50, 500); ?></span>
-                            <span><i class="far fa-clock"></i> <?php echo $course['hours']; ?> ชม.</span>
-                            <span><i class="fas fa-signal"></i> พื้นฐาน</span>
+                        <img src="<?php echo $img_src; ?>" alt="Course" class="course-card-img">
+                        <div class="course-card-label">
+                            <?php echo htmlspecialchars($course['category']); ?>
                         </div>
-                        
-                        <p class="course-description" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.8em;"><?php echo htmlspecialchars($course['short_desc']); ?></p>
+                        <div class="course-rating">
+                            ⭐ <?php echo number_format($course['rating'], 1); ?>
+                        </div>
                     </div>
-                    
+                    <div class="course-card-body">
+                        <h3 class="course-name"><?php echo htmlspecialchars($course['name']); ?></h3>
+                        <div class="course-instructor">
+                            <div class="instructor-avatar-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span><?php echo htmlspecialchars($course['instructor']); ?></span>
+                        </div>
+                        <div class="course-info">
+                            <span><i class="far fa-clock"></i> <?php echo $course['hours']; ?> ชม.</span>
+                            <span><i class="far fa-play-circle"></i> <?php echo $course['lessons']; ?> บทเรียน</span>
+                        </div>
+                        <p class="course-description">
+                            <?php echo htmlspecialchars($course['short_desc']); ?>
+                        </p>
+                    </div>
                     <div class="course-card-footer">
                         <div class="course-price-container">
                             <span class="course-price-new">฿<?php echo number_format($course['price']); ?></span>
-                            <?php if(isset($course['old_price']) && $course['old_price'] > $course['price']): ?>
+                            <?php if($course['old_price'] > $course['price']): ?>
                                 <span class="course-price-old">฿<?php echo number_format($course['old_price']); ?></span>
                             <?php endif; ?>
                         </div>
-                        <div class="course-actions">
-                            <button class="course-btn-cart" onclick="event.stopPropagation();addToCart(<?php echo $course['id']; ?>)">
+                        <div style="display: flex; gap: 8px;">
+                            <button class="course-btn-icon" onclick="event.stopPropagation();addToCart(<?php echo $course['id']; ?>)" title="Add to Cart">
                                 <i class="fas fa-shopping-cart"></i>
                             </button>
-                            <button class="course-btn-buy" onclick="goToDetail(<?php echo $course['id']; ?>)">
-                                ซื้อคอร์สนี้
+                            <button class="course-btn-action" onclick="goToDetail(<?php echo $course['id']; ?>)">
+                                ดูคอร์ส
                             </button>
                         </div>
                     </div>
                 </div>
-                <?php 
-                    endif;
-                endforeach; 
-                ?>
-            </div>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
+
 
         <!-- See More Button -->
-        <div id="see-more-container" class="see-more-container" style="display: none;">
-            <button class="btn-see-more" onclick="showAllCourses()">
+        <?php $showSeeMore = count($courses) > 3; ?>
+        <div id="see-more-container" class="see-more-container" style="display: <?php echo $showSeeMore ? 'flex' : 'none'; ?>; justify-content: center; margin: 50px 0;">
+            <div role="button" class="btn-see-more-final" onclick="showAllCourses()" style="
+                background: linear-gradient(135deg, #d4af37 0%, #f1c40f 100%);
+                color: #0b1221;
+                padding: 14px 40px;
+                border-radius: 40px;
+                font-weight: 700;
+                font-size: 1rem;
+                font-family: 'Sora', sans-serif;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+                transition: all 0.3s var(--ease);
+                border: 1px solid rgba(255,255,255,0.2);
+            " onmouseover="this.style.transform='translateY(-4px) scale(1.02)'; this.style.boxShadow='0 15px 35px rgba(212, 175, 55, 0.4)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 25px rgba(212, 175, 55, 0.3)';" onclick="showAllCourses()">
                 <span><?php echo __('btn_see_more'); ?></span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
+                <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
+            </div>
         </div>
     </section>
 
