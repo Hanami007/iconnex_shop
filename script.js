@@ -4,7 +4,7 @@ function goToDetail(courseId) {
 }
 
 // Tab: portfolio
-function switchTab(btn, type) {
+function switchPortfolioTab(btn, type) {
   document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
   const photo = document.getElementById('portfolio-photo-content');

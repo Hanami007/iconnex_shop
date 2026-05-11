@@ -253,8 +253,116 @@ $recommended = array_slice($recommended, 0, 3);
                     
                     <div id="reviews" class="tab-pane" style="display:none;">
                         <h2>ความเห็นจากผู้เรียน</h2>
-                        <p style="color: var(--text-muted);">ยังไม่มีรีวิวสำหรับคอร์สนี้</p>
+                        
+                        <!-- Review Form -->
+                        <div class="review-form-container" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 30px; margin-bottom: 40px;">
+                            <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.2rem;">เขียนรีวิวของคุณ</h3>
+                            <form id="review-form" onsubmit="submitReview(event)">
+                                <input type="hidden" name="course_id" value="<?php echo $id; ?>">
+                                <input type="hidden" name="action" value="submit">
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; color: var(--text-muted); margin-bottom: 10px; font-size: 0.9rem;">คะแนนความพึงพอใจ</label>
+                                    <div class="star-rating" style="display: flex; gap: 10px; font-size: 1.5rem; color: #444;">
+                                        <?php for($i=1; $i<=5; $i++): ?>
+                                            <i class="fas fa-star star-input" data-value="<?php echo $i; ?>" style="cursor: pointer; transition: 0.2s;" onclick="setRating(<?php echo $i; ?>)"></i>
+                                        <?php endfor; ?>
+                                        <input type="hidden" name="rating" id="rating-input" value="5">
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; color: var(--text-muted); margin-bottom: 10px; font-size: 0.9rem;">ความเห็นของคุณ</label>
+                                    <textarea name="comment" placeholder="เล่าความประทับใจของคุณ..." style="width: 100%; background: #0b1221; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; color: #fff; font-family: 'Prompt', sans-serif; resize: vertical; min-height: 100px;"></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn-submit-review" style="background: var(--gold); color: var(--navy-deep); border: none; padding: 12px 30px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.3s;">ส่งรีวิว</button>
+                            </form>
+                        </div>
+
+                        <div id="reviews-list">
+                            <p style="color: var(--text-muted);">กำลังโหลดรีวิว...</p>
+                        </div>
                     </div>
+
+                    <script>
+                        let currentRating = 5;
+                        function setRating(val) {
+                            currentRating = val;
+                            document.getElementById('rating-input').value = val;
+                            document.querySelectorAll('.star-input').forEach((s, idx) => {
+                                if (idx < val) s.style.color = 'var(--gold)';
+                                else s.style.color = '#444';
+                            });
+                        }
+                        
+                        // Initial star highlight
+                        setTimeout(() => setRating(5), 100);
+
+                        async function submitReview(e) {
+                            e.preventDefault();
+                            const form = e.target;
+                            const fd = new FormData(form);
+                            
+                            try {
+                                const res = await fetch('review_handler.php', { method: 'POST', body: fd });
+                                const data = await res.json();
+                                if (data.success) {
+                                    alert('ขอบคุณสำหรับรีวิวครับ!');
+                                    form.reset();
+                                    setRating(5);
+                                    loadReviews();
+                                } else {
+                                    alert(data.message);
+                                }
+                            } catch (err) {
+                                alert('เกิดข้อผิดพลาดในการส่งรีวิว');
+                            }
+                        }
+
+                        async function loadReviews() {
+                            const list = document.getElementById('reviews-list');
+                            const fd = new FormData();
+                            fd.append('action', 'get_reviews');
+                            fd.append('course_id', <?php echo $id; ?>);
+                            
+                            try {
+                                const res = await fetch('review_handler.php', { method: 'POST', body: fd });
+                                const data = await res.json();
+                                
+                                if (data.success && data.reviews.length > 0) {
+                                    list.innerHTML = '';
+                                    data.reviews.forEach(r => {
+                                        const date = new Date(r.created_at).toLocaleDateString('th-TH');
+                                        const stars = '⭐'.repeat(r.rating);
+                                        const html = `
+                                            <div style="background: rgba(255,255,255,0.01); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 25px 0; margin-bottom: 5px;">
+                                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--navy-light); border: 1px solid var(--gold-line); display: flex; align-items: center; justify-content: center; color: var(--gold-soft); font-weight: 700;">${r.user_name[0]}</div>
+                                                        <div>
+                                                            <div style="color: #fff; font-weight: 700; font-size: 0.95rem;">${r.user_name}</div>
+                                                            <div style="font-size: 0.8rem; color: var(--gold-soft);">${stars}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-subtle);">${date}</div>
+                                                </div>
+                                                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; padding-left: 52px;">${r.comment}</p>
+                                            </div>
+                                        `;
+                                        list.insertAdjacentHTML('beforeend', html);
+                                    });
+                                } else {
+                                    list.innerHTML = '<p style="color: var(--text-muted);">ยังไม่มีรีวิวสำหรับคอร์สนี้ เป็นคนแรกที่รีวิวเลย!</p>';
+                                }
+                            } catch (err) {
+                                list.innerHTML = '<p style="color: var(--text-muted);">โหลดรีวิวไม่สำเร็จ</p>';
+                            }
+                        }
+
+                        // Load reviews on tab switch or page load
+                        document.addEventListener('DOMContentLoaded', loadReviews);
+                    </script>
                 </div>
             </div>
 

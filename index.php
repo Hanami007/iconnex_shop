@@ -204,8 +204,8 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         </div>
 
         <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 60px;">
-            <button class="tab-btn active" onclick="switchTab(this,'video')" style="padding: 14px 35px; border-radius: 40px; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; font-weight: 700; font-family: 'Sora', sans-serif; transition: 0.3s;">VIDEOS</button>
-            <button class="tab-btn" onclick="switchTab(this,'photo')" style="padding: 14px 35px; border-radius: 40px; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; font-weight: 700; font-family: 'Sora', sans-serif; transition: 0.3s;">PHOTOS</button>
+            <button class="tab-btn active" onclick="switchPortfolioTab(this,'video')" style="padding: 14px 35px; border-radius: 40px; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; font-weight: 700; font-family: 'Sora', sans-serif; transition: 0.3s;">VIDEOS</button>
+            <button class="tab-btn" onclick="switchPortfolioTab(this,'photo')" style="padding: 14px 35px; border-radius: 40px; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; font-weight: 700; font-family: 'Sora', sans-serif; transition: 0.3s;">PHOTOS</button>
         </div>
 
         <div id="portfolio-photo-content" class="testimonials-marquee-container" style="display: none;">
