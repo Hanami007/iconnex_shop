@@ -18,8 +18,8 @@ require_once '../lang.php';
   <!-- HEADER -->
   <header class="site-header">
     <div class="logo-mark">
-      <div class="logo-icon">E</div>
-      <div class="logo-text">Edu<span>Course</span></div>
+      <div class="logo-icon">🌀</div>
+      <div class="logo-text">ICON<span>NEX</span></div>
     </div>
     <div class="header-meta">
       <div class="label"><?php echo __('order_no'); ?></div>
@@ -381,7 +381,7 @@ require_once '../lang.php';
 
   <!-- FOOTER -->
   <footer class="site-footer">
-    <p>© 2026 EduCourse ·
+    <p>© 2026 ICONNEX Creators Club ·
       <a href="#">นโยบายความเป็นส่วนตัว</a> ·
       <a href="#">เงื่อนไขการใช้งาน</a> ·
       support@educourse.com · 02-123-4567

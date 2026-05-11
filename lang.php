@@ -77,7 +77,8 @@ $translations = [
         'qr_promptpay' => 'QR PromptPay',
         'bank_transfer' => 'โอนบัญชีธนาคาร',
         'confirm_pay' => 'ยืนยันการชำระเงิน',
-        'btn_copy' => 'คัดลอก'
+        'btn_copy' => 'คัดลอก',
+        'btn_see_more' => 'ดูเพิ่มเติม'
     ],
     'en' => [
         'nav_home' => 'Home',
@@ -143,7 +144,8 @@ $translations = [
         'qr_promptpay' => 'QR PromptPay',
         'bank_transfer' => 'Bank Transfer',
         'confirm_pay' => 'Confirm Payment',
-        'btn_copy' => 'Copy'
+        'btn_copy' => 'Copy',
+        'btn_see_more' => 'See More'
     ]
 ];
 

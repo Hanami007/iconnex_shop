@@ -105,70 +105,9 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
                             <span class="name"><?php echo htmlspecialchars($course['instructor']); ?></span>
                         </div>
                     </div>
-                </div>
 
-                <div class="hero-card-wrap reveal">
-                    <div class="course-buy-card">
-                        <div class="card-image">
-                            <?php 
-                            $img_val = $course['image'];
-                            if (strpos($img_val, '<img') !== false): 
-                                echo str_replace('<img', '<img class="main-img"', $img_val);
-                            elseif (strpos($img_val, '.') !== false): 
-                                $img_src = strpos($img_val, 'uploads/') === 0 ? '/' . htmlspecialchars($img_val) : 'IMG/' . htmlspecialchars($img_val);
-                            ?>
-                                <img src="<?php echo $img_src; ?>" alt="Course" class="main-img" />
-                            <?php else: ?>
-                                <div class="emoji-img"><?php echo htmlspecialchars($img_val ?: '📚'); ?></div>
-                            <?php endif; ?>
-                            <div class="image-overlay"></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="price-box">
-                                <div class="current-price">฿<?php echo number_format($course['price']); ?></div>
-                                <div class="old-price">฿<?php echo number_format($course['old_price']); ?></div>
-                                <div class="discount-badge"><?php echo round((($course['old_price'] - $course['price']) / $course['old_price']) * 100); ?>% OFF</div>
-                            </div>
-                            
-                            <script>
-                                const currentCourseData = {
-                                    id: <?php echo $course['id']; ?>,
-                                    name: <?php echo json_encode($course['name']); ?>,
-                                    price: <?php echo $course['price']; ?>,
-                                    instructor: <?php echo json_encode($course['instructor']); ?>,
-                                    image: <?php echo json_encode($course['image']); ?>,
-                                    description: <?php echo json_encode($course['description']); ?>,
-                                    category: <?php echo json_encode($course['category']); ?>
-                                };
-                            </script>
-                            
-                            <div class="action-btns">
-                                <button class="btn-primary" onclick="buyNow(currentCourseData)">
-                                    <i class="fas fa-bolt"></i> <?php echo $current_lang == 'th' ? 'สมัครเรียนเลย' : 'Enroll Now'; ?>
-                                </button>
-                                <button class="btn-outline" onclick="addToCart(<?php echo $course['id']; ?>)">
-                                    <i class="fas fa-shopping-cart"></i> <?php echo $current_lang == 'th' ? 'เพิ่มลงตะกร้า' : 'Add to Cart'; ?>
-                                </button>
-                            </div>
-
-                            <ul class="benefit-list">
-                                <li><i class="fas fa-check-circle"></i> <?php echo $current_lang == 'th' ? 'เรียนได้ตลอดชีพ' : 'Lifetime Access'; ?></li>
-                                <li><i class="fas fa-check-circle"></i> <?php echo $current_lang == 'th' ? 'ดูผ่านมือถือ/แท็บเล็ตได้' : 'Mobile/Tablet Support'; ?></li>
-                                <li><i class="fas fa-check-circle"></i> <?php echo $current_lang == 'th' ? 'มีใบประกาศนียบัตร' : 'Certificate of Completion'; ?></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CONTENT SECTIONS -->
-    <section class="course-main-content">
-        <div class="container">
-            <div class="content-grid">
-                <div class="main-column">
-                    <div class="content-card reveal">
+                    <!-- MOVE CONTENT TABS HERE -->
+                    <div class="content-card reveal" style="margin-top: 40px;">
                         <div class="content-tabs">
                             <button class="tab-btn active" onclick="switchContentTab(this, 'overview')"><?php echo $current_lang == 'th' ? 'รายละเอียด' : 'Overview'; ?></button>
                             <button class="tab-btn" onclick="switchContentTab(this, 'curriculum')"><?php echo $current_lang == 'th' ? 'เนื้อหา' : 'Curriculum'; ?></button>
@@ -248,8 +187,60 @@ $relatedCourses = array_filter($courses, function($c) use ($course, $id) {
                     </div>
                 </div>
 
-                <div class="side-column reveal">
-                    <div class="sticky-side">
+                <div class="hero-card-wrap reveal">
+                    <div class="course-buy-card">
+                        <div class="card-image">
+                            <?php 
+                            $img_val = $course['image'];
+                            if (strpos($img_val, '<img') !== false): 
+                                echo str_replace('<img', '<img class="main-img"', $img_val);
+                            elseif (strpos($img_val, '.') !== false): 
+                                $img_src = strpos($img_val, 'uploads/') === 0 ? '/' . htmlspecialchars($img_val) : 'IMG/' . htmlspecialchars($img_val);
+                            ?>
+                                <img src="<?php echo $img_src; ?>" alt="Course" class="main-img" />
+                            <?php else: ?>
+                                <div class="emoji-img"><?php echo htmlspecialchars($img_val ?: '📚'); ?></div>
+                            <?php endif; ?>
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="price-box">
+                                <div class="current-price">฿<?php echo number_format($course['price']); ?></div>
+                                <div class="old-price">฿<?php echo number_format($course['old_price']); ?></div>
+                                <div class="discount-badge"><?php echo round((($course['old_price'] - $course['price']) / $course['old_price']) * 100); ?>% OFF</div>
+                            </div>
+                            
+                            <script>
+                                const currentCourseData = {
+                                    id: <?php echo $course['id']; ?>,
+                                    name: <?php echo json_encode($course['name']); ?>,
+                                    price: <?php echo $course['price']; ?>,
+                                    instructor: <?php echo json_encode($course['instructor']); ?>,
+                                    image: <?php echo json_encode($course['image']); ?>,
+                                    description: <?php echo json_encode($course['description']); ?>,
+                                    category: <?php echo json_encode($course['category']); ?>
+                                };
+                            </script>
+                            
+                            <div class="action-btns">
+                                <button class="btn-primary" onclick="buyNow(currentCourseData)">
+                                    <i class="fas fa-bolt"></i> <?php echo $current_lang == 'th' ? 'สมัครเรียนเลย' : 'Enroll Now'; ?>
+                                </button>
+                                <button class="btn-outline" onclick="addToCart(<?php echo $course['id']; ?>)">
+                                    <i class="fas fa-shopping-cart"></i> <?php echo $current_lang == 'th' ? 'เพิ่มลงตะกร้า' : 'Add to Cart'; ?>
+                                </button>
+                            </div>
+
+                            <ul class="benefit-list">
+                                <li><i class="fas fa-check-circle"></i> <?php echo $current_lang == 'th' ? 'เรียนได้ตลอดชีพ' : 'Lifetime Access'; ?></li>
+                                <li><i class="fas fa-check-circle"></i> <?php echo $current_lang == 'th' ? 'ดูผ่านมือถือ/แท็บเล็ตได้' : 'Mobile/Tablet Support'; ?></li>
+                                <li><i class="fas fa-check-circle"></i> <?php echo $current_lang == 'th' ? 'มีใบประกาศนียบัตร' : 'Certificate of Completion'; ?></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- MOVE SIDEBAR WIDGETS HERE -->
+                    <div class="sticky-side" style="margin-top: 30px;">
                         <div class="promo-card">
                             <h4><i class="fas fa-building"></i> สำหรับองค์กร</h4>
                             <p>ต้องการซื้อให้ทีม หรือขอใบเสนอราคาแบบองค์กรเพื่อรับส่วนลดพิเศษ</p>

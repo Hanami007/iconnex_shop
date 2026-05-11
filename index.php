@@ -357,6 +357,14 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             </div>
         </div>
         <?php endforeach; ?>
+
+        <!-- See More Button -->
+        <div id="see-more-container" class="see-more-container" style="display: none;">
+            <button class="btn-see-more" onclick="showAllCourses()">
+                <span><?php echo __('btn_see_more'); ?></span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
     </section>
 
 

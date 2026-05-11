@@ -1987,7 +1987,7 @@ footer {
 
 .cart-empty {
   text-align: center;
-  padding: 80px 0;
+  padding: 0 0 80px; margin-top: -40px;
   color: var(--text-muted);
   font-size: 1.1rem;
 }
@@ -2508,8 +2508,6 @@ footer {
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-  position: sticky;
-  top: 100px;
 }
 
 .course-buy-card .card-image {
@@ -2950,4 +2948,43 @@ footer {
   .content-tabs {
     overflow-x: auto;
   }
+}
+/* See More Button */
+.see-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 60px;
+}
+
+.btn-see-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--navy-mid);
+  color: var(--gold-soft);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 12px 32px;
+  border-radius: 50px;
+  border: 1px solid var(--gold-line);
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-see-more:hover {
+  background: var(--gold-pale);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(201, 168, 76, 0.2);
+  border-color: var(--gold);
+}
+
+.btn-see-more i {
+  transition: transform 0.3s var(--ease);
+}
+
+.btn-see-more:hover i {
+  transform: translateY(3px);
 }

@@ -21,17 +21,87 @@ function switchTab(btn, type) {
 }
 
 // Category filter
+let showingAll = false;
 function filterCategory(category) {
+  showingAll = false;
+  const seeMoreBtn = document.getElementById('see-more-container');
+  if (seeMoreBtn) seeMoreBtn.style.display = 'none';
+
+  let totalVisibleCards = 0;
+  const limit = 3;
+
   document.querySelectorAll(".category-section").forEach((section) => {
-    if (category === 'all' || section.getAttribute('data-category') === category) {
+    const isMatch = category === 'all' || section.getAttribute('data-category') === category;
+    if (isMatch) {
       section.style.display = "block";
       void section.offsetWidth;
       section.style.opacity = "1";
+      
+      const cards = section.querySelectorAll('.course-card');
+      let visibleInThisSection = 0;
+      cards.forEach(card => {
+        if (category === 'all') {
+          if (totalVisibleCards < limit) {
+            card.style.display = "flex";
+            visibleInThisSection++;
+          } else {
+            card.style.display = "none";
+          }
+          totalVisibleCards++;
+        } else {
+          card.style.display = "flex";
+          visibleInThisSection++;
+        }
+      });
+
+      // Hide section if no cards are visible in it
+      if (visibleInThisSection === 0 && category === 'all') {
+        section.style.display = "none";
+      } else {
+        section.style.display = "block";
+        section.style.opacity = "1";
+      }
+
+      // Hide carousel arrows if limiting to 3 items
+      const carouselBtns = section.querySelectorAll('.carousel-btn');
+      carouselBtns.forEach(btn => {
+        btn.style.display = (category === 'all' && totalVisibleCards > limit && !showingAll) ? 'none' : 'flex';
+      });
+
+      // Hide category labels if 'all' is selected and we're limiting
+      const label = section.querySelector('.course-section-label');
+      if (label) label.style.display = (category === 'all' && totalVisibleCards > limit && !showingAll) ? 'none' : 'block';
+
     } else {
       section.style.display = "none";
       section.style.opacity = "0";
     }
   });
+
+  if (category === 'all' && totalVisibleCards > limit) {
+    if (seeMoreBtn) seeMoreBtn.style.display = 'flex';
+  }
+}
+
+function showAllCourses() {
+  showingAll = true;
+  document.querySelectorAll(".category-section").forEach(section => {
+    section.style.display = "block";
+    section.style.opacity = "1";
+    
+    const label = section.querySelector('.course-section-label');
+    if (label) label.style.display = 'block';
+    
+    const carouselBtns = section.querySelectorAll('.carousel-btn');
+    carouselBtns.forEach(btn => btn.style.display = 'flex');
+    
+    section.querySelectorAll('.course-card').forEach(card => {
+      card.style.display = "flex";
+    });
+  });
+  
+  const seeMoreBtn = document.getElementById('see-more-container');
+  if (seeMoreBtn) seeMoreBtn.style.display = 'none';
 }
 
 // FAQ accordion
@@ -265,12 +335,34 @@ function removeFromCartModal(courseId) {
   .then(r => r.json())
   .then(data => {
     if (data.success) {
+      // Update badge
       const badge = document.getElementById("cart-count");
       if (badge) {
         badge.textContent = data.count;
         badge.style.display = data.count > 0 ? "flex" : "none";
       }
-      openCartModal(); // Re-render
+      
+      if (data.count === 0) {
+        // If empty, re-render to show empty state
+        renderCartModal([], 0, 0);
+      } else {
+        // Otherwise, just remove the row and update total
+        const row = document.getElementById(`cart-item-${courseId}`);
+        if (row) {
+          row.style.opacity = '0';
+          row.style.transform = 'translateX(20px)';
+          setTimeout(() => {
+            row.remove();
+          }, 300);
+        }
+        
+        // Update total and count text
+        const totalEl = document.getElementById('cart-total-value');
+        if (totalEl) totalEl.textContent = `฿${Number(data.total).toLocaleString()}`;
+        
+        const countEl = document.getElementById('cart-count-text');
+        if (countEl) countEl.textContent = `คุณมี ${data.count} รายการในตะกร้า`;
+      }
     }
   });
 }
@@ -335,7 +427,7 @@ function renderCartModal(items, total, count) {
     }
 
     return `
-      <div class="cart-item-row">
+      <div class="cart-item-row" id="cart-item-${item.id}" style="transition: all 0.3s ease;">
         <img src="${img_src}" class="cart-item-img" alt="${item.name}">
         <div class="cart-item-info">
           <div class="cart-item-name">${item.name}</div>
@@ -357,7 +449,7 @@ function renderCartModal(items, total, count) {
       <div class="cart-modal-header">
         <div>
           <h2>ตะกร้าสินค้าของคุณ</h2>
-          <div class="cart-count-text">คุณมี ${count} รายการในตะกร้า</div>
+          <div class="cart-count-text" id="cart-count-text">คุณมี ${count} รายการในตะกร้า</div>
         </div>
         <button class="close-modal" onclick="closeCartModal()">&times;</button>
       </div>
@@ -367,7 +459,7 @@ function renderCartModal(items, total, count) {
       <div class="cart-modal-footer">
         <div class="cart-total-row">
           <div class="cart-total-label">ยอดชำระทั้งหมด</div>
-          <div class="cart-total-value">฿${Number(total).toLocaleString()}</div>
+          <div class="cart-total-value" id="cart-total-value">฿${Number(total).toLocaleString()}</div>
         </div>
         <button class="btn-checkout" onclick="checkoutCartModal()">
           ดำเนินการชำระเงิน
@@ -394,6 +486,8 @@ function switchCourseTab(val) {
 document.addEventListener("DOMContentLoaded", () => {
   // Course Carousel Logic
   document.querySelectorAll('.course-grid').forEach(grid => {
+    // Only apply carousel if not in 'All' mode or if we want horizontal scroll for categories
+    // For now, we'll keep it but it might look better disabled for vertical "See More" flow
     if (grid.children.length > 3) {
       const wrapper = document.createElement('div');
       wrapper.className = 'course-carousel-container';
@@ -412,6 +506,9 @@ document.addEventListener("DOMContentLoaded", () => {
       grid.style.margin = '0';
     }
   });
+  
+  // Initial filter to apply 3-item limit
+  filterCategory('all');
 
   // Testimonials Marquee Clone
   const testimonialsTrack = document.querySelector('.testimonials-track');
