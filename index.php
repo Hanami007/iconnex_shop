@@ -393,6 +393,66 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     </section>
 
 
+    <!-- TESTIMONIALS -->
+    <section id="testimonials" style="padding: 100px 0; background: #070c16; overflow: hidden;">
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h2 class="section-title">ความประทับใจจากผู้เรียน</h2>
+            <div style="width: 80px; height: 4px; background: var(--gold); margin: 20px auto; border-radius: 2px;"></div>
+        </div>
+
+        <div class="testimonials-marquee-container">
+            <div class="testimonials-track">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card">
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--gold-pale); display: flex; align-items: center; justify-content: center; color: var(--gold-rich); font-weight: 800;">W</div>
+                        <div>
+                            <div style="font-weight: 700; color: #fff;">Wanchai S.</div>
+                            <div style="font-size: 0.8rem; color: var(--gold-soft);">Video Editor</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-subtle); line-height: 1.6; font-size: 0.95rem;">"คอร์สตัดต่อที่นี่เปลี่ยนชีวิตผมเลยครับ สอนเข้าใจง่ายนำไปใช้รับงานได้จริง ขอบคุณ Creators Club มากๆ ครับ"</p>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card">
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--gold-pale); display: flex; align-items: center; justify-content: center; color: var(--gold-rich); font-weight: 800;">M</div>
+                        <div>
+                            <div style="font-weight: 700; color: #fff;">Manit P.</div>
+                            <div style="font-size: 0.8rem; color: var(--gold-soft);">Content Creator</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-subtle); line-height: 1.6; font-size: 0.95rem;">"ชอบเทคนิคการเกรดสีที่อาจารย์สอนมากครับ ทำให้งานดูแพงขึ้นเยอะเลย คุ้มค่าที่สุดเท่าที่เคยเรียนมา"</p>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card">
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--gold-pale); display: flex; align-items: center; justify-content: center; color: var(--gold-rich); font-weight: 800;">S</div>
+                        <div>
+                            <div style="font-weight: 700; color: #fff;">Siriwan K.</div>
+                            <div style="font-size: 0.8rem; color: var(--gold-soft);">Freelance</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-subtle); line-height: 1.6; font-size: 0.95rem;">"บริการหลังการขายดีมากค่ะ สอบถามอะไรในกลุ่มมีเพื่อนๆ และอาจารย์คอยตอบตลอด ไม่ทิ้งผู้เรียนแน่นอน"</p>
+                </div>
+
+                <!-- Testimonial 4 -->
+                <div class="testimonial-card">
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--gold-pale); display: flex; align-items: center; justify-content: center; color: var(--gold-rich); font-weight: 800;">A</div>
+                        <div>
+                            <div style="font-weight: 700; color: #fff;">Anirut T.</div>
+                            <div style="font-size: 0.8rem; color: var(--gold-soft);">YouTuber</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-subtle); line-height: 1.6; font-size: 0.95rem;">"เนื้อหาอัปเดตตลอดเวลา เทคนิคใหม่ๆ มีมาให้เรียนรู้เสมอ แนะนำเลยครับสำหรับคนอยากจริงจังด้านวิดีโอ"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- FAQ -->
     <section id="faq">
         <h2 class="section-title">คำถามที่พบบ่อย</h2>

@@ -278,6 +278,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Testimonials Marquee Logic
+  const track = document.querySelector('.testimonials-track');
+  if (track) {
+    const cards = Array.from(track.children);
+    cards.forEach(c => track.appendChild(c.cloneNode(true)));
+  }
+
   fetch('cart_handler.php', { method: 'POST', body: new URLSearchParams({ action: 'count' }) })
     .then(res => res.json()).then(data => updateCartBadge(data.count));
 

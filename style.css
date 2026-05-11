@@ -1128,7 +1128,12 @@ section {
   display: flex;
   gap: 20px;
   width: max-content;
-  animation: scroll-marquee 40s linear infinite;
+  animation: scroll-marquee 60s linear infinite;
+}
+
+@keyframes scroll-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50%)); }
 }
 
 .testimonials-track:hover {
