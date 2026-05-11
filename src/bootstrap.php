@@ -46,6 +46,60 @@ function validateCsrf() {
     }
 }
 
+/**
+ * Rate Limiting Logic
+ * @param string $key Unique key for the action (e.g. 'login', 'register')
+ * @param int $limit Max requests allowed
+ * @param int $period Time period in seconds
+ */
+function checkRateLimit($key, $limit = 5, $period = 60) {
+    global $pdo;
+    if (!$pdo) useService('db');
+    
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    $now = date('Y-m-d H:i:s');
+    
+    try {
+        // Cleanup expired limits occasionally (1% chance per request)
+        if (rand(1, 100) === 1) {
+            $pdo->exec("DELETE FROM rate_limits WHERE reset_at < '$now'");
+        }
+
+        $stmt = $pdo->prepare("SELECT id, request_count, reset_at FROM rate_limits WHERE ip_address = ? AND action_key = ?");
+        $stmt->execute([$ip, $key]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            if (strtotime($row['reset_at']) < strtotime($now)) {
+                // Reset expired window
+                $reset_at = date('Y-m-d H:i:s', time() + $period);
+                $stmt = $pdo->prepare("UPDATE rate_limits SET request_count = 1, reset_at = ? WHERE id = ?");
+                $stmt->execute([$reset_at, $row['id']]);
+            } else {
+                if ($row['request_count'] >= $limit) {
+                    $retry_after = strtotime($row['reset_at']) - time();
+                    header('HTTP/1.1 429 Too Many Requests');
+                    header("Retry-After: $retry_after");
+                    echo json_encode([
+                        'success' => false, 
+                        'error' => 'คุณทำรายการบ่อยเกินไป กรุณารออีก ' . $retry_after . ' วินาที'
+                    ]);
+                    exit;
+                }
+                $stmt = $pdo->prepare("UPDATE rate_limits SET request_count = request_count + 1 WHERE id = ?");
+                $stmt->execute([$row['id']]);
+            }
+        } else {
+            $reset_at = date('Y-m-d H:i:s', time() + $period);
+            $stmt = $pdo->prepare("INSERT INTO rate_limits (ip_address, action_key, request_count, reset_at) VALUES (?, ?, 1, ?)");
+            $stmt->execute([$ip, $key, $reset_at]);
+        }
+    } catch (PDOException $e) {
+        // If DB error, fail gracefully and allow request? 
+        // Or log it. For now, we just proceed to not block users if DB is slow.
+    }
+}
+
 // Auto-inject components (optional)
 function renderComponent($path, $data = []) {
     extract($data);

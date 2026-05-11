@@ -8,6 +8,9 @@ header('Content-Type: application/json');
 // Security: Validate CSRF for all POST actions
 validateCsrf();
 
+// Rate Limit: 3 checkout attempts per minute
+checkRateLimit('checkout', 3, 60);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Determine content type
     $isJson = isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false;

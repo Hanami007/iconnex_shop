@@ -4,6 +4,9 @@ useService('db');
 header('Content-Type: application/json');
 validateCsrf();
 
+// Rate Limit: 5 registration attempts per 10 minutes
+checkRateLimit('register', 5, 600);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');

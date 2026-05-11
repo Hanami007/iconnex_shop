@@ -8,6 +8,9 @@ header('Content-Type: application/json');
 // Security: Validate CSRF for all POST actions
 validateCsrf();
 
+// Rate Limit: 10 attempts per minute
+checkRateLimit('login', 10, 60);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
