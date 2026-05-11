@@ -44,7 +44,7 @@ function getCourseImage($name, $courses) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICONNEX – <?php echo __('nav_my_orders'); ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=1.1" />
     <style>
         :root {
             --sidebar-w: 280px;
@@ -102,6 +102,9 @@ function getCourseImage($name, $courses) {
             .order-status-price { text-align: left; align-items: flex-start; margin-top: 15px; border-top: 1px solid var(--navy-border); padding-top: 15px; width: 100%; }
         }
     </style>
+    <script>
+        const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+    </script>
 </head>
 <body>
     <!-- NAV (Same as main site) -->
@@ -115,6 +118,23 @@ function getCourseImage($name, $courses) {
             <li><a href="index.php#courses"><?php echo __('nav_courses'); ?></a></li>
             <li><a href="logout.php" style="color: #ffae35;"><?php echo __('nav_logout'); ?></a></li>
         </ul>
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 20px; margin-right: 40px;">
+            <div class="noti-container" style="position:relative;">
+                <a href="#" onclick="toggleNotiDropdown(event)" style="font-size: 1.2rem; color: #fff; text-decoration:none; transition: 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='#fff'">
+                    <i class="fa-solid fa-bell"></i>
+                    <span id="noti-badge" style="display:none; position:absolute; top:-8px; right:-8px; background:#ff4757; color:#fff; border-radius:50%; width:16px; height:16px; font-size:.65rem; align-items:center; justify-content:center; font-weight:800; border: 2px solid var(--navy-deep);">0</span>
+                </a>
+                <div id="noti-dropdown" class="noti-dropdown">
+                    <div class="noti-header">
+                        <span>Notifications</span>
+                        <button onclick="markAllAsRead()" style="background:none; border:none; color:var(--gold); font-size:0.7rem; cursor:pointer;">Mark all as read</button>
+                    </div>
+                    <div id="noti-list" class="noti-list">
+                        <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">No new notifications</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <div class="dashboard-wrapper">
@@ -194,5 +214,6 @@ function getCourseImage($name, $courses) {
         <div style="margin-bottom: 20px; font-weight: 700; color: #fff;">ICONNEX CREATORS CLUB</div>
         <p>© 2025 ICONNEX. All rights reserved.</p>
     </footer>
+    <script src="script.js?v=1.1"></script>
 </body>
 </html>
