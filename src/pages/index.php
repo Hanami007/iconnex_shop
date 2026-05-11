@@ -24,6 +24,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     <script>
         const coursesData = <?php echo json_encode($courses); ?>;
         const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+        const csrfToken = "<?php echo getCsrfToken(); ?>";
         const langData = {
             cart_popup_title: "<?php echo __('cart_popup_title'); ?>",
             cart_popup_desc: "<?php echo __('cart_popup_desc'); ?>",

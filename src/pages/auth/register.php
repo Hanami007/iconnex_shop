@@ -380,6 +380,7 @@ if (isset($_SESSION['user_id'])) {
     </div>
 
     <script>
+        const csrfToken = "<?php echo getCsrfToken(); ?>";
     async function handleRegister(e) {
         e.preventDefault();
         const username = document.getElementById('username').value;
@@ -413,6 +414,7 @@ if (isset($_SESSION['user_id'])) {
             fd.append('username', username);
             fd.append('email', email);
             fd.append('password', password);
+            fd.append('csrf_token', csrfToken);
 
             const res = await fetch('api/register.php', {
                 method: 'POST',

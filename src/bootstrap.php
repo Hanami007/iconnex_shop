@@ -22,6 +22,30 @@ function useApi($name) {
     require_once SERVICES_DIR . "/api/$name.php";
 }
 
+// CSRF Protection
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+function getCsrfToken() {
+    return $_SESSION['csrf_token'];
+}
+
+function csrfInput() {
+    echo '<input type="hidden" name="csrf_token" value="' . getCsrfToken() . '">';
+}
+
+function validateCsrf() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        if (empty($token) || $token !== $_SESSION['csrf_token']) {
+            header('HTTP/1.1 403 Forbidden');
+            echo json_encode(['success' => false, 'error' => 'CSRF token validation failed.']);
+            exit;
+        }
+    }
+}
+
 // Auto-inject components (optional)
 function renderComponent($path, $data = []) {
     extract($data);

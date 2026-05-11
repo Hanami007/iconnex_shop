@@ -1,5 +1,24 @@
 <?php
 require_once '../lang.php';
+useService('db');
+global $pdo;
+
+// Auth Guard
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../login.php?redirect=pay2.1');
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
+$stmt->execute([$user_id]);
+$currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$currentUser) {
+    session_destroy();
+    header('Location: ../login.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $current_lang; ?>">
@@ -276,16 +295,16 @@ require_once '../lang.php';
           <div class="input-row">
             <div class="input-group">
               <label class="input-label" for="inp-name"><?php echo __('first_name'); ?></label>
-              <input class="input-field" type="text" id="inp-name" placeholder="<?php echo __('first_name'); ?>">
+              <input class="input-field" type="text" id="inp-name" value="<?php echo htmlspecialchars($currentUser['username']); ?>" readonly style="background: rgba(255,255,255,0.02); color: var(--gold-soft); cursor: not-allowed;">
             </div>
-            <div class="input-group">
+            <div class="input-group" style="display:none;">
               <label class="input-label" for="inp-surname"><?php echo __('last_name'); ?></label>
-              <input class="input-field" type="text" id="inp-surname" placeholder="<?php echo __('last_name'); ?>">
+              <input class="input-field" type="text" id="inp-surname" value="User" readonly>
             </div>
           </div>
           <div class="input-group">
             <label class="input-label" for="inp-email"><?php echo __('label_email'); ?></label>
-            <input class="input-field" type="email" id="inp-email" placeholder="you@example.com">
+            <input class="input-field" type="email" id="inp-email" value="<?php echo htmlspecialchars($currentUser['email']); ?>" readonly style="background: rgba(255,255,255,0.02); color: var(--gold-soft); cursor: not-allowed;">
           </div>
           <div class="input-group">
             <label class="input-label" for="inp-phone"><?php echo __('phone'); ?></label>

@@ -37,6 +37,7 @@ $recommended = array_slice($recommended, 0, 3);
     <script defer src="src/assets/js/script.js?v=1.2"></script>
     <script>
         const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+        const csrfToken = "<?php echo getCsrfToken(); ?>";
     </script>
     <style>
         body { background: var(--navy-deep); color: var(--text-on-navy); font-family: 'Prompt', sans-serif; }

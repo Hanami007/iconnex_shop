@@ -5,10 +5,24 @@ useService('db');
 
 header('Content-Type: application/json');
 
+// Security: Validate CSRF for all POST actions
+validateCsrf();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     $login_type = $_POST['login_type'] ?? 'user'; // 'user' or 'admin'
+    $target_redirect = $_POST['redirect'] ?? '';
+
+    // Validate redirect path to prevent open redirect vulnerabilities
+    if ($target_redirect) {
+        $allowed = ['pay2.1', 'index.php', 'dic_product.php'];
+        $isValid = false;
+        foreach($allowed as $path) {
+            if (strpos($target_redirect, $path) !== false) { $isValid = true; break; }
+        }
+        if (!$isValid) $target_redirect = '';
+    }
 
     if (empty($username) || empty($password)) {
         echo json_encode(['success' => false, 'error' => 'Please provide both username and password.']);
@@ -37,10 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
 
+            $defaultRedirect = $user['role'] === 'admin' ? 'admin/index.php' : 'index.php';
+            $finalRedirect = $target_redirect ? ($target_redirect . '/index.php') : $defaultRedirect;
+            // Special case for pay2.1 since it's a folder
+            if ($target_redirect === 'pay2.1') $finalRedirect = 'pay2.1/index.php';
+
             echo json_encode([
                 'success' => true,
                 'role' => $user['role'],
-                'redirect' => $user['role'] === 'admin' ? 'admin/index.php' : 'index.php'
+                'redirect' => $finalRedirect
             ]);
         } else {
             echo json_encode(['success' => false, 'error' => 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง']);

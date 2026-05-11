@@ -2,6 +2,7 @@
 global $pdo;
 useService('db');
 header('Content-Type: application/json');
+validateCsrf();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');

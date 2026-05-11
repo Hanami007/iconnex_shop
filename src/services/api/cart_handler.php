@@ -5,6 +5,9 @@ useService('course_data');
 
 header('Content-Type: application/json');
 
+// Security: Validate CSRF for all POST actions
+validateCsrf();
+
 $action    = $_POST['action']    ?? '';
 $course_id = intval($_POST['course_id'] ?? 0);
 $quantity  = intval($_POST['quantity']  ?? 1);

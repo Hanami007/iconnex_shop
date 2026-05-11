@@ -28,7 +28,11 @@ const NotificationService = {
     try {
       const fd = new FormData();
       fd.append('id', id);
-      const res = await fetch('api/notifications.php?action=mark_read', { method: 'POST', body: fd });
+      const res = await fetch('api/notifications.php?action=mark_read', { 
+        method: 'POST', 
+        headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+        body: fd 
+      });
       return await res.json();
     } catch (err) {
       console.error("Failed to mark notification as read:", err);
