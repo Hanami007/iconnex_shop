@@ -172,7 +172,44 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         </div>
         
         <div class="testimonials-marquee-container">
-            <div class="testimonials-track" style="display: flex; gap: 30px; padding: 20px 0;">
+            <div class="testimonials-track" style="display: flex; gap: 30px; padding: 20px 0; animation: scroll-marquee 35s linear infinite;">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px; width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                    <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
+                    <p style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; font-family: 'Prompt', sans-serif;">"คอร์สเรียนนี้ช่วยให้ผมประหยัดเวลาในการลองผิดลองถูกไปได้เยอะมาก เนื้อหากระชับ เข้าใจง่าย และที่สำคัญคือเทคนิคที่สอนมันใช้งานได้จริงในระดับมืออาชีพครับ"</p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">K</div>
+                        <div>
+                            <div style="color: #fff; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif;">คุณกิตติศักดิ์</div>
+                            <div style="color: var(--gold-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Creative Director</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px; width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                    <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
+                    <p style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; font-family: 'Prompt', sans-serif;">"ประทับใจระบบหลังบ้านและทีมสนับสนุนมากค่ะ เวลาติดปัญหาตรงไหนถามไปก็ได้คำตอบที่ชัดเจนตลอด คุ้มค่าแก่การลงทุนเพื่อพัฒนาตัวเองจริงๆ ค่ะ"</p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">N</div>
+                        <div>
+                            <div style="color: #fff; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif;">คุณนภัสสร</div>
+                            <div style="color: var(--gold-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Content Strategist</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px; width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                    <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
+                    <p style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; font-family: 'Prompt', sans-serif;">"ผมเรียนจบคอร์สนี้แล้วสามารถรับงานตัดต่อวิดีโอได้เลย คุ้มค่ามากครับ อาจารย์สอนเทคนิคที่หาเรียนที่ไหนไม่ได้ และคอมมูนิตี้ในกลุ่มก็น่ารักมากครับ"</p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">P</div>
+                        <div>
+                            <div style="color: #fff; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif;">คุณพีระพัฒน์</div>
+                            <div style="color: var(--gold-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Professional YouTuber</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Duplicates for seamless loop -->
                 <!-- Testimonial 1 -->
                 <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px; width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
                     <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
