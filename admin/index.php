@@ -102,8 +102,11 @@ $completion_rate = "0%"; // Keep simple for now
   </div>
 </div>
 
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon">🎓</div>
     <span class="logo-text">Course<span>Flow</span></span>
@@ -152,6 +155,7 @@ $completion_rate = "0%"; // Keep simple for now
 <!-- MAIN -->
 <main class="main">
   <header class="topbar">
+    <div class="admin-hamburger" onclick="toggleSidebar()">☰</div>
     <span class="topbar-title" id="topbarTitle">Dashboard</span>
     <div class="topbar-search">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-3)"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -382,6 +386,15 @@ $completion_rate = "0%"; // Keep simple for now
 .user-tag { background: var(--surface-3); border: 1px solid var(--border-hi); padding: 4px 10px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 8px; }
 .user-tag button { color: var(--red); font-size: 14px; line-height: 1; }
 </style>
+
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('active');
+  overlay.classList.toggle('active');
+}
+</script>
 
 </body>
 </html>

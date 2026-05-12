@@ -36,13 +36,14 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
 
 <body>
 
+    <div class="nav-overlay" id="navOverlay"></div>
     <!-- NAV -->
     <nav>
         <a href="index.php" class="nav-logo">
             <div class="logo-icon">🌀</div>
             ICONNEX
         </a>
-        <ul class="nav-links">
+        <ul class="nav-links" id="navLinks">
             <li><a href="#hero"><?php echo __('nav_home'); ?></a></li>
             <li><a href="#courses"><?php echo __('nav_courses'); ?></a></li>
             <li><a href="#portfolio"><?php echo __('nav_portfolio'); ?></a></li>
@@ -53,7 +54,8 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                 <a href="?lang=en" class="<?php echo $current_lang === 'en' ? 'active' : ''; ?>">EN</a>
             </li>
         </ul>
-        <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
+        <div class="nav-actions-wrapper" style="display: flex; align-items: center; gap: 20px;">
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
             <?php if(isset($_SESSION['user_id'])): ?>
                 <?php renderComponent('notification/NotificationDropdown'); ?>
             <?php endif; ?>
@@ -77,15 +79,22 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                 </a>
             <?php endif; ?>
         </div>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </nav>
 
     <!-- HERO -->
-    <section class="hero" id="hero" style="padding: 140px 5% 100px; text-align: center; display: flex; flex-direction: column; align-items: center;">
-        <h1 style="font-size: 4.5rem; background: linear-gradient(135deg, #fff 0%, var(--gold-soft) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 25px;"><?php echo __('hero_title'); ?></h1>
-        <p style="font-size: 1.25rem; max-width: 800px; line-height: 1.6; margin-bottom: 40px; color: var(--text-muted);"><?php echo __('hero_subtitle'); ?></p>
-        <div style="display: flex; gap: 20px;">
-            <a href="#courses" class="btn-primary" style="padding: 18px 45px; border-radius: 50px; font-size: 1.1rem; font-weight: 800;"><?php echo __('hero_btn_explore'); ?></a>
-            <a href="#about" class="btn-outline" style="padding: 18px 45px; border-radius: 50px; font-size: 1.1rem; font-weight: 800; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03);"><?php echo __('hero_btn_about'); ?></a>
+    <section class="hero" id="hero">
+        <div class="container">
+            <h1 class="hero-title"><?php echo __('hero_title'); ?></h1>
+            <p class="hero-subtitle"><?php echo __('hero_subtitle'); ?></p>
+            <div class="hero-cta-group">
+                <a href="#courses" class="btn-primary"><?php echo __('hero_btn_explore'); ?></a>
+                <a href="#about" class="btn-outline"><?php echo __('hero_btn_about'); ?></a>
+            </div>
         </div>
         
         <?php
@@ -100,111 +109,85 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         $total_members = $total_reviews * 10;
         $total_members_display = $total_members > 1000 ? round($total_members / 1000, 1) . 'K' : number_format($total_members);
         ?>
-        <div class="hero-stats-premium reveal-item stagger-3" style="margin-top: 80px;">
-            <div class="stat-item" style="padding: 0 40px; border-right: 1px solid rgba(255,255,255,0.1);">
-                <div style="font-family: 'Sora', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold);"><?php echo $total_members_display; ?></div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;"><?php echo __('stats_members'); ?></div>
+        <div class="hero-stats reveal-pro">
+            <div class="stat-item">
+                <div class="stat-num"><?php echo $total_members_display; ?></div>
+                <div class="stat-label"><?php echo __('stats_members'); ?></div>
             </div>
-            <div class="stat-item" style="padding: 0 40px; border-right: 1px solid rgba(255,255,255,0.1);">
-                <div style="font-family: 'Sora', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold);"><?php echo $total_courses; ?>+</div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;"><?php echo __('stats_courses'); ?></div>
+            <div class="stat-item">
+                <div class="stat-num"><?php echo $total_courses; ?>+</div>
+                <div class="stat-label"><?php echo __('stats_courses'); ?></div>
             </div>
-            <div class="stat-item" style="padding: 0 40px;">
-                <div style="font-family: 'Sora', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold);"><?php echo $avg_rating; ?> ★</div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;"><?php echo __('stats_rating'); ?></div>
+            <div class="stat-item">
+                <div class="stat-num"><?php echo $avg_rating; ?> ★</div>
+                <div class="stat-label"><?php echo __('stats_rating'); ?></div>
             </div>
         </div>
     </section>
 
     <!-- VIDEO -->
-    <div class="video-section" style="padding: 0 5% 80px;">
+    <div class="video-section" style="padding: 0 5% 100px;">
         <div class="video-container" style="border-radius: 30px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.5); border: 1px solid var(--navy-border2);">
             <iframe width="100%" height="600" src="https://www.youtube.com/embed/PorE9ETx9Ek" frameborder="0" allowfullscreen></iframe>
         </div>
     </div>
 
     <!-- PORTFOLIO -->
-    <section id="portfolio" style="padding: 80px 0; background: radial-gradient(circle at 50% 0%, rgba(168, 133, 46, 0.05), transparent 70%);">
-        <div style="text-align: center; margin-bottom: 50px;">
-            <span style="color: var(--gold); font-weight: 800; letter-spacing: 3px; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 12px; display: block;">Our Creations</span>
-            <h2 style="font-size: 3rem; font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; margin-bottom: 15px;"><?php echo __('nav_portfolio'); ?></h2>
-            <div style="width: 60px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-rich)); margin: 0 auto; border-radius: 2px;"></div>
+    <section id="portfolio" style="padding: 120px 0; background: radial-gradient(circle at 50% 0%, rgba(168, 133, 46, 0.05), transparent 70%);">
+        <div style="text-align: center; margin-bottom: 70px; padding: 0 5%;">
+            <span style="color: var(--gold); font-weight: 800; letter-spacing: 3px; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; display: block;">Our Creations</span>
+            <h2 style="font-size: 3.5rem; font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; margin-bottom: 20px;"><?php echo __('nav_portfolio'); ?></h2>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; font-size: 1.1rem; line-height: 1.6;">สัมผัสผลงานระดับ Masterpiece ที่คัดสรรมาเพื่อการันตีความเป็นมืออาชีพในทุกมิติ</p>
         </div>
 
-        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 50px;">
-            <button class="tab-btn active" onclick="switchPortfolioTab(this,'video')">VIDEOS</button>
-            <button class="tab-btn" onclick="switchPortfolioTab(this,'photo')">PHOTOS</button>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 60px;">
+            <button class="tab-btn active" onclick="switchPortfolioTab(this,'video')" style="padding: 14px 35px; border-radius: 40px; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; font-weight: 700; font-family: 'Sora', sans-serif; transition: 0.3s;">VIDEOS</button>
+            <button class="tab-btn" onclick="switchPortfolioTab(this,'photo')" style="padding: 14px 35px; border-radius: 40px; border: 1px solid var(--navy-border2); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; font-weight: 700; font-family: 'Sora', sans-serif; transition: 0.3s;">PHOTOS</button>
         </div>
 
-        <div id="portfolio-photo-content" class="portfolio-marquee-container" style="display: none;">
-            <div class="portfolio-marquee">
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=800&q=80" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" /></div>
-                <div class="portfolio-card"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80" /></div>
+        <div id="portfolio-photo-content" class="testimonials-marquee-container" style="display: none;">
+            <div class="portfolio-marquee" style="display: flex; gap: 30px; width: max-content; animation: scroll-marquee 40s linear infinite;">
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <!-- Duplicate for seamless scroll -->
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border);"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;" /></div>
             </div>
         </div>
 
-        <div id="portfolio-video-content" class="portfolio-marquee-container">
-            <div class="portfolio-marquee" style="animation-duration: 35s;">
-                <div class="portfolio-card">
-                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80" />
-                    <div class="portfolio-overlay">
-                        <span class="video-play-icon"><i class="fas fa-play"></i></span>
-                    </div>
-                </div>
-                <div class="portfolio-card">
-                    <img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=800&q=80" />
-                    <div class="portfolio-overlay">
-                        <span class="video-play-icon"><i class="fas fa-play"></i></span>
-                    </div>
-                </div>
-                <div class="portfolio-card">
-                    <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" />
-                    <div class="portfolio-overlay">
-                        <span class="video-play-icon"><i class="fas fa-play"></i></span>
-                    </div>
-                </div>
-                <div class="portfolio-card">
-                    <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80" />
-                    <div class="portfolio-overlay">
-                        <span class="video-play-icon"><i class="fas fa-play"></i></span>
-                    </div>
-                </div>
-                <div class="portfolio-card">
-                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80" />
-                    <div class="portfolio-overlay">
-                        <span class="video-play-icon"><i class="fas fa-play"></i></span>
-                    </div>
-                </div>
-                <div class="portfolio-card">
-                    <img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=800&q=80" />
-                    <div class="portfolio-overlay">
-                        <span class="video-play-icon"><i class="fas fa-play"></i></span>
-                    </div>
-                </div>
+        <div id="portfolio-video-content" class="testimonials-marquee-container">
+            <div class="portfolio-marquee" style="display: flex; gap: 30px; width: max-content; animation: scroll-marquee 35s linear infinite;">
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <!-- Duplicate -->
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
+                <div class="portfolio-card" style="width: 400px; height: 250px; border-radius: 20px; overflow: hidden; border: 1px solid var(--navy-border); position: relative;"><img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=800&q=80" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7);" /><span class="video-play-icon">▶</span></div>
             </div>
         </div>
     </section>
 
     <!-- TESTIMONIALS -->
-    <section id="testimonials" style="padding: 80px 0; background: var(--navy-deep);">
-        <div style="text-align: center; margin-bottom: 60px; padding: 0 5%;">
+    <section id="testimonials" style="padding: var(--section-pad) 0;">
+        <div class="container" style="text-align: center; margin-bottom: 60px;">
             <span style="color: var(--gold); font-weight: 800; letter-spacing: 3px; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; display: block;">Reviews</span>
-            <h2 style="font-size: 3rem; font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; margin-bottom: 20px;"><?php 
-                $title = __('testimonials_title');
-                echo ($title === 'testimonials_title') ? 'ความประทับใจจากลูกค้า' : $title; 
-            ?></h2>
+            <h2 style="font-size: var(--fs-2xl); font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; margin-bottom: 20px;">
+                <?php 
+                    $title = __('testimonials_title');
+                    echo ($title === 'testimonials_title') ? 'ความประทับใจจากลูกค้า' : $title; 
+                ?>
+            </h2>
         </div>
         
         <div class="testimonials-marquee-container">
-            <div class="testimonials-track" style="display: flex; gap: 30px; padding: 20px 0; animation: scroll-marquee 35s linear infinite;">
+            <div class="testimonials-track" style="display: flex; gap: 30px; padding: 20px 0;">
                 <!-- Testimonial 1 -->
-                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px; width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-                    <div style="color: var(--gold); margin-bottom: 15px; font-size: 1.1rem;">★★★★★</div>
-                    <p style="color: #e0e0e0; font-size: 1rem; line-height: 1.7; margin-bottom: 25px; font-family: 'Prompt', sans-serif;">"คอร์สเรียนนี้ช่วยให้ผมประหยัดเวลาในการลองผิดลองถูกไปได้เยอะมาก เนื้อหากระชับ เข้าใจง่าย และที่สำคัญคือเทคนิคที่สอนมันใช้งานได้จริงในระดับมืออาชีพครับ"</p>
+                <div class="testimonial-card">
+                    <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
+                    <p style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; font-family: 'Prompt', sans-serif;">"คอร์สเรียนนี้ช่วยให้ผมประหยัดเวลาในการลองผิดลองถูกไปได้เยอะมาก เนื้อหากระชับ เข้าใจง่าย และที่สำคัญคือเทคนิคที่สอนมันใช้งานได้จริงในระดับมืออาชีพครับ"</p>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">K</div>
                         <div>
@@ -214,9 +197,9 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     </div>
                 </div>
                 <!-- Testimonial 2 -->
-                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px; width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-                    <div style="color: var(--gold); margin-bottom: 15px; font-size: 1.1rem;">★★★★★</div>
-                    <p style="color: #e0e0e0; font-size: 1rem; line-height: 1.7; margin-bottom: 25px; font-family: 'Prompt', sans-serif;">"ประทับใจระบบหลังบ้านและทีมสนับสนุนมากค่ะ เวลาติดปัญหาตรงไหนถามไปก็ได้คำตอบที่ชัดเจนตลอด คุ้มค่าแก่การลงทุนเพื่อพัฒนาตัวเองจริงๆ ค่ะ"</p>
+                <div class="testimonial-card">
+                    <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
+                    <p style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; font-family: 'Prompt', sans-serif;">"ประทับใจระบบหลังบ้านและทีมสนับสนุนมากค่ะ เวลาติดปัญหาตรงไหนถามไปก็ได้คำตอบที่ชัดเจนตลอด คุ้มค่าแก่การลงทุนเพื่อพัฒนาตัวเองจริงๆ ค่ะ"</p>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">N</div>
                         <div>
@@ -226,46 +209,9 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     </div>
                 </div>
                 <!-- Testimonial 3 -->
-                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px; width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-                    <div style="color: var(--gold); margin-bottom: 15px; font-size: 1.1rem;">★★★★★</div>
-                    <p style="color: #e0e0e0; font-size: 1rem; line-height: 1.7; margin-bottom: 25px; font-family: 'Prompt', sans-serif;">"ผมเรียนจบคอร์สนี้แล้วสามารถรับงานตัดต่อวิดีโอได้เลย คุ้มค่ามากครับ อาจารย์สอนเทคนิคที่หาเรียนที่ไหนไม่ได้ และคอมมูนิตี้ในกลุ่มก็น่ารักมากครับ"</p>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">P</div>
-                        <div>
-                            <div style="color: #fff; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif;">คุณพีระพัฒน์</div>
-                            <div style="color: var(--gold-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Professional YouTuber</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Duplicates for seamless loop -->
-                <!-- Testimonial 1 -->
-                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px; width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-                    <div style="color: var(--gold); margin-bottom: 15px; font-size: 1.1rem;">★★★★★</div>
-                    <p style="color: #e0e0e0; font-size: 1rem; line-height: 1.7; margin-bottom: 25px; font-family: 'Prompt', sans-serif;">"คอร์สเรียนนี้ช่วยให้ผมประหยัดเวลาในการลองผิดลองถูกไปได้เยอะมาก เนื้อหากระชับ เข้าใจง่าย และที่สำคัญคือเทคนิคที่สอนมันใช้งานได้จริงในระดับมืออาชีพครับ"</p>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">K</div>
-                        <div>
-                            <div style="color: #fff; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif;">คุณกิตติศักดิ์</div>
-                            <div style="color: var(--gold-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Creative Director</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Testimonial 2 -->
-                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px; width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-                    <div style="color: var(--gold); margin-bottom: 15px; font-size: 1.1rem;">★★★★★</div>
-                    <p style="color: #e0e0e0; font-size: 1rem; line-height: 1.7; margin-bottom: 25px; font-family: 'Prompt', sans-serif;">"ประทับใจระบบหลังบ้านและทีมสนับสนุนมากค่ะ เวลาติดปัญหาตรงไหนถามไปก็ได้คำตอบที่ชัดเจนตลอด คุ้มค่าแก่การลงทุนเพื่อพัฒนาตัวเองจริงๆ ค่ะ"</p>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">N</div>
-                        <div>
-                            <div style="color: #fff; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif;">คุณนภัสสร</div>
-                            <div style="color: var(--gold-soft); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Content Strategist</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Testimonial 3 -->
-                <div class="testimonial-card" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px; width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-                    <div style="color: var(--gold); margin-bottom: 15px; font-size: 1.1rem;">★★★★★</div>
-                    <p style="color: #e0e0e0; font-size: 1rem; line-height: 1.7; margin-bottom: 25px; font-family: 'Prompt', sans-serif;">"ผมเรียนจบคอร์สนี้แล้วสามารถรับงานตัดต่อวิดีโอได้เลย คุ้มค่ามากครับ อาจารย์สอนเทคนิคที่หาเรียนที่ไหนไม่ได้ และคอมมูนิตี้ในกลุ่มก็น่ารักมากครับ"</p>
+                <div class="testimonial-card">
+                    <div style="color: var(--gold); margin-bottom: 20px; font-size: 1.2rem;">★★★★★</div>
+                    <p style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; font-family: 'Prompt', sans-serif;">"ผมเรียนจบคอร์สนี้แล้วสามารถรับงานตัดต่อวิดีโอได้เลย คุ้มค่ามากครับ อาจารย์สอนเทคนิคที่หาเรียนที่ไหนไม่ได้ และคอมมูนิตี้ในกลุ่มก็น่ารักมากครับ"</p>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy-deep); font-size: 1.2rem;">P</div>
                         <div>
@@ -279,11 +225,12 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     </section>
 
     <!-- COURSES -->
-    <section id="courses" style="padding: 80px 5%;">
-        <div style="text-align: center; margin-bottom: 50px;">
-            <h2 style="font-size: 3.5rem; font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 20px; color: #fff;"><?php echo __('packages_title'); ?></h2>
-            <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 700px; margin: 0 auto;"><?php echo __('packages_subtitle'); ?></p>
-        </div>
+    <section id="courses" style="padding: var(--section-pad) 0;">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h2 style="font-size: var(--fs-2xl); font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 20px; color: #fff;"><?php echo __('packages_title'); ?></h2>
+                <p style="font-size: var(--fs-base); color: var(--text-muted); max-width: 700px; margin: 0 auto;"><?php echo __('packages_subtitle'); ?></p>
+            </div>
 
         <!-- Category Filters -->
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 60px;">
@@ -301,7 +248,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             <?php endforeach; ?>
         </div>
         
-        <div class="course-grid" id="courseGrid">
+            <div class="grid-responsive" id="courseGrid">
             <?php 
             $count = 0;
             foreach ($courses as $course): 
@@ -316,9 +263,9 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                 $displayClass = $count > 3 ? 'extra-course' : '';
                 $catData = htmlspecialchars($course['category']);
             ?>
-                <div class="course-card reveal-item <?php echo $displayClass; ?>" data-category="<?php echo $catData; ?>" onclick="goToDetail(<?php echo $course['id']; ?>)" style="<?php echo $count > 3 ? 'display: none;' : ''; ?>">
+                <div class="course-card <?php echo $displayClass; ?>" data-category="<?php echo $catData; ?>" onclick="goToDetail(<?php echo $course['id']; ?>)" style="<?php echo $count > 3 ? 'display: none;' : ''; ?>">
                     <div class="course-card-header">
-                        <img src="<?php echo $img_src; ?>" alt="Course" class="course-card-img">
+                        <img src="<?php echo $img_src; ?>" alt="Course" class="course-card-img" loading="lazy">
                         <div class="course-card-label">
                             <?php echo htmlspecialchars($course['category']); ?>
                         </div>
@@ -388,17 +335,14 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         </div>
     </section>
 
-    <!-- SECTION DIVIDER -->
-    <div class="section-divider" style="max-width: 1200px; opacity: 0.5;"></div>
+
+
 
     <!-- FAQ -->
-    <section id="faq" style="padding: 80px 5% 100px;">
-        <div style="text-align: center; margin-bottom: 50px;">
-            <h2 style="font-size: 3rem; font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; margin-bottom: 15px;">คำถามที่พบบ่อย</h2>
-            <div style="width: 60px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-rich)); margin: 0 auto; border-radius: 2px;"></div>
-        </div>
+    <section id="faq">
+        <h2 class="section-title">คำถามที่พบบ่อย</h2>
         <div class="faq-box">
-            <div class="faq-item reveal-item stagger-1 open">
+            <div class="faq-item open">
                 <div class="faq-question">
                     <span>Creators Club คืออะไร?</span>
                     <span class="faq-chevron">▾</span>
@@ -408,7 +352,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     สำหรับผู้ที่ต้องการพัฒนาทักษะการตัดต่อและเชื่อมต่อกับชุมชนนักสร้างสรรค์
                 </div>
             </div>
-            <div class="faq-item reveal-item stagger-2">
+            <div class="faq-item">
                 <div class="faq-question">
                     <span>ฉันสามารถเรียนได้เมื่อไหร่?</span>
                     <span class="faq-chevron">▾</span>
@@ -418,7 +362,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     เข้าถึงเนื้อหาได้ทุกที่ทุกเวลาผ่านอุปกรณ์ใดก็ได้
                 </div>
             </div>
-            <div class="faq-item reveal-item stagger-3">
+            <div class="faq-item">
                 <div class="faq-question">
                     <span>มีการรับประกันคืนเงินหรือไม่?</span>
                     <span class="faq-chevron">▾</span>
@@ -427,7 +371,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     เรามีนโยบายคืนเงินภายใน 7 วันหากคุณไม่พอใจกับคอร์สที่เลือก
                 </div>
             </div>
-            <div class="faq-item reveal-item stagger-4">
+            <div class="faq-item">
                 <div class="faq-question">
                     <span>มีใบรับรองหลังจบคอร์สหรือเปล่า?</span>
                     <span class="faq-chevron">▾</span>
@@ -436,7 +380,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     ใช่ ผู้เรียนทุกคนที่จบหลักสูตรจะได้รับใบรับรองการผ่านการอบรมจาก ICONNEX
                 </div>
             </div>
-            <div class="faq-item reveal-item stagger-5">
+            <div class="faq-item">
                 <div class="faq-question">
                     <span>ชำระเงินได้อย่างไร?</span>
                     <span class="faq-chevron">▾</span>
@@ -469,4 +413,8 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     </footer>
 </body>
 
-</html>
+
+
+    
+
+    
