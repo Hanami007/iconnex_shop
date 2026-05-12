@@ -20,7 +20,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     <link rel="stylesheet" href="src/styles/notification.css?v=1.2" />
     <script src="src/assets/js/notification/notificationService.js?v=1.2"></script>
     <script src="src/assets/js/notification/notificationUI.js?v=1.2"></script>
-    <script defer src="src/assets/js/script.js?v=1.2"></script>
+    <script defer src="src/assets/js/script.js?v"></script>
     <script>
         const coursesData = <?php echo json_encode($courses); ?>;
         const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;

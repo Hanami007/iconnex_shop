@@ -340,8 +340,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
-
 function showToast(msg) {
   let toast = document.getElementById('toast');
   if (!toast) {
@@ -359,39 +357,4 @@ function showToast(msg) {
   toast.textContent = msg;
   toast.style.display = 'block';
   setTimeout(() => { toast.style.display = 'none'; }, 3000);
-}
-  fetch('api/cart.php', { 
-    method: 'POST', 
-    headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
-    body: new URLSearchParams({ action: 'count' }) 
-  })
-    .then(res => res.json()).then(data => updateCartBadge(data.count));
-
-  const checkLogin = typeof isLoggedIn !== 'undefined' ? isLoggedIn : (window.isLoggedIn || false);
-  if (checkLogin) {
-    console.log("User logged in, starting notification polling...");
-    updateNotiBadge();
-    setInterval(updateNotiBadge, 30000);
-  }
-});
-
-
-
-function showToast(msg) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.style = `
-      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.95); color: white; padding: 14px 28px;
-      border-radius: 50px; z-index: 10000; font-family: 'Prompt', sans-serif;
-      font-size: 0.95rem; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: none;
-      border: 1px solid var(--navy-border);
-    `;
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 3000);
-}
+}

@@ -5,8 +5,7 @@ useService('db');
 
 header('Content-Type: application/json');
 
-// Security: Validate CSRF for state-changing actions
-validateCsrf();
+// validateCsrf() will be called only for POST actions below
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'error' => 'Not logged in']);
@@ -37,6 +36,7 @@ if ($action === 'list') {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 } elseif ($action === 'mark_read') {
+    validateCsrf();
     $id = (int)($_POST['id'] ?? 0);
     if (!$id) exit;
     try {
