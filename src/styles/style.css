@@ -66,7 +66,7 @@
 
   /* Layout Tokens */
   --container-max: 1280px;
-  --section-pad: clamp(3rem, 2rem + 5vw, 6rem);
+  --section-pad: clamp(2.5rem, 1.5rem + 4vw, 5rem);
   --gutter: clamp(1rem, 0.5rem + 2vw, 2.5rem);
 }
 
@@ -172,7 +172,7 @@ nav {
   position: sticky;
   top: 0;
   z-index: 200;
-  height: clamp(64px, 10vh, 80px);
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -192,13 +192,14 @@ nav.scrolled {
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
-  color: var(--text-on-navy);
+  font-size: 1.25rem;
+  color: #fff;
   text-decoration: none;
+  letter-spacing: -0.5px;
+  z-index: 220;
 }
 
 .nav-logo .logo-icon {
@@ -397,7 +398,7 @@ nav.scrolled {
    ═══════════════════════════════════════════════════════════════ */
 .hero {
   position: relative;
-  min-height: 88vh;
+  min-height: 75vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -679,7 +680,7 @@ nav.scrolled {
    GENERIC SECTION
    ═══════════════════════════════════════════════════════════════ */
 section {
-  padding: 80px 40px;
+  padding: 50px 40px;
 }
 
 .section-title {
@@ -715,7 +716,7 @@ section {
   color: var(--text-muted);
   font-size: 1rem;
   max-width: 560px;
-  margin: 0 auto;
+  margin: 0 auto 10px;
   line-height: 1.7;
 }
 
@@ -726,23 +727,25 @@ section {
   background: var(--navy-deep);
   position: relative;
   overflow: hidden;
-  padding: 100px 0;
+  padding: 30px 0;
 }
 
 #portfolio::before {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, rgba(201, 168, 76, 0.05) 0%, transparent 70%);
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(201, 168, 76, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(201, 168, 76, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at center, rgba(18, 30, 52, 0.5) 0%, transparent 70%);
   pointer-events: none;
 }
 
 #portfolio .section-title {
-  margin-bottom: 12px;
+  margin-bottom: 5px;
 }
 
 .tab-bar {
@@ -750,14 +753,16 @@ section {
   justify-content: center;
   align-items: center;
   gap: 12px;
-  margin-bottom: 48px;
-  background: var(--navy-mid);
-  padding: 6px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  padding: 8px;
   border-radius: 50px;
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  border: 1px solid var(--navy-border);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .tab-btn {
@@ -815,17 +820,17 @@ section {
   flex-shrink: 0;
   position: relative;
   cursor: pointer;
-  border: 1px solid var(--navy-border2);
-  transition: all 0.4s var(--ease);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.5s var(--ease);
   background: var(--navy-mid);
 }
 
 .portfolio-marquee .portfolio-card:hover {
-  transform: scale(1.05) translateY(-8px);
+  transform: translateY(-12px) scale(1.03);
   border-color: var(--gold-line);
   box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.5),
-    0 0 0 1px var(--gold-line);
+    0 30px 60px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(201, 168, 76, 0.15);
   z-index: 10;
 }
 
@@ -919,7 +924,7 @@ section {
 }
 
 .course-section-label {
-  margin-bottom: 32px;
+  margin-bottom: 5px;
 }
 
 .course-section-label h3 {
@@ -1297,9 +1302,9 @@ section {
 
 .testimonials-track {
   display: flex;
-  gap: 20px;
+  gap: 15px;
   width: max-content;
-  animation: scroll-marquee 60s linear infinite;
+  animation: scroll-marquee 30s linear infinite;
 }
 
 @keyframes scroll-marquee {
@@ -1317,12 +1322,15 @@ section {
 }
 
 .testimonial-card {
-  flex: 0 0 300px;
+  flex: 0 0 280px;
   background: var(--navy-card);
   border: 1px solid var(--navy-border);
   border-radius: var(--radius-lg);
-  padding: 28px 24px;
+  padding: 12px 16px;
   transition: border-color 0.3s, transform 0.3s var(--ease), box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .testimonial-card:hover {
@@ -1339,10 +1347,10 @@ section {
 }
 
 .testimonial-text {
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   color: var(--text-muted);
-  line-height: 1.8;
-  margin-bottom: 20px;
+  line-height: 1.5;
+  margin-bottom: 8px;
   font-style: italic;
 }
 
@@ -1383,25 +1391,26 @@ section {
    FAQ — Cream section
    ═══════════════════════════════════════════════════════════════ */
 #faq {
-  background: var(--cream);
+  background: var(--navy-deep);
+  border-top: 1px solid var(--navy-border2);
 }
 
 #faq .section-title {
-  color: var(--text-on-cream);
+  color: var(--text-on-navy);
 }
 
 .faq-box {
-  background: #ffffff;
+  background: var(--navy-card);
   border-radius: var(--radius-lg);
   max-width: 760px;
   margin: 0 auto;
   overflow: hidden;
-  border: 1px solid var(--cream-mid);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--navy-border);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
 }
 
 .faq-item {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--navy-border);
   padding: 22px 28px;
   cursor: pointer;
   transition: background 0.2s;
@@ -1412,7 +1421,7 @@ section {
 }
 
 .faq-item:hover {
-  background: #faf9f7;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .faq-question {
@@ -1422,7 +1431,7 @@ section {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--text-on-cream);
+  color: #fff;
 }
 
 .faq-chevron {
@@ -1440,7 +1449,7 @@ section {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.35s var(--ease), padding 0.35s var(--ease);
-  color: #5a6a7a;
+  color: var(--text-muted);
   font-size: 0.9rem;
   line-height: 1.75;
 }

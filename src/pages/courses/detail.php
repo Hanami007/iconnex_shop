@@ -43,7 +43,7 @@ $recommended = array_slice($recommended, 0, 3);
         body { background: var(--navy-deep); color: var(--text-on-navy); font-family: 'Prompt', sans-serif; }
         
         .course-hero-wrap { 
-            padding: 140px 5% 60px; 
+            padding: 80px 5% 60px; 
             background: linear-gradient(to bottom, rgba(11,18,33,1) 0%, rgba(18,30,52,0.4) 100%);
         }
         .hero-container { 
@@ -152,49 +152,12 @@ $recommended = array_slice($recommended, 0, 3);
 
 <body>
     <!-- NAV (Match index.php) -->
-    <nav>
-        <a href="index.php" class="nav-logo">
-            <div class="logo-icon">🌀</div>
-            ICONNEX
-        </a>
-        <ul class="nav-links">
-            <li><a href="index.php"><?php echo __('nav_home'); ?></a></li>
-            <li><a href="index.php#courses"><?php echo __('nav_courses'); ?></a></li>
-            <li><a href="index.php#portfolio"><?php echo __('nav_portfolio'); ?></a></li>
-            <li><a href="index.php#contact"><?php echo __('nav_contact'); ?></a></li>
-            <li class="lang-switcher">
-                <a href="?id=<?php echo $id; ?>&lang=th" class="<?php echo $current_lang === 'th' ? 'active' : ''; ?>">TH</a>
-                <span>|</span>
-                <a href="?id=<?php echo $id; ?>&lang=en" class="<?php echo $current_lang === 'en' ? 'active' : ''; ?>">EN</a>
-            </li>
-        </ul>
-        <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
-            <a href="#" onclick="openCartModal(event)" style="position:relative; font-size: 1.2rem; color: #fff; text-decoration:none; transition: 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='#fff'">
-                <i class="fas fa-shopping-cart"></i>
-                <span id="cart-count" style="display:none; position:absolute; top:-8px; right:-12px; background:var(--gold); color:var(--navy-deep); border-radius:50%; width:18px; height:18px; font-size:.7rem; align-items:center; justify-content:center; font-weight:800; border: 2px solid var(--navy-deep);">0</span>
-            </a>
-            <?php if(isset($_SESSION['user_id'])): ?>
-                <?php renderComponent('notification/NotificationDropdown'); ?>
-                <div style="display: flex; align-items: center; gap: 15px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
-                    <a href="my_orders.php" style="color: var(--gold-soft); font-size: 0.85rem; font-weight: 700; text-decoration:none;">
-                        <i class="fas fa-history"></i> <?php echo __('nav_my_orders'); ?>
-                    </a>
-                    <a href="logout.php" style="background: rgba(255,255,255,0.05); color: #fff; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; text-decoration:none;">
-                        <?php echo __('nav_logout'); ?>
-                    </a>
-                </div>
-            <?php else: ?>
-                <a href="login.php" style="background: var(--gold); color: var(--navy-deep); padding: 8px 25px; border-radius: 30px; font-weight: 800; text-decoration:none; font-size: 0.85rem;">
-                    <?php echo __('btn_login'); ?>
-                </a>
-            <?php endif; ?>
-        </div>
-    </nav>
+    <?php renderComponent('Navbar'); ?>
 
     <div class="course-hero-wrap">
         <div class="hero-container">
             <div class="hero-info">
-                <div style="font-size: 0.8rem; color: var(--text-subtle); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;">
+                <div style="font-size: 0.8rem; color: var(--text-subtle); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
                     Home > Courses > <?php echo htmlspecialchars($course['name']); ?>
                 </div>
                 <h1><?php echo htmlspecialchars($course['name']); ?></h1>

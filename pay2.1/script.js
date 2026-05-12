@@ -45,36 +45,27 @@ function loadCartData() {
   const cart = JSON.parse(data);
   if (cart.length === 0) return;
 
-  fullCartItems = cart;
+  // Reset states
+  fullCartItems = [];
+  addedCourses = {};
   currentHeroIndex = 0;
+  baseCourse = { price: 0, name: 'ไม่มีสินค้า' };
 
   // Clear receipt lines
-  document.getElementById('receipt-lines').innerHTML = '';
+  const receiptLines = document.getElementById('receipt-lines');
+  if (receiptLines) receiptLines.innerHTML = '';
 
-  // Add all items to the receipt and carousel
-  cart.forEach((item, index) => {
-    // The first item is our initial baseCourse for calculation
-    if (index === 0) {
-      baseCourse = {
-        price: item.price,
-        name: item.name,
-        instructor: item.instructor,
-        image: item.image,
-        description: item.description,
-        category: item.category
-      };
-    }
-    
-    // Use toggleCourse to add it to the UI and addedCourses (if not the base)
-    // Actually, let's make them all "Added" so they all have remove buttons
-    // and we'll just set baseCourse.price to 0 to avoid double counting.
-    // Wait, the existing calcSubtotal adds baseCourse.price.
-    // Let's set baseCourse.price = 0 and add everything via toggleCourse.
-  });
-
-  baseCourse.price = 0; 
+  // Add items from cart
   cart.forEach(item => {
-    toggleCourse('cart-' + item.id, item.price, item.name);
+    // Provide full data to toggleCourse to ensure carousel has all info
+    const additionalData = {
+      image: item.image,
+      category: item.category,
+      description: item.description || item.short_desc,
+      hours: item.hours,
+      lessons: item.lessons
+    };
+    toggleCourse('cart-' + item.id, item.price, item.name, additionalData);
   });
 
   updateHeroDisplay();

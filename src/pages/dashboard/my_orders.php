@@ -53,10 +53,10 @@ function getCourseImage($name, $courses) {
         }
         body { background: var(--dashboard-bg); }
         
-        .dashboard-wrapper { display: flex; min-height: 100vh; padding-top: 80px; }
+        .dashboard-wrapper { display: flex; min-height: 100vh; padding-top: 70px; }
         
         /* Sidebar */
-        .dashboard-sidebar { width: var(--sidebar-w); padding: 20px; border-right: 1px solid var(--navy-border); position: sticky; top: 80px; height: calc(100vh - 80px); }
+        .dashboard-sidebar { width: var(--sidebar-w); padding: 20px; border-right: 1px solid var(--navy-border); position: sticky; top: 70px; height: calc(100vh - 70px); }
         .sidebar-menu { display: flex; flex-direction: column; gap: 8px; }
         .menu-item { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600; transition: 0.3s; }
         .menu-item:hover { background: var(--navy-light); color: var(--gold-soft); }
@@ -109,20 +109,7 @@ function getCourseImage($name, $courses) {
 </head>
 <body>
     <!-- NAV (Same as main site) -->
-    <nav style="background: rgba(7, 11, 20, 0.85); backdrop-filter: blur(20px);">
-        <a href="index.php" class="nav-logo">
-            <div class="logo-icon">🌀</div>
-            ICONNEX
-        </a>
-        <ul class="nav-links">
-            <li><a href="index.php"><?php echo __('nav_home'); ?></a></li>
-            <li><a href="index.php#courses"><?php echo __('nav_courses'); ?></a></li>
-            <li><a href="logout.php" style="color: #ffae35;"><?php echo __('nav_logout'); ?></a></li>
-        </ul>
-        <div class="nav-actions" style="display: flex; align-items: center; gap: 20px; margin-right: 40px;">
-            <?php renderComponent('notification/NotificationDropdown'); ?>
-        </div>
-    </nav>
+    <?php renderComponent('Navbar'); ?>
 
     <div class="dashboard-wrapper">
         <!-- Sidebar -->
