@@ -36,11 +36,30 @@ function csrfInput() {
 }
 
 function validateCsrf() {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+    $method = $_SERVER['REQUEST_METHOD'];
+    if ($method === 'POST') {
+        $token = $_POST['csrf_token'] ?? '';
+        if (empty($token)) {
+            $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? $_SERVER['X_CSRF_TOKEN'] ?? '';
+        }
+        
+        if (empty($token) && function_exists('getallheaders')) {
+            $headers = getallheaders();
+            $token = $headers['X-CSRF-TOKEN'] ?? $headers['X-CSRF-Token'] ?? $headers['x-csrf-token'] ?? '';
+        }
+
         if (empty($token) || $token !== $_SESSION['csrf_token']) {
+            $uri = $_SERVER['REQUEST_URI'];
+            $token_recv = $token ? substr($token, 0, 8) . '...' : 'EMPTY';
+            $token_sess = isset($_SESSION['csrf_token']) ? substr($_SESSION['csrf_token'], 0, 8) . '...' : 'NULL';
+            
+            $log = sprintf("[%s] CSRF FAIL: SID=%s, URI=%s, Method=%s, Action=%s, TokenRecv=%s, TokenSess=%s\n", 
+                date('Y-m-d H:i:s'), session_id(), $uri, $method, $_POST['action'] ?? $_GET['action'] ?? 'N/A', 
+                $token_recv, $token_sess);
+            file_put_contents(ROOT_DIR . '/debug_csrf.log', $log, FILE_APPEND);
+            
             header('HTTP/1.1 403 Forbidden');
-            echo json_encode(['success' => false, 'error' => 'CSRF token validation failed.']);
+            echo json_encode(['success' => false, 'error' => 'CSRF token validation failed (V3).']);
             exit;
         }
     }
