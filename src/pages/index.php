@@ -190,15 +190,11 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 60px;">
             <button class="filter-pill active" onclick="setFilter(this,'all')"><?php echo __('filter_all'); ?></button>
             <?php 
-            $unique_categories = [];
-            foreach ($courses as $c) {
-                if (!in_array($c['category'], $unique_categories)) {
-                    $unique_categories[] = $c['category'];
-                }
-            }
-            foreach ($unique_categories as $cat): 
+            useService('category_service');
+            $all_categories = getCategories();
+            foreach ($all_categories as $cat): 
             ?>
-            <button class="filter-pill" onclick="setFilter(this,'<?php echo htmlspecialchars($cat); ?>')"><?php echo htmlspecialchars($cat); ?></button>
+            <button class="filter-pill" onclick="setFilter(this,'<?php echo htmlspecialchars($cat['name']); ?>')"><?php echo htmlspecialchars($cat['name']); ?></button>
             <?php endforeach; ?>
         </div>
         

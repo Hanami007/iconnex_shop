@@ -9,7 +9,12 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
     try {
-        $stmt = $pdo->query("SELECT * FROM courses ORDER BY id DESC");
+        $stmt = $pdo->query("
+            SELECT c.*, cat.name as category_name 
+            FROM courses c 
+            LEFT JOIN categories cat ON c.category_id = cat.id 
+            ORDER BY c.id DESC
+        ");
         $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Format to match what admin.js expects
@@ -28,7 +33,8 @@ if ($method === 'GET') {
                 'img' => $img,
                 'title' => $c['name'],
                 'description' => $c['description'] ?? '',
-                'category' => $c['category'] ?? '',
+                'category' => $c['category_name'] ?? $c['category'] ?? '', // Fallback to legacy text
+                'category_id' => $c['category_id'],
                 'price' => '฿' . number_format($c['price'] ?? 0),
                 'raw_price' => $c['price'] ?? 0,
                 'instructor' => $c['instructor'] ?? '',
@@ -72,12 +78,15 @@ if ($method === 'GET') {
     $id = $_POST['id'] ?? 0;
     $title = $_POST['title'] ?? '';
     $description = $_POST['description'] ?? '';
-    $category = $_POST['category'] ?? '';
+    $category_id = intval($_POST['category_id'] ?? 0);
     $price = intval($_POST['price'] ?? 0);
     $instructor = $_POST['instructor'] ?? 'Admin';
     $lessons = intval($_POST['lessons'] ?? 10);
     $hours = intval($_POST['hours'] ?? 20);
     $content_json = $_POST['content_json'] ?? '[]';
+    
+    // Legacy fallback: if category_id is 0, try to find by name or just use text
+    $category_text = $_POST['category'] ?? '';
     
     if (empty($title) || empty($price)) {
         echo json_encode(['success' => false, 'error' => 'Title and Price are required']);
@@ -112,17 +121,17 @@ if ($method === 'GET') {
     try {
         if ($action === 'edit' && $id) {
             if ($image_path) {
-                $stmt = $pdo->prepare("UPDATE courses SET name = ?, category = ?, instructor = ?, price = ?, old_price = ?, lessons = ?, hours = ?, description = ?, short_desc = ?, fullDescription = ?, long_desc = ?, content_json = ?, image = ? WHERE id = ?");
-                $stmt->execute([$title, $category, $instructor, $price, $price + 500, $lessons, $hours, $description, $description, $description, $description, $content_json, $image_path, $id]);
+                $stmt = $pdo->prepare("UPDATE courses SET name = ?, category_id = ?, category = ?, instructor = ?, price = ?, old_price = ?, lessons = ?, hours = ?, description = ?, short_desc = ?, fullDescription = ?, long_desc = ?, content_json = ?, image = ? WHERE id = ?");
+                $stmt->execute([$title, $category_id, $category_text, $instructor, $price, $price + 500, $lessons, $hours, $description, $description, $description, $description, $content_json, $image_path, $id]);
             } else {
-                $stmt = $pdo->prepare("UPDATE courses SET name = ?, category = ?, instructor = ?, price = ?, old_price = ?, lessons = ?, hours = ?, description = ?, short_desc = ?, fullDescription = ?, long_desc = ?, content_json = ? WHERE id = ?");
-                $stmt->execute([$title, $category, $instructor, $price, $price + 500, $lessons, $hours, $description, $description, $description, $description, $content_json, $id]);
+                $stmt = $pdo->prepare("UPDATE courses SET name = ?, category_id = ?, category = ?, instructor = ?, price = ?, old_price = ?, lessons = ?, hours = ?, description = ?, short_desc = ?, fullDescription = ?, long_desc = ?, content_json = ? WHERE id = ?");
+                $stmt->execute([$title, $category_id, $category_text, $instructor, $price, $price + 500, $lessons, $hours, $description, $description, $description, $description, $content_json, $id]);
             }
         } else { // add
             $img_val = $image_path ? $image_path : '📚';
-            $stmt = $pdo->prepare("INSERT INTO courses (name, category, instructor, price, old_price, rating, reviews, lessons, hours, description, short_desc, fullDescription, long_desc, content_json, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO courses (name, category_id, category, instructor, price, old_price, rating, reviews, lessons, hours, description, short_desc, fullDescription, long_desc, content_json, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
-                $title, $category, $instructor, $price, $price + 500, 0.0, 0, $lessons, $hours, $description, $description, $description, $description, $content_json, $img_val
+                $title, $category_id, $category_text, $instructor, $price, $price + 500, 0.0, 0, $lessons, $hours, $description, $description, $description, $description, $content_json, $img_val
             ]);
         }
         echo json_encode(['success' => true]);

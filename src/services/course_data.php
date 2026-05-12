@@ -5,7 +5,11 @@ useService('db');
 $courses = array();
 
 try {
-    $stmt = $pdo->query("SELECT * FROM courses");
+    $stmt = $pdo->query("
+        SELECT c.*, cat.name as category_name, cat.slug as category_slug
+        FROM courses c
+        LEFT JOIN categories cat ON c.category_id = cat.id
+    ");
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         // Ensure integer fields are properly casted if needed
         $row['id'] = (int)$row['id'];
@@ -15,6 +19,9 @@ try {
         $row['reviews'] = (int)$row['reviews'];
         $row['lessons'] = (int)$row['lessons'];
         $row['hours'] = (int)$row['hours'];
+        
+        // Use dynamic category name if available
+        $row['category'] = $row['category_name'] ?: $row['category'];
         
         $courses[$row['id']] = $row;
     }
