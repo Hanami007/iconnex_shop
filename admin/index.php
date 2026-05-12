@@ -29,7 +29,7 @@ $completion_rate = "0%"; // Keep simple for now
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CourseFlow — Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="admin.css?v=1.1">
 <script>const csrfToken = "<?php echo getCsrfToken(); ?>";</script>
 <script src="admin.js"></script>        
 </head>
@@ -51,7 +51,17 @@ $completion_rate = "0%"; // Keep simple for now
         <div class="form-group full"><label class="form-label">Description</label><textarea id="courseDesc" class="form-control" placeholder="Describe what students will learn..."></textarea></div>
         <div class="form-group"><label class="form-label">Instructor</label><input id="courseInstructor" class="form-control" placeholder="e.g. John Doe"/></div>
         <div class="form-group"><label class="form-label">Category</label>
-          <select id="courseCategory" class="form-control"><option>Web Development</option><option>Data Science</option><option>UI/UX Design</option><option>Mobile Development</option><option>DevOps</option><option>Business</option><option>Video Editing</option></select>
+          <div id="categoryContainer" style="display:flex; flex-direction:column; gap:8px;">
+            <select id="courseCategory" class="form-control" onchange="handleCategoryChange(this)">
+              <option value="">-- Select Category --</option>
+              <option value="add_new">＋ Add New Category</option>
+            </select>
+            <div id="newCategoryWrap" style="display:none; gap:8px; align-items:center;">
+              <input type="text" id="newCategoryName" class="form-control" placeholder="New category name..." style="flex:1;">
+              <button type="button" class="btn btn-sm btn-primary" onclick="saveNewCategory()">Add</button>
+              <button type="button" class="btn btn-sm btn-ghost" onclick="cancelNewCategory()">✕</button>
+            </div>
+          </div>
         </div>
         <div class="form-group"><label class="form-label">Price (THB)</label><input id="coursePrice" class="form-control" type="number" placeholder="1500"/></div>
         <div class="form-group"><label class="form-label">Lessons (Count)</label><input id="courseLessons" class="form-control" type="number" placeholder="10" value="10"/></div>

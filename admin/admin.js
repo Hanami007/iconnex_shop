@@ -17,6 +17,79 @@ let orders = [];
 let notifications = [];
 let selectedUsers = []; // For custom audience
 const API_NOTI = 'api_notifications.php';
+const API_CAT = '../api/categories.php';
+let categories = [];
+
+async function fetchCategories() {
+    try {
+        const res = await fetch(API_CAT + '?action=list');
+        const json = await res.json();
+        if (json.success) {
+            categories = json.data;
+            updateCategoryDropdown();
+        }
+    } catch (err) {
+        console.error("Failed to fetch categories:", err);
+    }
+}
+
+function updateCategoryDropdown() {
+    const select = document.getElementById('courseCategory');
+    if (!select) return;
+    
+    // Keep first 2 options: placeholder and Add New
+    const currentVal = select.value;
+    select.innerHTML = `
+        <option value="">-- Select Category --</option>
+        ${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+        <option value="add_new">＋ Add New Category</option>
+    `;
+    if (currentVal && currentVal !== 'add_new') select.value = currentVal;
+}
+
+function handleCategoryChange(select) {
+    const wrap = document.getElementById('newCategoryWrap');
+    if (select.value === 'add_new') {
+        wrap.style.display = 'flex';
+        document.getElementById('newCategoryName').focus();
+    } else {
+        wrap.style.display = 'none';
+    }
+}
+
+async function saveNewCategory() {
+    const name = document.getElementById('newCategoryName').value.trim();
+    if (!name) return;
+    
+    try {
+        const fd = new FormData();
+        fd.append('name', name);
+        const res = await fetch(API_CAT + '?action=create', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+            body: fd
+        });
+        const json = await res.json();
+        if (json.success) {
+            showToast('✅', 'Category added!');
+            await fetchCategories();
+            document.getElementById('courseCategory').value = json.id;
+            cancelNewCategory();
+        } else {
+            showToast('❌', json.error);
+        }
+    } catch (err) {
+        showToast('❌', 'Failed to save category');
+    }
+}
+
+function cancelNewCategory() {
+    document.getElementById('newCategoryWrap').style.display = 'none';
+    document.getElementById('newCategoryName').value = '';
+    if (document.getElementById('courseCategory').value === 'add_new') {
+        document.getElementById('courseCategory').value = '';
+    }
+}
 
 async function fetchOrders() {
     try {
@@ -448,7 +521,7 @@ function editCourse(id) {
     document.getElementById('courseInstructor').value = course.instructor || '';
     document.getElementById('courseLessons').value = course.lessons || 10;
     document.getElementById('courseHours').value = course.hours || 20;
-    document.getElementById('courseCategory').value = course.category;
+    document.getElementById('courseCategory').value = course.category_id || '';
     document.getElementById('coursePrice').value = course.raw_price || course.price.replace(/[^0-9]/g, '');
     document.getElementById('courseModalTitle').textContent = '✦ Edit Course';
     
@@ -538,6 +611,7 @@ async function saveCourse() {
     const instructor = document.getElementById('courseInstructor').value;
     const lessons = document.getElementById('courseLessons').value;
     const hours = document.getElementById('courseHours').value;
+    const categoryId = document.getElementById('courseCategory').value;
     const imageFile = document.getElementById('courseImage').files[0];
     
     if (!title || !price) {
@@ -564,7 +638,7 @@ async function saveCourse() {
     if (id) fd.append('id', id);
     fd.append('title', title);
     fd.append('description', description);
-    fd.append('category', category);
+    fd.append('category_id', categoryId);
     fd.append('price', price);
     fd.append('instructor', instructor);
     fd.append('lessons', lessons);
@@ -598,6 +672,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCourses();
     fetchUsers();
     fetchOrders();
+    fetchCategories();
 });
 
 /* ── NOTIFICATIONS LOGIC ─────────────────────────────────────────── */
