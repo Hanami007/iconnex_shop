@@ -100,7 +100,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         $total_members = $total_reviews * 10;
         $total_members_display = $total_members > 1000 ? round($total_members / 1000, 1) . 'K' : number_format($total_members);
         ?>
-        <div class="hero-stats-premium reveal-pro" style="margin-top: 80px;">
+        <div class="hero-stats-premium reveal-item stagger-3" style="margin-top: 80px;">
             <div class="stat-item" style="padding: 0 40px; border-right: 1px solid rgba(255,255,255,0.1);">
                 <div style="font-family: 'Sora', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold);"><?php echo $total_members_display; ?></div>
                 <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;"><?php echo __('stats_members'); ?></div>
@@ -288,7 +288,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                 $displayClass = $count > 3 ? 'extra-course' : '';
                 $catData = htmlspecialchars($course['category']);
             ?>
-                <div class="course-card <?php echo $displayClass; ?>" data-category="<?php echo $catData; ?>" onclick="goToDetail(<?php echo $course['id']; ?>)" style="<?php echo $count > 3 ? 'display: none;' : ''; ?>">
+                <div class="course-card reveal-item <?php echo $displayClass; ?>" data-category="<?php echo $catData; ?>" onclick="goToDetail(<?php echo $course['id']; ?>)" style="<?php echo $count > 3 ? 'display: none;' : ''; ?>">
                     <div class="course-card-header">
                         <img src="<?php echo $img_src; ?>" alt="Course" class="course-card-img">
                         <div class="course-card-label">
@@ -367,7 +367,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
     <section id="faq">
         <h2 class="section-title">คำถามที่พบบ่อย</h2>
         <div class="faq-box">
-            <div class="faq-item open">
+            <div class="faq-item reveal-item stagger-1 open">
                 <div class="faq-question">
                     <span>Creators Club คืออะไร?</span>
                     <span class="faq-chevron">▾</span>
@@ -377,7 +377,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     สำหรับผู้ที่ต้องการพัฒนาทักษะการตัดต่อและเชื่อมต่อกับชุมชนนักสร้างสรรค์
                 </div>
             </div>
-            <div class="faq-item">
+            <div class="faq-item reveal-item stagger-2">
                 <div class="faq-question">
                     <span>ฉันสามารถเรียนได้เมื่อไหร่?</span>
                     <span class="faq-chevron">▾</span>
@@ -387,7 +387,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     เข้าถึงเนื้อหาได้ทุกที่ทุกเวลาผ่านอุปกรณ์ใดก็ได้
                 </div>
             </div>
-            <div class="faq-item">
+            <div class="faq-item reveal-item stagger-3">
                 <div class="faq-question">
                     <span>มีการรับประกันคืนเงินหรือไม่?</span>
                     <span class="faq-chevron">▾</span>
@@ -396,7 +396,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     เรามีนโยบายคืนเงินภายใน 7 วันหากคุณไม่พอใจกับคอร์สที่เลือก
                 </div>
             </div>
-            <div class="faq-item">
+            <div class="faq-item reveal-item stagger-4">
                 <div class="faq-question">
                     <span>มีใบรับรองหลังจบคอร์สหรือเปล่า?</span>
                     <span class="faq-chevron">▾</span>
@@ -405,7 +405,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
                     ใช่ ผู้เรียนทุกคนที่จบหลักสูตรจะได้รับใบรับรองการผ่านการอบรมจาก ICONNEX
                 </div>
             </div>
-            <div class="faq-item">
+            <div class="faq-item reveal-item stagger-5">
                 <div class="faq-question">
                     <span>ชำระเงินได้อย่างไร?</span>
                     <span class="faq-chevron">▾</span>
