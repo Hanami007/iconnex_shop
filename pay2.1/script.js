@@ -85,35 +85,60 @@ function updateHeroDisplay() {
     document.getElementById('hero-banner-title').textContent = 'ไม่มีสินค้าในตะกร้า';
     document.getElementById('hero-banner-sub').textContent   = '-';
     document.getElementById('hero-course-name').textContent  = 'กรุณาเลือกคอร์สเรียน';
-    document.getElementById('hero-course-desc').textContent  = 'คุณยังไม่ได้เลือกคอร์สเรียนใดๆ กรุณากลับไปเลือกคอร์สที่ต้องการ';
-    document.getElementById('hero-icon-box').innerHTML       = `<i class="ti ti-shopping-cart-off" style="font-size:32px;color:var(--gold)"></i>`;
+    document.getElementById('hero-course-desc').textContent  = 'คุณยังไม่ได้เลือกคอร์สเรียนใดๆ';
     document.getElementById('hero-counter').textContent      = '0 / 0';
     document.getElementById('hero-prev').style.display       = 'none';
     document.getElementById('hero-next').style.display       = 'none';
-    document.getElementById('hero-features-grid').innerHTML  = '';
+    document.getElementById('hero-cover-img').style.display  = 'none';
+    document.getElementById('hero-placeholder-icon').style.display = 'flex';
     return;
   }
 
   const course = fullCartItems[currentHeroIndex];
   if (!course) return;
 
-  // Update Hero Section
+  // Update Text
   document.getElementById('hero-banner-title').textContent = course.name;
-  document.getElementById('hero-banner-sub').textContent   = course.category;
+  document.getElementById('hero-banner-sub').textContent   = course.category || 'คอร์สเรียน';
   document.getElementById('hero-course-name').textContent  = course.name;
-  document.getElementById('hero-course-desc').textContent  = course.description;
-  document.getElementById('hero-icon-box').innerHTML       = `<span style="font-size:32px">${course.image}</span>`;
+  document.getElementById('hero-course-desc').textContent  = course.description || 'สัมผัสประสบการณ์การเรียนรู้ระดับมืออาชีพ';
+
+  // Update Image
+  const img = document.getElementById('hero-cover-img');
+  const placeholder = document.getElementById('hero-placeholder-icon');
+  
+  if (course.image) {
+    let finalSrc = course.image;
+    // If it's a local upload path and we are in pay2.1/ subdirectory, we need ../
+    if (course.image.startsWith('uploads/')) {
+      finalSrc = '../' + course.image;
+    }
+    
+    if (finalSrc.startsWith('http') || finalSrc.startsWith('../uploads/')) {
+      img.src = finalSrc;
+      img.style.display = 'block';
+      placeholder.style.display = 'none';
+    } else {
+      img.style.display = 'none';
+      placeholder.style.display = 'flex';
+    }
+  } else {
+    img.style.display = 'none';
+    placeholder.style.display = 'flex';
+  }
 
   // Update Features Grid
   const grid = document.getElementById('hero-features-grid');
-  grid.innerHTML = `
-    <div class="feature-item"><span class="feature-dot"></span>วิดีโอ ${course.hours}+ ชั่วโมง</div>
-    <div class="feature-item"><span class="feature-dot"></span>เนื้อหา ${course.lessons} บทเรียน</div>
-    <div class="feature-item"><span class="feature-dot"></span>ใบรับรองเมื่อจบคอร์ส</div>
-    <div class="feature-item"><span class="feature-dot"></span>กลุ่ม Community หลังเรียน</div>
-    <div class="feature-item"><span class="feature-dot"></span>อัปเดตเนื้อหาตลอดชีพ</div>
-    <div class="feature-item"><span class="feature-dot"></span>ถามตอบกับอาจารย์</div>
-  `;
+  if (grid) {
+    grid.innerHTML = `
+      <div class="feature-item"><span class="feature-dot"></span>วิดีโอ ${course.hours || 10}+ ชั่วโมง</div>
+      <div class="feature-item"><span class="feature-dot"></span>เนื้อหา ${course.lessons || 5} บทเรียน</div>
+      <div class="feature-item"><span class="feature-dot"></span>ใบรับรองเมื่อจบคอร์ส</div>
+      <div class="feature-item"><span class="feature-dot"></span>กลุ่ม Community หลังเรียน</div>
+      <div class="feature-item"><span class="feature-dot"></span>อัปเดตเนื้อหาตลอดชีพ</div>
+      <div class="feature-item"><span class="feature-dot"></span>ถามตอบกับอาจารย์</div>
+    `;
+  }
 
   // Update Counter
   document.getElementById('hero-counter').textContent = `${currentHeroIndex + 1} / ${fullCartItems.length}`;
@@ -202,7 +227,7 @@ function updateTotals() {
 }
 
 /* ---------- Course Toggle ---------- */
-function toggleCourse(catId, price, name) {
+function toggleCourse(catId, price, name, additionalData = {}) {
   const toggleBtn = document.getElementById('toggle-' + catId);
   const wrapper = toggleBtn ? toggleBtn.closest('.catalogue-wrapper') : null;
   const btn  = wrapper ? wrapper.querySelector('.cat-add-btn') : null;
@@ -215,7 +240,7 @@ function toggleCourse(catId, price, name) {
     document.getElementById('rline-' + catId)?.remove();
 
     // Remove from carousel data
-    const itemIndex = fullCartItems.findIndex(item => ('cart-' + item.id) === catId);
+    const itemIndex = fullCartItems.findIndex(item => ('cart-' + item.id) === catId || ('cat-' + item.id) === catId);
     if (itemIndex > -1) {
       fullCartItems.splice(itemIndex, 1);
       // If we removed the current item or an item before it, adjust index
@@ -242,6 +267,20 @@ function toggleCourse(catId, price, name) {
       <button class="rline-remove" data-id="${catId}" data-price="${price}" data-name="${name}">✕</button>
     `;
     document.getElementById('receipt-lines').appendChild(line);
+
+    // Add to carousel data
+    const newItem = {
+      id: catId.replace('cat-', '').replace('cart-', ''),
+      name: name,
+      price: price,
+      image: additionalData.image || '📚',
+      category: additionalData.category || 'คอร์สเรียน',
+      description: additionalData.description || '',
+      hours: additionalData.hours || 0,
+      lessons: additionalData.lessons || 0
+    };
+    fullCartItems.push(newItem);
+    updateHeroDisplay();
 
     // Delegate remove click on newly created button
     line.querySelector('.rline-remove').addEventListener('click', function () {
@@ -461,7 +500,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add-course buttons (catalogue)
   document.querySelectorAll('.cat-add-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      toggleCourse(btn.dataset.id, Number(btn.dataset.price), btn.dataset.name);
+      const data = {
+        image: btn.dataset.image,
+        category: btn.dataset.category,
+        description: btn.dataset.description,
+        hours: btn.dataset.hours,
+        lessons: btn.dataset.lessons
+      };
+      toggleCourse(btn.dataset.id, Number(btn.dataset.price), btn.dataset.name, data);
     });
   });
 

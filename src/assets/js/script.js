@@ -247,24 +247,24 @@ function createCartModal() {
     font-family: 'Prompt', sans-serif;
   `;
   modal.innerHTML = `
-    <div style="background: var(--navy-card); width: 100%; max-width: 580px; border-radius: 32px; border: 1px solid var(--navy-border2); overflow: hidden; box-shadow: 0 50px 120px rgba(0,0,0,0.8);">
-      <div style="padding: 35px 40px 25px; display: flex; justify-content: space-between; align-items: flex-start;">
+    <div style="background: var(--navy-card); width: 100%; max-width: 580px; max-height: 90vh; border-radius: 32px; border: 1px solid var(--navy-border2); overflow: hidden; box-shadow: 0 50px 120px rgba(0,0,0,0.8); display: flex; flex-direction: column;">
+      <div style="padding: 30px 40px 20px; display: flex; justify-content: space-between; align-items: flex-start; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
         <div>
-          <h2 style="margin: 0 0 8px; color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 1.6rem;">ตะกร้าสินค้าของคุณ</h2>
-          <p id="cart-subtitle-count" style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">กำลังคำนวณรายการ...</p>
+          <h2 style="margin: 0 0 5px; color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 1.4rem;">ตะกร้าสินค้าของคุณ</h2>
+          <p id="cart-subtitle-count" style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">กำลังคำนวณรายการ...</p>
         </div>
         <button onclick="closeCartModal()" style="background: rgba(255,255,255,0.05); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">&times;</button>
       </div>
-      <div id="cart-items-list" style="padding: 10px 40px; max-height: 420px; overflow-y: auto;"></div>
-      <div style="padding: 35px 40px 45px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; border-top: 1px solid var(--navy-border); padding-top: 30px;">
-          <span style="color: var(--text-muted); font-weight: 600; font-size: 1.1rem;">ยอดชำระทั้งหมด</span>
-          <span id="cart-total-price" style="font-size: 2.2rem; font-weight: 800; color: #fff; font-family: var(--font-display);">฿0</span>
+      <div id="cart-items-list" style="padding: 20px 40px; overflow-y: auto; flex: 1; scrollbar-width: thin; scrollbar-color: var(--gold) transparent;"></div>
+      <div style="padding: 25px 40px 35px; flex-shrink: 0; background: rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+          <span style="color: var(--text-muted); font-weight: 600; font-size: 1rem;">ยอดชำระทั้งหมด</span>
+          <span id="cart-total-price" style="font-size: 2rem; font-weight: 800; color: #fff; font-family: var(--font-display);">฿0</span>
         </div>
         <button onclick="goToPayment()" style="
           width: 100%; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-rich) 100%); 
-          color: var(--navy-deep); border: none; padding: 20px; border-radius: 18px; 
-          font-weight: 800; font-size: 1.2rem; cursor: pointer; transition: 0.4s;
+          color: var(--navy-deep); border: none; padding: 18px; border-radius: 16px; 
+          font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.4s;
           box-shadow: 0 15px 35px rgba(201, 168, 76, 0.25);
         " onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 20px 45px rgba(201, 168, 76, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 15px 35px rgba(201, 168, 76, 0.25)';">
           ดำเนินการชำระเงิน

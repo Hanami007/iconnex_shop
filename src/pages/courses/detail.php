@@ -107,9 +107,20 @@ $recommended = array_slice($recommended, 0, 3);
         .card-img-wrap { width: 100%; height: 220px; overflow: hidden; background: #000; }
         .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
         .card-body { padding: 30px; }
-        .card-price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 25px; }
-        .card-price-row .new { font-size: 2.8rem; font-weight: 800; color: #fff; font-family: var(--font-display); }
-        .card-price-row .old { color: var(--text-subtle); text-decoration: line-through; font-size: 1.1rem; }
+        .card-price-row { 
+            display: flex; 
+            align-items: baseline; 
+            gap: 10px; 
+            margin-bottom: 25px; 
+            flex-wrap: wrap; 
+        }
+        .card-price-row .new { 
+            font-size: 2.2rem; 
+            font-weight: 800; 
+            color: #fff; 
+            font-family: var(--font-display); 
+            line-height: 1.1;
+        }
         .card-price-row .off { background: #ff4757; color: #fff; padding: 3px 8px; border-radius: 5px; font-size: 0.75rem; font-weight: 800; }
         
         .btn-enroll { 
@@ -295,7 +306,11 @@ $recommended = array_slice($recommended, 0, 3);
                             const fd = new FormData(form);
                             
                             try {
-                                const res = await fetch('api/reviews.php', { method: 'POST', body: fd });
+                                const res = await fetch('api/reviews.php', { 
+                                    method: 'POST', 
+                                    headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+                                    body: fd 
+                                });
                                 const data = await res.json();
                                 if (data.success) {
                                     alert('ขอบคุณสำหรับรีวิวครับ!');
@@ -303,21 +318,27 @@ $recommended = array_slice($recommended, 0, 3);
                                     setRating(5);
                                     loadReviews();
                                 } else {
-                                    alert(data.message);
+                                    alert(data.message || 'ไม่สามารถส่งรีวิวได้');
                                 }
                             } catch (err) {
-                                alert('เกิดข้อผิดพลาดในการส่งรีวิว');
+                                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
                             }
                         }
 
                         async function loadReviews() {
                             const list = document.getElementById('reviews-list');
+                            if (!list) return;
+
                             const fd = new FormData();
                             fd.append('action', 'get_reviews');
                             fd.append('course_id', <?php echo $id; ?>);
                             
                             try {
-                                const res = await fetch('api/reviews.php', { method: 'POST', body: fd });
+                                const res = await fetch('api/reviews.php', { 
+                                    method: 'POST', 
+                                    headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+                                    body: fd 
+                                });
                                 const data = await res.json();
                                 
                                 if (data.success && data.reviews.length > 0) {

@@ -53,32 +53,37 @@ if (!$currentUser) {
   <!-- MAIN GRID -->
   <div class="checkout-grid">
 
-    <!-- ===== LEFT COLUMN ===== -->
     <div class="left-col">
-
-      <!-- Course Hero Card -->
+ 
+      <!-- Course Hero Card (Single Frame with Carousel) -->
       <div class="course-hero">
-        <div class="course-banner">
-          <div class="banner-pattern"></div>
+        <div class="course-banner" id="hero-banner" style="height: 240px; position: relative; background: var(--navy-dark); overflow: hidden;">
+          <!-- Cover Image -->
+          <img id="hero-cover-img" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+          <div id="hero-placeholder-icon" style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; font-size: 4rem; color: rgba(255,255,255,0.1);">
+            <i class="ti ti-school"></i>
+          </div>
+          
+          <div class="banner-pattern" style="z-index: 1;"></div>
           
           <!-- Navigation Arrows -->
-          <button class="hero-nav-btn prev" id="hero-prev" onclick="prevHeroCourse()">
+          <button class="hero-nav-btn prev" id="hero-prev" onclick="prevHeroCourse()" style="z-index: 2;">
             <i class="ti ti-chevron-left"></i>
           </button>
-          <button class="hero-nav-btn next" id="hero-next" onclick="nextHeroCourse()">
+          <button class="hero-nav-btn next" id="hero-next" onclick="nextHeroCourse()" style="z-index: 2;">
             <i class="ti ti-chevron-right"></i>
           </button>
-
-          <div class="banner-content">
-            <div class="banner-icon" id="hero-icon-box">
-              <i class="ti ti-school" style="color:var(--gold-light)"></i>
-            </div>
-            <div class="banner-title" id="hero-banner-title">Course Name</div>
-            <div class="banner-sub" id="hero-banner-sub">Category</div>
+ 
+          <!-- Text Overlay with Gradient for Readability -->
+          <div class="banner-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(11, 18, 33, 0.9) 0%, rgba(11, 18, 33, 0.4) 40%, transparent 100%); z-index: 1;"></div>
+ 
+          <div class="banner-content" style="z-index: 2; bottom: 20px; left: 25px; text-align: left; position: absolute; width: calc(100% - 50px);">
+            <div class="banner-title" id="hero-banner-title" style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 5px; line-height: 1.2;">Course Name</div>
+            <div class="banner-sub" id="hero-banner-sub" style="font-size: 14px; font-weight: 500; color: var(--gold-light); opacity: 0.9;">Category</div>
           </div>
-
+ 
           <!-- Course Counter Badge -->
-          <div class="hero-counter" id="hero-counter">1 / 1</div>
+          <div class="hero-counter" id="hero-counter" style="z-index: 2;">1 / 1</div>
         </div>
         <div class="course-info">
           <div class="course-badges">
@@ -87,147 +92,70 @@ if (!$currentUser) {
             <span class="badge badge-instant"><i class="ti ti-bolt"></i> เริ่มได้ทันที</span>
           </div>
           <div class="course-name" id="hero-course-name">Course Name</div>
-          <div class="course-desc" id="hero-course-desc">
-            Description
-          </div>
+          <div class="course-desc" id="hero-course-desc">Description</div>
           <div class="features-grid" id="hero-features-grid">
-            <div class="feature-item"><span class="feature-dot"></span>วิดีโอ 18+ ชั่วโมง</div>
-            <div class="feature-item"><span class="feature-dot"></span>โค้ดตัวอย่างพร้อมใช้</div>
-            <div class="feature-item"><span class="feature-dot"></span>ใบรับรองเมื่อจบคอร์ส</div>
-            <div class="feature-item"><span class="feature-dot"></span>กลุ่ม Community หลังเรียน</div>
-            <div class="feature-item"><span class="feature-dot"></span>อัปเดตเนื้อหาตลอดชีพ</div>
-            <div class="feature-item"><span class="feature-dot"></span>ถามตอบกับอาจารย์</div>
+            <!-- Features populated by JS -->
           </div>
         </div>
       </div>
+      
+      <div id="checkout-items-container" style="display:none;"></div>
 
       <!-- Add More Courses -->
       <div class="add-courses-card">
         <div class="section-title">เพิ่มคอร์สอื่นๆ ที่สนใจ</div>
         <div class="catalogue-list">
-
+          <?php 
+          useService('course_data');
+          global $courses;
+          foreach ($courses as $c): 
+          ?>
           <div class="catalogue-wrapper">
-            <button class="catalogue-toggle" id="toggle-cat-1" data-course="cat-1">
-              <div class="cat-icon blue">
-                <i class="ti ti-brand-nodejs" style="color:#1d4ed8"></i>
+            <button class="catalogue-toggle" id="toggle-cat-<?php echo $c['id']; ?>" data-course="cat-<?php echo $c['id']; ?>">
+              <div class="cat-icon" style="background: var(--gold-pale);">
+                <?php if(strpos($c['image'], 'http') === 0 || strpos($c['image'], 'uploads/') === 0): ?>
+                  <img src="<?php echo strpos($c['image'], 'uploads/') === 0 ? '../'.$c['image'] : $c['image']; ?>" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+                <?php else: ?>
+                  <span style="font-size: 20px;"><?php echo $c['image'] ?: '📚'; ?></span>
+                <?php endif; ?>
               </div>
               <div class="cat-info">
-                <div class="cat-name">Node.js & Express Backend</div>
-                <div class="cat-price">4,500 บาท • 14 ชั่วโมง</div>
+                <div class="cat-name"><?php echo htmlspecialchars($c['name']); ?></div>
+                <div class="cat-price"><?php echo number_format($c['price']); ?> บาท • <?php echo $c['hours']; ?> ชั่วโมง</div>
               </div>
               <div class="toggle-icon">
                 <i class="ti ti-chevron-down"></i>
               </div>
             </button>
-            <div class="catalogue-detail hidden" id="detail-cat-1">
+            <div class="catalogue-detail hidden" id="detail-cat-<?php echo $c['id']; ?>">
               <div class="detail-content">
                 <div class="detail-section">
                   <div class="detail-label">เรทติ้ง</div>
-                  <div class="detail-value">⭐⭐⭐⭐⭐ 4.8 (450 รีวิว)</div>
+                  <div class="detail-value">⭐⭐⭐⭐⭐ <?php echo $c['rating']; ?> (<?php echo $c['reviews']; ?> รีวิว)</div>
                 </div>
                 <div class="detail-section">
-                  <div class="detail-label">สิ่งที่จะได้รับ</div>
-                  <div class="detail-items">
-                    <div class="detail-item"><span class="item-icon">✓</span>REST API สิ้นสุดเต็มรูปแบบ</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>เชื่อมต่อ MongoDB</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>Error Handling ขั้นสูง</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>JWT Authentication</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>Deploy บน Railway</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>โปรเจกต์ 3 ชิ้น</div>
-                  </div>
+                  <div class="detail-label">เกี่ยวกับคอร์ส</div>
+                  <div class="detail-value"><?php echo htmlspecialchars($c['short_desc']); ?></div>
                 </div>
                 <div class="detail-section">
                   <div class="detail-label">สอนโดย</div>
-                  <div class="detail-value">🧑‍💼 Senior Backend Engineer • 8 ปีประสบการณ์</div>
+                  <div class="detail-value">🧑‍💼 <?php echo htmlspecialchars($c['instructor']); ?></div>
                 </div>
               </div>
-              <button class="cat-add-btn" data-id="cat-1" data-price="4500" data-name="Node.js &amp; Express Backend">
+              <button class="cat-add-btn" 
+                data-id="cat-<?php echo $c['id']; ?>" 
+                data-price="<?php echo $c['price']; ?>" 
+                data-name="<?php echo htmlspecialchars($c['name']); ?>"
+                data-image="<?php echo htmlspecialchars($c['image']); ?>"
+                data-category="<?php echo htmlspecialchars($c['category']); ?>"
+                data-description="<?php echo htmlspecialchars($c['short_desc']); ?>"
+                data-hours="<?php echo $c['hours']; ?>"
+                data-lessons="<?php echo $c['lessons']; ?>">
                 <i class="ti ti-plus"></i> เพิ่มไปยังตะกร้า
               </button>
             </div>
           </div>
-
-          <div class="catalogue-wrapper">
-            <button class="catalogue-toggle" id="toggle-cat-2" data-course="cat-2">
-              <div class="cat-icon green">
-                <i class="ti ti-database" style="color:#059669"></i>
-              </div>
-              <div class="cat-info">
-                <div class="cat-name">SQL & Database Design</div>
-                <div class="cat-price">3,200 บาท • 10 ชั่วโมง</div>
-              </div>
-              <div class="toggle-icon">
-                <i class="ti ti-chevron-down"></i>
-              </div>
-            </button>
-            <div class="catalogue-detail hidden" id="detail-cat-2">
-              <div class="detail-content">
-                <div class="detail-section">
-                  <div class="detail-label">เรทติ้ง</div>
-                  <div class="detail-value">⭐⭐⭐⭐⭐ 4.9 (380 รีวิว)</div>
-                </div>
-                <div class="detail-section">
-                  <div class="detail-label">สิ่งที่จะได้รับ</div>
-                  <div class="detail-items">
-                    <div class="detail-item"><span class="item-icon">✓</span>SQL พื้นฐานถึงขั้นสูง</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>Database Design & Normalization</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>Indexing & Performance Tuning</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>Backup & Recovery Strategies</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>ทำงานกับ PostgreSQL & MySQL</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>โปรเจกต์เฉพาะด้าน 5 ชิ้น</div>
-                  </div>
-                </div>
-                <div class="detail-section">
-                  <div class="detail-label">สอนโดย</div>
-                  <div class="detail-value">👨‍🏫 Database Specialist • 12 ปีประสบการณ์</div>
-                </div>
-              </div>
-              <button class="cat-add-btn" data-id="cat-2" data-price="3200" data-name="SQL &amp; Database Design">
-                <i class="ti ti-plus"></i> เพิ่มไปยังตะกร้า
-              </button>
-            </div>
-          </div>
-
-          <div class="catalogue-wrapper">
-            <button class="catalogue-toggle" id="toggle-cat-3" data-course="cat-3">
-              <div class="cat-icon purple">
-                <i class="ti ti-palette" style="color:#7c3aed"></i>
-              </div>
-              <div class="cat-info">
-                <div class="cat-name">UI/UX Design ด้วย Figma</div>
-                <div class="cat-price">3,800 บาท • 12 ชั่วโมง</div>
-              </div>
-              <div class="toggle-icon">
-                <i class="ti ti-chevron-down"></i>
-              </div>
-            </button>
-            <div class="catalogue-detail hidden" id="detail-cat-3">
-              <div class="detail-content">
-                <div class="detail-section">
-                  <div class="detail-label">เรทติ้ง</div>
-                  <div class="detail-value">⭐⭐⭐⭐⭐ 4.7 (520 รีวิว)</div>
-                </div>
-                <div class="detail-section">
-                  <div class="detail-label">สิ่งที่จะได้รับ</div>
-                  <div class="detail-items">
-                    <div class="detail-item"><span class="item-icon">✓</span>Figma จากผู้เริ่มต้นถึงมืออาชีพ</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>Design System & Components</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>Wireframing & Prototyping</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>User Research Fundamentals</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>Portfolio Project ที่โดดเด่น</div>
-                    <div class="detail-item"><span class="item-icon">✓</span>Job Placement Support</div>
-                  </div>
-                </div>
-                <div class="detail-section">
-                  <div class="detail-label">สอนโดย</div>
-                  <div class="detail-value">👩‍🎨 UX Designer • 9 ปีประสบการณ์ที่ Tech Startups</div>
-                </div>
-              </div>
-              <button class="cat-add-btn" data-id="cat-3" data-price="3800" data-name="UI/UX Design ด้วย Figma">
-                <i class="ti ti-plus"></i> เพิ่มไปยังตะกร้า
-              </button>
-            </div>
-          </div>
+          <?php endforeach; ?>
 
         </div>
       </div>
