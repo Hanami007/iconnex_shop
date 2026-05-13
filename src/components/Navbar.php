@@ -12,6 +12,7 @@
         
         <?php if(isset($_SESSION['user_id'])): ?>
             <li class="mobile-only"><a href="my_orders.php"><i class="fas fa-history" style="margin-right: 10px;"></i> <?php echo __('nav_my_orders'); ?></a></li>
+            <li class="mobile-only"><a href="invoices.php"><i class="fas fa-file-invoice-dollar" style="margin-right: 10px;"></i> <?php echo __('nav_invoices'); ?></a></li>
             <li class="mobile-only"><a href="logout.php"><i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> <?php echo __('nav_logout'); ?></a></li>
         <?php else: ?>
             <li class="mobile-only"><a href="login.php" style="color: var(--gold-soft) !important;"><i class="fas fa-sign-in-alt" style="margin-right: 10px;"></i> <?php echo __('btn_login'); ?></a></li>
@@ -39,6 +40,9 @@
                 <div style="display: flex; align-items: center; gap: 15px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
                     <a href="my_orders.php" style="color: var(--gold-soft); font-size: 0.85rem; font-weight: 700; text-decoration:none;">
                         <i class="fas fa-history"></i> <?php echo __('nav_my_orders'); ?>
+                    </a>
+                    <a href="invoices.php" style="color: var(--gold-soft); font-size: 0.85rem; font-weight: 700; text-decoration:none;">
+                        <i class="fas fa-file-invoice-dollar"></i> <?php echo __('nav_invoices'); ?>
                     </a>
                     <a href="logout.php" style="background: rgba(255,255,255,0.05); color: #fff; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; text-decoration:none;">
                         <?php echo __('nav_logout'); ?>

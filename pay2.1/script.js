@@ -390,6 +390,8 @@ async function confirmPayment() {
   const email   = document.getElementById('inp-email').value.trim();
   const phone   = document.getElementById('inp-phone').value.trim();
   const lineId  = document.getElementById('inp-line').value.trim();
+  const taxId   = document.getElementById('inp-tax-id').value.trim();
+  const address = document.getElementById('inp-address').value.trim();
   const slip    = document.getElementById('inp-slip').files[0];
 
   if (!name || !email || !phone || !lineId) {
@@ -423,6 +425,8 @@ async function confirmPayment() {
   // Backend will fetch real name/email from session for security
   fd.append('phone', phone);
   fd.append('line_id', lineId);
+  fd.append('tax_id', taxId);
+  fd.append('billing_address', address);
   fd.append('total_amount', grand);
   fd.append('payment_method', payMethod);
   fd.append('items', JSON.stringify(fullCartItems));

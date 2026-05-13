@@ -243,6 +243,20 @@ if (!$currentUser) {
             <label class="input-label" for="inp-line">LINE ID</label>
             <input class="input-field" type="text" id="inp-line" placeholder="LINE ID ของคุณ">
           </div>
+          
+          <div style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.1);">
+            <div class="pform-header-title" style="font-size: 0.9rem; margin-bottom: 15px;">
+              <i class="ti ti-file-description"></i> ข้อมูลออกใบกำกับภาษี (Optional)
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="inp-tax-id">เลขประจำตัวผู้เสียภาษี</label>
+              <input class="input-field" type="text" id="inp-tax-id" placeholder="เลข 13 หลัก">
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="inp-address">ที่อยู่สำหรับออกใบกำกับภาษี</label>
+              <textarea class="input-field" id="inp-address" rows="3" placeholder="บ้านเลขที่, ถนน, แขวง/ตำบล, เขต/อำเภอ, จังหวัด, รหัสไปรษณีย์" style="resize: none; padding-top: 10px;"></textarea>
+            </div>
+          </div>
 
           <!-- Payment Method Tabs -->
           <div class="pay-method-section">

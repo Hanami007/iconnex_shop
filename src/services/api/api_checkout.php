@@ -116,7 +116,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         $user_id = $_SESSION['user_id'] ?? null;
-        $stmt = $pdo->prepare("INSERT INTO orders (order_no, user_id, customer_name, customer_email, customer_phone, line_id, total_amount, payment_method, items_json, slip_image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $tax_id = $data['tax_id'] ?? null;
+        $billing_address = $data['billing_address'] ?? null;
+
+        $stmt = $pdo->prepare("INSERT INTO orders (order_no, user_id, customer_name, customer_email, customer_phone, line_id, tax_id, billing_address, total_amount, payment_method, items_json, slip_image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         
         $stmt->execute([
             $order_no,
@@ -125,6 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email,
             $phone,
             $line_id,
+            $tax_id,
+            $billing_address,
             $total_amount,
             $payment_method,
             json_encode($items, JSON_UNESCAPED_UNICODE),

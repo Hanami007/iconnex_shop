@@ -140,6 +140,10 @@ $completion_rate = "0%"; // Keep simple for now
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         Orders <span class="nav-badge" style="background:var(--green)"><?php echo $total_orders; ?></span>
       </div>
+      <div class="nav-item" onclick="navigate('invoices',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Tax Invoices
+      </div>
       <div class="nav-item" onclick="navigate('notifications',this)">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         Notifications
@@ -259,6 +263,10 @@ $completion_rate = "0%"; // Keep simple for now
     </div>
 
     <!-- ORDERS -->
+    <div class="page" id="page-orders">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Orders</h1><p>Manage course purchases and enrollment requests.</p></div>
+      </div>
       <div class="card">
         <div class="table-wrap">
           <table class="data-table">
@@ -267,6 +275,24 @@ $completion_rate = "0%"; // Keep simple for now
           </table>
         </div>
         <div class="pagination" id="orderPagination"></div>
+      </div>
+    </div>
+
+    <!-- INVOICES -->
+    <div class="page" id="page-invoices">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Tax Invoices</h1><p>Manage and download legally compliant tax invoices.</p></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Invoice No.</th><th>Student</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="invoiceTableBody">
+              <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3)">Loading invoices...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="invoicePagination"></div>
       </div>
     </div>
 

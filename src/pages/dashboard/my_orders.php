@@ -118,6 +118,7 @@ function getCourseImage($name, $courses) {
                 <a href="#" class="menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
                 <a href="#" class="menu-item"><i class="fas fa-play-circle"></i> My Learning</a>
                 <a href="my_orders.php" class="menu-item active"><i class="fas fa-history"></i> Purchase History</a>
+                <a href="invoices.php" class="menu-item"><i class="fas fa-file-invoice-dollar"></i> Tax Invoices</a>
                 <a href="#" class="menu-item"><i class="fas fa-user-circle"></i> Profile Settings</a>
                 <hr style="border: none; border-top: 1px solid var(--navy-border); margin: 15px 0;">
                 <a href="logout.php" class="menu-item" style="color: var(--red);"><i class="fas fa-sign-out-alt"></i> Logout</a>

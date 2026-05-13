@@ -81,7 +81,9 @@ $translations = [
         'nav_my_orders' => 'ประวัติการสั่งซื้อ',
         'title_my_orders' => 'ประวัติการสั่งซื้อของฉัน',
         'nav_logout' => 'ออกจากระบบ',
-        'testimonials_title' => 'ความประทับใจจากลูกค้า'
+        'testimonials_title' => 'ความประทับใจจากลูกค้า',
+        'nav_invoices' => 'ใบกำกับภาษี',
+        'title_invoices' => 'ใบกำกับภาษีของฉัน'
     ],
     'en' => [
         'nav_home' => 'Home',
@@ -151,6 +153,8 @@ $translations = [
         'btn_see_more' => 'See More',
         'nav_my_orders' => 'My Orders',
         'title_my_orders' => 'My Purchase History',
+        'nav_invoices' => 'Tax Invoices',
+        'title_invoices' => 'My Tax Invoices',
         'nav_logout' => 'Logout',
         'testimonials_title' => 'Client Testimonials'
     ]

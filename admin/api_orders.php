@@ -55,10 +55,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $status = $_POST['status'] ?? '';
         if ($order_id && in_array($status, ['pending', 'completed', 'cancelled'])) {
             try {
+                $pdo->beginTransaction();
+                
                 $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
                 $stmt->execute([$status, $order_id]);
+                
+                // Generate Invoice if completed
+                if ($status === 'completed') {
+                    require_once dirname(__DIR__) . '/src/services/invoice_service.php';
+                    require_once dirname(__DIR__) . '/src/services/tax_service.php';
+                    
+                    $invoiceService = new InvoiceService($pdo);
+                    
+                    // Fetch full order data
+                    $stmtOrder = $pdo->prepare("SELECT * FROM orders WHERE id = ?");
+                    $stmtOrder->execute([$order_id]);
+                    $orderData = $stmtOrder->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($orderData) {
+                        // Prepare items
+                        $items = json_decode($orderData['items_json'], true);
+                        $orderData['items'] = [];
+                        foreach($items as $it) {
+                            $orderData['items'][] = [
+                                'course_id' => $it['id'] ?? 0,
+                                'course_name' => $it['name'] ?? 'Course',
+                                'qty' => 1,
+                                'unit_price' => $it['price'] ?? 0,
+                                'total_price' => $it['price'] ?? 0
+                            ];
+                        }
+                        
+                        $customerData = [
+                            'name' => $orderData['customer_name'],
+                            'address' => $orderData['billing_address'] ?: 'No address provided',
+                            'tax_id' => $orderData['tax_id'] ?: null
+                        ];
+                        
+                        $invoiceService->createInvoice($orderData, $customerData);
+                    }
+                }
+                
+                $pdo->commit();
                 echo json_encode(['success' => true]);
-            } catch (PDOException $e) {
+            } catch (Exception $e) {
+                $pdo->rollBack();
                 echo json_encode(['success' => false, 'error' => $e->getMessage()]);
             }
         } else {

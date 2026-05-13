@@ -396,7 +396,7 @@ function navigate(page,el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el) el.classList.add('active');
   
-  const titles={dashboard:'Dashboard',courses:'Course Management',users:'User Management',orders:'Orders & Enrollments',notifications:'Notifications',settings:'Settings'};
+  const titles={dashboard:'Dashboard',courses:'Course Management',users:'User Management',orders:'Orders & Enrollments',invoices:'Tax Invoices',notifications:'Notifications',settings:'Settings'};
   const titleEl = document.getElementById('topbarTitle');
   if(titleEl) titleEl.textContent=titles[page]||page;
 
@@ -404,6 +404,49 @@ function navigate(page,el){
       fetchNotifications();
       fetchNotiStats();
   }
+  if(page === 'invoices') {
+      fetchInvoices();
+  }
+}
+
+let invoices = [];
+async function fetchInvoices() {
+    try {
+        const res = await fetch('api_invoices.php');
+        const json = await res.json();
+        if (json.success) {
+            invoices = json.data;
+            renderInvoices();
+        }
+    } catch(err) {
+        console.error('Error fetching invoices:', err);
+    }
+}
+
+function renderInvoices(page=1) {
+    const {items, total} = paginate(invoices, page, 10);
+    const sc = {active: 'badge-green', cancelled: 'badge-red'};
+    const tbody = document.getElementById('invoiceTableBody');
+    if (!tbody) return;
+    
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3)">No invoices found.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = items.map(inv => `
+        <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent-2)">${inv.invoice_no}</td>
+            <td class="td-primary">${inv.student}</td>
+            <td style="font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600">${inv.amount}</td>
+            <td><span class="badge ${sc[inv.status] || 'badge-blue'}">${inv.status.toUpperCase()}</span></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:.77rem">${inv.date}</td>
+            <td><div class="actions">
+                <a href="../invoice_view.php?id=${inv.id}" target="_blank" class="act-btn" title="View Invoice">👁</a>
+                <a href="../api/invoices/download.php?id=${inv.id}" target="_blank" class="act-btn" title="Download PDF">📥</a>
+            </div></td>
+        </tr>`).join('');
+    renderPagination('invoicePagination', total, page, 'renderInvoices', 10);
 }
 
 function openModal(id){
