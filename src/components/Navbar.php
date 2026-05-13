@@ -9,6 +9,14 @@
         <li><a href="index.php#courses"><?php echo __('nav_courses'); ?></a></li>
         <li><a href="index.php#portfolio"><?php echo __('nav_portfolio'); ?></a></li>
         <li><a href="index.php#contact"><?php echo __('nav_contact'); ?></a></li>
+        
+        <?php if(isset($_SESSION['user_id'])): ?>
+            <li class="mobile-only"><a href="my_orders.php"><i class="fas fa-history" style="margin-right: 10px;"></i> <?php echo __('nav_my_orders'); ?></a></li>
+            <li class="mobile-only"><a href="logout.php"><i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> <?php echo __('nav_logout'); ?></a></li>
+        <?php else: ?>
+            <li class="mobile-only"><a href="login.php" style="color: var(--gold-soft) !important;"><i class="fas fa-sign-in-alt" style="margin-right: 10px;"></i> <?php echo __('btn_login'); ?></a></li>
+        <?php endif; ?>
+
         <li class="lang-switcher">
             <a href="?<?php echo http_build_query(array_merge($_GET, ['lang' => 'th'])); ?>" class="<?php echo $current_lang === 'th' ? 'active' : ''; ?>">TH</a>
             <span>|</span>

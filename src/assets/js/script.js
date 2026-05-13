@@ -304,7 +304,10 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch('api/cart.php', { 
     method: 'POST', 
     headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
-    body: new URLSearchParams({ action: 'count' }) 
+    body: new URLSearchParams({ 
+        action: 'count',
+        csrf_token: typeof csrfToken !== 'undefined' ? csrfToken : ''
+    }) 
   })
     .then(res => res.json()).then(data => updateCartBadge(data.count));
 

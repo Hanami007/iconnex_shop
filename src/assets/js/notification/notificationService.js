@@ -28,6 +28,7 @@ const NotificationService = {
     try {
       const fd = new FormData();
       fd.append('id', id);
+      fd.append('csrf_token', typeof csrfToken !== 'undefined' ? csrfToken : '');
       const res = await fetch('api/notifications.php?action=mark_read', { 
         method: 'POST', 
         headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },

@@ -29,9 +29,9 @@ $completion_rate = "0%"; // Keep simple for now
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CourseFlow — Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css?v=1.1">
+<link rel="stylesheet" href="/admin/admin.css?v=1.2">
 <script>const csrfToken = "<?php echo getCsrfToken(); ?>";</script>
-<script src="admin.js"></script>        
+<script src="/admin/admin.js?v=1.2"></script>        
 </head>
 <body>
 

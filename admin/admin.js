@@ -583,6 +583,7 @@ async function deleteCourse(id) {
         const fd = new FormData();
         fd.append('action', 'delete');
         fd.append('id', id);
+        fd.append('csrf_token', typeof csrfToken !== 'undefined' ? csrfToken : '');
         
         const res = await fetch('api_courses.php', { 
             method: 'POST', 
@@ -646,6 +647,7 @@ async function saveCourse() {
     fd.append('content_json', JSON.stringify(sections));
     
     if (imageFile) fd.append('image', imageFile);
+    fd.append('csrf_token', typeof csrfToken !== 'undefined' ? csrfToken : '');
     
     try {
         const res = await fetch('api_courses.php', {
@@ -825,6 +827,7 @@ async function sendNotification() {
     fd.append('type', type);
     fd.append('priority', priority);
     fd.append('target_audience', audience);
+    fd.append('csrf_token', typeof csrfToken !== 'undefined' ? csrfToken : '');
 
     if (audience === 'course_buyers') {
         fd.append('custom_user_ids', document.getElementById('notiCourseId').value);
@@ -841,7 +844,11 @@ async function sendNotification() {
     btn.textContent = 'Sending...';
 
     try {
-        const res = await fetch(API_NOTI, { method: 'POST', body: fd });
+        const res = await fetch(API_NOTI, { 
+            method: 'POST', 
+            headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+            body: fd 
+        });
         const json = await res.json();
         if (json.success) {
             showToast('✅', 'Notification sent successfully!');
@@ -867,7 +874,12 @@ async function deleteNoti(id) {
         const fd = new FormData();
         fd.append('action', 'delete');
         fd.append('id', id);
-        const res = await fetch(API_NOTI, { method: 'POST', body: fd });
+        fd.append('csrf_token', typeof csrfToken !== 'undefined' ? csrfToken : '');
+        const res = await fetch(API_NOTI, { 
+            method: 'POST', 
+            headers: { 'X-CSRF-TOKEN': typeof csrfToken !== 'undefined' ? csrfToken : '' },
+            body: fd 
+        });
         const json = await res.json();
         if (json.success) {
             showToast('✅', 'Deleted');
