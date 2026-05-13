@@ -20,6 +20,9 @@ $total_revenue = $stmt->fetchColumn() ?: 0;
 $stmt = $pdo->query("SELECT count(*) FROM orders WHERE status = 'pending'");
 $total_orders = $stmt->fetchColumn() ?: 0;
 
+$stmt = $pdo->query("SELECT count(*) FROM invoices");
+$total_invoices = $stmt->fetchColumn() ?: 0;
+
 $completion_rate = "0%"; // Keep simple for now
 ?>
 <!DOCTYPE html>
@@ -29,9 +32,9 @@ $completion_rate = "0%"; // Keep simple for now
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CourseFlow — Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/admin/admin.css?v=1.2">
+<link rel="stylesheet" href="admin.css?v=1.2">
 <script>const csrfToken = "<?php echo getCsrfToken(); ?>";</script>
-<script src="/admin/admin.js?v=1.2"></script>        
+<script src="admin.js?v=1.2"></script>        
 </head>
 <body>
 
@@ -142,7 +145,7 @@ $completion_rate = "0%"; // Keep simple for now
       </div>
       <div class="nav-item" onclick="navigate('invoices',this)">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Tax Invoices
+        Tax Invoices <span class="nav-badge" style="background:var(--accent-2)"><?php echo $total_invoices; ?></span>
       </div>
       <div class="nav-item" onclick="navigate('notifications',this)">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -211,19 +214,32 @@ $completion_rate = "0%"; // Keep simple for now
       </div>
 
       <div class="card">
-        <div class="card-header"><span class="card-title">Recent Activity</span><button class="btn btn-ghost btn-sm">View all</button></div>
+        <div class="card-header"><span class="card-title">Recent Activity</span></div>
         <div class="card-body">
           <div class="activity-list">
-            <div class="activity-item">
-              <div class="activity-dot" style="background:rgba(34,211,160,.12);color:var(--green)">🎓</div>
-              <div class="activity-info"><strong>Maria Chen enrolled in Complete React Course</strong><span>New enrollment · Student profile created</span></div>
-              <span class="activity-time">2m ago</span>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot" style="background:rgba(108,99,255,.12);color:var(--accent-2)">📗</div>
-              <div class="activity-info"><strong>New course published: Python for Beginners</strong><span>Added by instructor James Lee</span></div>
-              <span class="activity-time">18m ago</span>
-            </div>
+            <?php
+            $stmt = $pdo->query("SELECT o.*, u.username FROM orders o LEFT JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC LIMIT 5");
+            $recent = $stmt->fetchAll();
+            if (empty($recent)):
+            ?>
+              <div class="activity-item" style="justify-content:center;color:var(--text-3)">No recent activity</div>
+            <?php else: foreach($recent as $act): 
+              $time_ago = time() - strtotime($act['created_at']);
+              if($time_ago < 60) $ts = "Just now";
+              elseif($time_ago < 3600) $ts = floor($time_ago/60)."m ago";
+              elseif($time_ago < 86400) $ts = floor($time_ago/3600)."h ago";
+              else $ts = date('M j', strtotime($act['created_at']));
+            ?>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:rgba(34,211,160,.12);color:var(--green)">🎓</div>
+                <div class="activity-info">
+                    <strong><?php echo htmlspecialchars($act['customer_name'] ?: $act['username'] ?: 'Guest'); ?></strong> 
+                    ordered <strong><?php echo count(json_decode($act['items_json'] ?? '[]', true)); ?> course(s)</strong>
+                    <span>Status: <?php echo strtoupper($act['status']); ?></span>
+                </div>
+                <span class="activity-time"><?php echo $ts; ?></span>
+              </div>
+            <?php endforeach; endif; ?>
           </div>
         </div>
       </div>

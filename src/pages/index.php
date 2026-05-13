@@ -344,25 +344,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="footer-socials">
-            <a class="social-btn" href="#" title="Facebook">f</a>
-            <a class="social-btn" href="#" title="YouTube">▶</a>
-            <div class="social-right" style="display:flex;gap:12px;">
-                <a class="social-btn" href="#" title="LinkedIn">in</a>
-                <a class="social-btn" href="#" title="Instagram">📷</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div>
-                <div class="footer-brand">ICONNEX</div>
-                <div><?php echo __('footer_desc'); ?></div>
-            </div>
-            <div class="col-center"><?php echo __('footer_phone'); ?> 094-546-2224</div>
-            <div class="col-right"><?php echo __('footer_address'); ?></div>
-        </div>
-    </footer>
+    <?php renderComponent('footer/footer'); ?>
 </body>
 
 

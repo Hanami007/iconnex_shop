@@ -341,14 +341,7 @@ if (!$currentUser) {
     </div><!-- end right-col -->
   </div><!-- end checkout-grid -->
 
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <p>© 2026 ICONNEX Creators Club ·
-      <a href="#">นโยบายความเป็นส่วนตัว</a> ·
-      <a href="#">เงื่อนไขการใช้งาน</a> ·
-      support@educourse.com · 02-123-4567
-    </p>
-  </footer>
+  <?php renderComponent('footer/footer'); ?>
 
 </div><!-- end page-wrapper -->
 <script src="script.js"></script>

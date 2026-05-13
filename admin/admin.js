@@ -717,6 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCourses();
     fetchUsers();
     fetchOrders();
+    fetchInvoices();
     fetchCategories();
 });
 

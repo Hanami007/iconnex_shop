@@ -115,11 +115,10 @@ function getCourseImage($name, $courses) {
         <!-- Sidebar -->
         <aside class="dashboard-sidebar">
             <div class="sidebar-menu">
-                <a href="#" class="menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
-                <a href="#" class="menu-item"><i class="fas fa-play-circle"></i> My Learning</a>
+                <a href="index.php" class="menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a href="index.php#courses" class="menu-item"><i class="fas fa-play-circle"></i> My Learning</a>
                 <a href="my_orders.php" class="menu-item active"><i class="fas fa-history"></i> Purchase History</a>
                 <a href="invoices.php" class="menu-item"><i class="fas fa-file-invoice-dollar"></i> Tax Invoices</a>
-                <a href="#" class="menu-item"><i class="fas fa-user-circle"></i> Profile Settings</a>
                 <hr style="border: none; border-top: 1px solid var(--navy-border); margin: 15px 0;">
                 <a href="logout.php" class="menu-item" style="color: var(--red);"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
@@ -185,10 +184,7 @@ function getCourseImage($name, $courses) {
         </main>
     </div>
 
-    <footer style="padding: 60px 20px; background: var(--navy-deep); border-top: 1px solid var(--navy-border); text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-        <div style="margin-bottom: 20px; font-weight: 700; color: #fff;">ICONNEX CREATORS CLUB</div>
-        <p>© 2025 ICONNEX. All rights reserved.</p>
-    </footer>
+    <?php renderComponent('footer/footer'); ?>
     <script src="src/assets/js/notification/notificationService.js?v=1.1"></script>
     <script src="src/assets/js/notification/notificationUI.js?v=1.1"></script>
     <script src="src/assets/js/script.js?v=1.1"></script>
