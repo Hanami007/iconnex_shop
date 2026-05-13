@@ -31,8 +31,10 @@ try {
     if (file_exists($jsonPath)) {
         $json = file_get_contents($jsonPath);
         $fallback = json_decode($json, true);
-        foreach($fallback as $item) {
-            $courses[$item['id']] = $item;
+        if (is_array($fallback)) {
+            foreach($fallback as $item) {
+                $courses[$item['id']] = $item;
+            }
         }
     }
 }

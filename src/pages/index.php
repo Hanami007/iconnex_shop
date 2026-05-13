@@ -177,6 +177,8 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
             </div>
         </div>
     </section>
+    
+    <div class="section-divider"></div>
 
     <!-- COURSES -->
     <section id="courses" style="padding: var(--section-pad) 0;">
