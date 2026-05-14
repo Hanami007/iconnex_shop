@@ -9,7 +9,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ICONNEX – Creators Club</title>
+    <title>ICONNEX – Business Transformation Partner</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -296,12 +296,12 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
         <div class="faq-box">
             <div class="faq-item open">
                 <div class="faq-question">
-                    <span>Creators Club คืออะไร?</span>
+                    <span>ICONNEX คืออะไร?</span>
                     <span class="faq-chevron">▾</span>
                 </div>
                 <div class="faq-answer">
-                    Creators Club เป็นแพลตฟอร์ม E-Learning
-                    สำหรับผู้ที่ต้องการพัฒนาทักษะการตัดต่อและเชื่อมต่อกับชุมชนนักสร้างสรรค์
+                    ICONNEX คือพาร์ทเนอร์เชิงกลยุทธ์ที่ช่วยคุณทรานส์ฟอร์มธุรกิจและทีมงานสู่ยุคดิจิทัล
+                    ด้วยการวางระบบ AI Automation และกลยุทธ์การสร้างแบรนด์ที่ทรงพลัง
                 </div>
             </div>
             <div class="faq-item">
