@@ -1,7 +1,9 @@
 <!-- Navbar Component -->
 <nav>
     <a href="index.php" class="nav-logo">
-        <div class="logo-icon">🌀</div>
+        <div class="logo-icon">
+            <img src="<?php echo ASSETS_DIR; ?>/img/logo2.jpg" alt="Iconnex Logo" style="height: 100%; width: 100%; object-fit: cover; border-radius: 8px;">
+        </div>
         ICONNEX
     </a>
     <ul class="nav-links" id="navLinks">
